@@ -1,0 +1,154 @@
+
+# Ambari Server Install
+
+See the Ambari documentation relative to [Software Requirements][sr] before
+executing this module.
+
+    module.exports = header: 'Ambari Server Install', handler: (options) ->
+
+
+## Registry
+
+      @registry.register ['ambari','cluster','add'], "ryba-ambari-actions/lib/cluster/add"
+      @registry.register ['ambari','cluster','provisioning_state'], "ryba-ambari-actions/lib/cluster/provisioning_state"
+      @registry.register ['ambari','configs','update'], 'ryba-ambari-actions/lib/configs/update'
+      @registry.register ['ambari','configs','groups_add'], 'ryba-ambari-actions/lib/configs/groups/add'
+      @registry.register ['ambari','services','add'], 'ryba-ambari-actions/lib/services/add'
+      @registry.register ['ambari','services','add'], 'ryba-ambari-actions/lib/services/add'
+      @registry.register ['ambari','kerberos','descriptor', 'update'], 'ryba-ambari-actions/lib/kerberos/descriptor/update'
+
+      options.cluster_env_stack_properties['stack_features'] = fs.readFileSync('/home/bakalian/ryba/ryba-env-metal/resources/stack_features.json').toString()
+      # options.cluster_env_stack_properties['stack_tools'] = fs.readFileSync('/home/bakalian/ryba/ryba-env-metal/resources/stack_tools.json').toString()
+      options.cluster_env_stack_properties['repo_suse_rhel_template'] = fs.readFileSync('/home/bakalian/ryba/ryba-env-metal/resources/repo_suse_rhel_template.repo').toString()
+      options.cluster_env_stack_properties['stack_packages'] = fs.readFileSync('/home/bakalian/ryba/ryba-env-metal/resources/stack_packages.json').toString()
+      options.cluster_env_stack_properties['stack_tools'] = fs.readFileSync('/home/bakalian/ryba/ryba-env-metal/resources/stack_tools.json').toString()
+
+      @ambari.cluster.add
+        header: 'Cluster add'
+        url: options.ambari_url
+        username: 'admin'
+        password: options.ambari_admin_password
+        name: options.cluster_name
+        security_type: 'KERBEROS'
+        version: "#{options.stack_name}-#{options.stack_version}"
+
+      @system.execute
+        header: 'VDF File'
+        if: options.vdf_source?
+        cmd: """
+          curl --fail --request POST \
+            -u admin:#{options.ambari_admin_password} \
+            --insecure \
+            --url #{options.ambari_url}/api/v1/version_definitions \
+            --header 'x-requested-by: ambari' \
+            --data '{
+               "VersionDefinition": {
+                 "version_url": "#{options.vdf_source}"
+               }
+              }'
+        """
+        code_skipped: 22
+
+      @ambari.cluster.provisioning_state
+        header: 'Set Installed'
+        url: options.ambari_url
+        username: 'admin'
+        password: options.ambari_admin_password
+        name: options.cluster_name
+        provisioning_state: 'INSTALLED'
+
+      @ambari.configs.update
+        header: 'cluster-env stack'
+        url: options.ambari_url
+        username: 'admin'
+        password: options.ambari_admin_password
+        config_type: 'cluster-env'
+        cluster_name: options.cluster_name
+        properties: options.cluster_env_stack_properties
+
+      @ambari.configs.update
+        header: 'cluster-env main'
+        url: options.ambari_url
+        username: 'admin'
+        password: options.ambari_admin_password
+        config_type: 'cluster-env'
+        cluster_name: options.cluster_name
+        properties: options.cluster_env_global_properties
+
+      @ambari.configs.update
+        header: 'upload krb5-conf'
+        url: options.ambari_url
+        username: 'admin'
+        password: options.ambari_admin_password
+        config_type: 'krb5-conf'
+        cluster_name: options.cluster_name
+        properties: options.configurations['krb5-conf']
+
+      @ambari.configs.update
+        header: 'upload kerberos-env'
+        url: options.ambari_url
+        username: 'admin'
+        password: options.ambari_admin_password
+        config_type: 'kerberos-env'
+        cluster_name: options.cluster_name
+        properties: options.configurations['kerberos-env']
+
+
+      
+      @system.execute
+        header: 'Keberos Credential'
+        cmd: """
+          curl --request POST \
+            -u admin:#{options.ambari_admin_password} \
+            --insecure \
+            --url #{options.ambari_url}/api/v1/clusters/#{ options.cluster_name}/credentials/kdc.admin.credential \
+            --header 'x-requested-by: ambari' \
+            --data '{"Credential":{"principal":"#{options.krb5.admin.kadmin_principal}","key":"#{options.krb5.admin.kadmin_password}","type":"persisted"}}'
+        """
+      
+      @ambari.kerberos.descriptor.update
+        header: 'Kerberos Artifact'
+        if: options.post_component
+        url: options.ambari_url
+        username: 'admin'
+        password: options.ambari_admin_password
+        stack_name: options.stack_name
+        stack_version: options.stack_version
+        cluster_name: options.cluster_name
+        identities: []
+        service: 'KERBEROS'
+        source: 'STACK'
+      
+      @ambari.services.add
+        header: 'KERBEROS Service'
+        url: options.ambari_url
+        username: 'admin'
+        password: options.ambari_admin_password
+        cluster_name: options.cluster_name
+        name: 'KERBEROS'
+
+        
+      @each options.config_groups, (opts, cb) ->
+        {key, value} = opts
+        @ambari.configs.groups_add
+          header: "#{key}"
+          url: options.ambari_url
+          username: 'admin'
+          password: options.ambari_admin_password
+          cluster_name: options.cluster_name
+          group_name: key
+          tag: key
+          description: "#{key} config groups"
+          hosts: value.hosts
+          desired_configs: 
+            type: value.type
+            tag: value.tag
+            properties: value.properties
+        @next cb
+
+
+## Dependencies
+
+    fs = require 'fs'
+
+[sr]: http://docs.hortonworks.com/HDPDocuments/Ambari-2.2.2.0/bk_Installing_HDP_AMB/content/_meet_minimum_system_requirements.html

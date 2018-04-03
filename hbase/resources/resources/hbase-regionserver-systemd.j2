@@ -1,0 +1,14 @@
+[Unit]
+Description=HBase Region server
+
+[Service]
+User={{options.user.name}}
+Group={{options.vgroup.name}}
+PIDFile={{options.pid_dir}}/hbase-hbase-regionserver.pid
+ExecStart=/usr/hdp/current/hbase-regionserver/bin/hbase-daemon.sh --config {{options.conf_dir}} start regionserver
+ExecReload=/usr/hdp/current/hbase-regionserver/bin/hbase-daemon.sh --config {{options.conf_dir}} restart regionserver
+ExecStop=/usr/hdp/current/hbase-regionserver/bin/hbase-daemon.sh --config {{options.conf_dir}} stop regionserver
+LimitNOFILE={{options.user.limits.nofile}}
+
+[Install]
+WantedBy=multi-user.target

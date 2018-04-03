@@ -1,0 +1,68 @@
+# Ambari Agent Install
+
+The ambari server must be set in the configuration file.
+
+    module.exports = header: 'Ambari Agent Install', handler: (options) ->
+
+## Registry
+
+      @registry.register ['ambari','cluster','node_add'], 'ryba-ambari-actions/lib/cluster/node_add'
+      @registry.register ['ambari','hosts','add'], 'ryba-ambari-actions/lib/hosts/add'
+
+## Wait
+
+      @call 'ryba/ambari/server/wait', rest: options.wait_ambari_rest
+
+
+## Identities
+
+By default, the "ambari-agent" package does not create any identities.
+Create System Service Account & user/client accounts
+
+      @system.group  header: 'Test Group', options.test_group
+      @system.user  header: 'Test User', options.test_user
+      
+      for name, group of options.groups
+        @system.group header: "Group #{name}", group
+      for name, user of options.users
+        @system.user header: "User #{name}", user
+
+## Kerberos Test User
+Create ambari-qa principal with its keytab
+
+      @krb5.addprinc options.krb5.admin,
+        header: 'Smokeuser principal'
+        principal: options.test_user.principal
+        password: options.test_user.password
+        
+      @krb5.ktutil.add options.krb5.admin,
+        header: 'Smokeuser keytab'
+        principal: options.test_user.principal
+        password: options.test_user.password
+        keytab: options.test_user.keytab
+        kadmin_server: options.krb5.admin.admin_server
+        mode: 0o0644
+        uid: 'root'
+        gid: 'root'
+
+## Add Hosts
+
+      @ambari.hosts.add
+        header: 'Register host'
+        url: options.ambari_url
+        username: 'admin'
+        password: options.ambari_admin_password
+        hostname: options.fqdn
+
+      @ambari.cluster.node_add
+        header: "Add host to Cluster"
+        url: options.ambari_url
+        username: 'admin'
+        password: options.ambari_admin_password
+        hostname: options.fqdn
+        cluster_name: options.cluster_name
+
+## Dependencies
+
+    path = require 'path'
+    misc = require 'nikita/lib/misc'

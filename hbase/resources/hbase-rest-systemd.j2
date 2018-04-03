@@ -1,0 +1,14 @@
+[Unit]
+Description=HBase Rest server
+
+[Service]
+User={{options.user.name}}
+Group={{options.group.name}}
+PIDFile={{options.pid_dir}}/hbase-hbase-rest.pid
+ExecStart=/usr/hdp/current/hbase-client/bin/hbase-daemon.sh --config {{options.conf_dir}} start rest
+ExecReload=/usr/hdp/current/hbase-client/bin/hbase-daemon.sh --config {{options.conf_dir}} restart rest
+ExecStop=/usr/hdp/current/hbase-client/bin/hbase-daemon.sh --config {{options.conf_dir}} stop rest
+LimitNOFILE={{options.user.limits.nofile}}
+
+[Install]
+WantedBy=multi-user.target
