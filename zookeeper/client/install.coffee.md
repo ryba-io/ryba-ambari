@@ -16,56 +16,11 @@
       @registry.register ['ambari', 'hosts', 'component_add'], "ryba-ambari-actions/lib/hosts/component_add"
       @registry.register ['ambari', 'hosts', 'component_install'], "ryba-ambari-actions/lib/hosts/component_install"
 
-## Users & Groups
-
-By default, the "zookeeper" package create the following entries:
-
-```bash
-cat /etc/passwd | grep zookeeper
-zookeeper:x:497:498:ZooKeeper:/var/run/zookeeper:/bin/bash
-cat /etc/group | grep hadoop
-hadoop:x:498:hdfs
-```
-
-      @system.group header: "Group #{options.hadoop_group.name}", options.hadoop_group
-      @system.group header: "Group #{options.group.name}", options.group
-      @system.user header: "User #{options.user.name}", options.user
-
-## Packages
-
-Follow the [HDP recommandations][install] to install the "zookeeper" package
-which has no dependency.
-
-      @call header: 'Packages', ->
-        @service
-          name: 'zookeeper'
-        @hdp_select
-          name: 'zookeeper-client'
-
-## Kerberos
-
-Create the JAAS client configuration file.
-
-      @file.jaas
-        header: 'Kerberos'
-        target: "#{options.conf_dir}/zookeeper-client.jaas"
-        content: Client:
-          useTicketCache: 'true'
-        mode: 0o644
-
-## Environment
-
-Generate the "zookeeper-env.sh" file.
-
-      @file
-        header: 'Environment'
-        target: "#{options.conf_dir}/zookeeper-env.sh"
-        content: ("export #{k}=\"#{v}\"" for k, v of options.env).join '\n'
-        backup: true
-        eof: true
+## Ambari Service & components
 
       @ambari.services.wait
         header: 'WAIT Service'
+        if: options.takeover
         url: options.ambari_url
         username: 'admin'
         password: options.ambari_admin_password
@@ -74,6 +29,7 @@ Generate the "zookeeper-env.sh" file.
 
       @ambari.services.component_add
         header: 'ADD COMPONENT TO SERVICE'
+        if: options.takeover
         url: options.ambari_url
         username: 'admin'
         password: options.ambari_admin_password
@@ -83,6 +39,7 @@ Generate the "zookeeper-env.sh" file.
 
       @ambari.hosts.component_add
         header: 'ADD COMPONENT TO HOST'
+        if: options.takeover
         url: options.ambari_url
         username: 'admin'
         password: options.ambari_admin_password
@@ -92,6 +49,7 @@ Generate the "zookeeper-env.sh" file.
 
       @ambari.hosts.component_install
         header: 'set Installed'
+        if: options.takeover
         url: options.ambari_url
         username: 'admin'
         password: options.ambari_admin_password

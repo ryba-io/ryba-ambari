@@ -116,6 +116,7 @@ Copy the spnego keytab with restricitive permissions
       @ambari.hosts.component_install
         header: 'WEBHCAT_SERVER'
         url: options.ambari_url
+        if: options.takeover
         username: 'admin'
         password: options.ambari_admin_password
         cluster_name: options.cluster_name

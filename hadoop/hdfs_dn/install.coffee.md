@@ -209,6 +209,7 @@ Wait for the DATANODE component to be declared on the host
 
       @ambari.hosts.component_wait
         header: 'DATANODE WAITED'
+        if: options.takeover
         url: options.ambari_url
         username: 'admin'
         password: options.ambari_admin_password
@@ -221,6 +222,7 @@ Put the JOURNALNODE component declared on the host as `INSTALLED` desired state
 
       @ambari.hosts.component_install
         header: 'DATANODE set installed'
+        if: options.takeover
         url: options.ambari_url
         username: 'admin'
         password: options.ambari_admin_password

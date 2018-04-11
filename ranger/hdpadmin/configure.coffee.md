@@ -33,6 +33,7 @@ variables but also inject some function to be executed.
       options.clean_logs ?= false
       options.iptables ?= service.deps.iptables and service.deps.iptables.options.action is 'start'
       options.fqdn ?= service.node.fqdn # Used by Solr embedded
+      options.configurations ?= {}
 
 ## Kerberos
 
@@ -212,6 +213,7 @@ If you have configured a Solr Cloud Docker in your cluster, you can configure li
 ```
 
       options.solr_type ?= 'embedded'
+      options.configurations['ranger-solr-configuration'] ?= {}
       options.solr_client_source ?= service.deps.solr_client.options.source if service.deps.solr_client
       options.solr_client_source = if options.solr_client_source is 'HDP'
       then '/opt/lucidworks-hdpsearch/solr'
@@ -220,6 +222,8 @@ If you have configured a Solr Cloud Docker in your cluster, you can configure li
       # solr_ctx = {}
       # Retention period in day to keep audit logs
       options.audit_retention_period ?= '1095' #value in days. default to 3 years.
+      options.configurations['ranger-solr-configuration']['ranger_audit_max_retention_days'] ?= options.audit_retention_period
+      options.configurations['ranger-solr-configuration']['ranger_audit_logs_merge_factor'] ?= '10'
       options.retention ?=  "+#{options.audit_retention_period}"
       switch options.solr_type
         when 'embedded'
@@ -285,6 +289,8 @@ If you have configured a Solr Cloud Docker in your cluster, you can configure li
           throw Error "Missing Solr options.solr.cluster_config.master: master01.metal.ryba" unless options.solr.cluster_config.master?
           throw Error "Missing Solr options.solr.cluster_config.port: 8983" unless options.solr.cluster_config.port?
           throw Error "Missing Solr options.solr.cluster_config.authentication: kerberos" unless options.solr.cluster_config.authentication?
+          throw Error "Missing Solr options.solr.cluster_config.version property example: 6.3.0" unless options.solr.cluster_config.version?
+          throw Error "Unexpected version format. Solr version should look like 6.3.0" unless /[0-9](.[0-9]){2}/.test options.solr.cluster_config.version
           if options.solr.cluster_config.authentication? is 'kerberos'
             throw Error "Missing Solr options.solr.cluster_config.admin_principal: " unless options.solr.cluster_config.admin_principal?
             throw Error "Missing Solr options.solr.cluster_config.admin_password: " unless options.solr.cluster_config.admin_password?
@@ -297,6 +303,15 @@ If you have configured a Solr Cloud Docker in your cluster, you can configure li
           options.install['audit_solr_urls'] ?= options.solr.cluster_config.hosts.map( (host) ->
               "#{if options.solr.cluster_config.ssl_enabled then 'https://' else 'http://'}#{host}:#{options.solr.cluster_config.port}")
           options.install['audit_solr_zookeepers'] ?= options.solr.cluster_config.zk_connect
+          [version] = /^[0-9](.[0-9]){1}/.exec options.solr.cluster_config.version
+          if parseFloat(version) >= 7.0
+            options.download ?= '7'
+          else if parseFloat(version) >= 6.0
+            options.download ?= '6'
+          else if parseFloat(version) >= 5.0
+            options.download ?= '5'
+          else
+            throw Error 'Solr Version Not Supported'
         # when 'cloud'
         #   throw Error 'No Solr Cloud Server configured' unless service.deps.solr_cloud.length > 0
         #     # options.solr_admin_user ?= 'solr'
@@ -329,6 +344,7 @@ Create the `ranger_audits` collection('cloud')/core('standalone').
         options.install['audit_solr_urls'] ?= solrs_urls
         options.install['audit_solr_user'] ?= 'ranger'
         options.install['audit_solr_password'] ?= 'ranger123'
+        options.site['ranger.audit.solr.zookeepers'] ?= options.install['audit_solr_zookeepers']
         # options.install['audit_solr_zookeepers'] = 'NONE'
 
 When Basic authentication is used, the following property can be set to add 
@@ -547,6 +563,7 @@ Ryba injects function to the different contexts.
           options.configurations['ranger-env']['is_solrCloud_enabled'] ?= "true"
           options.configurations['ranger-env']['is_external_solrCloud_enabled'] ?= "true"
           options.configurations['ranger-env']['is_external_solrCloud_kerberos'] ?= 'true'
+          options.site['ranger.audit.solr.urls'] ?= options.install['audit_solr_urls']
       options.configurations['ranger-env']['ranger-hdfs-plugin-enabled'] ?= 'No'#No
       options.configurations['ranger-env']['ranger-yarn-plugin-enabled'] ?= 'No'
       options.configurations['ranger-env']['ranger-hbase-plugin-enabled'] ?= 'No'

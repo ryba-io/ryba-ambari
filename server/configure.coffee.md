@@ -212,6 +212,15 @@ The key is the identity name, and the value should contain principal information
 
       options.config_groups ?= {}
 
+## Ambari Alert Definitions fix
+
+      options.alerts_definitions ?= {}
+      options.alerts_definitions['mapreduce_history_server_process'] ?=
+        AlertDefinition:
+          source:
+            default_port: '19889'
+            uri : "{{mapred-site/mapreduce.jobhistory.webapp.address}}"
+
 ## Wait
 
       options.wait = {}

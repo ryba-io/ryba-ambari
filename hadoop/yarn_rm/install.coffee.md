@@ -13,20 +13,6 @@
       @registry.register ['ambari', 'hosts', 'component_install'], "ryba-ambari-actions/lib/hosts/component_install"
       @registry.register ['ambari', 'hosts', 'component_wait'], "ryba-ambari-actions/lib/hosts/component_wait"
 
-## Identities
-
-By default, the "hadoop-yarn-resourcemanager" package create the following entries:
-
-```bash
-cat /etc/passwd | grep yarn
-yarn:x:2403:2403:Hadoop YARN User:/var/lib/hadoop-yarn:/bin/bash
-cat /etc/group | grep hadoop
-hadoop:x:499:hdfs
-```
-
-      @system.group header: 'Hadoop Group', options.hadoop_group
-      @system.group header: 'Group', options.group
-      @system.user header: 'User', options.user
 
 ## Ulimit
 
@@ -158,28 +144,6 @@ inside "/etc/init.d" and activate it on startup.
         uid: options.user.name
         gid: options.hadoop_group.name
 
-## Kerberos JAAS
-
-The JAAS file is used by the ResourceManager to initiate a secure connection 
-with Zookeeper.
-
-      @file.jaas
-        header: 'Kerberos JAAS'
-        target: "#{options.hadoop_conf_dir}/yarn-rm.jaas"
-        content: Client:
-          principal: options.yarn_site['yarn.resourcemanager.principal'].replace '_HOST', options.fqdn
-          keyTab: options.yarn_site['yarn.resourcemanager.keytab']
-        uid: options.user.name
-        gid: options.hadoop_group.name
-
-## Ranger YARN Plugin Install
-
-      # @call
-      #   if: -> @contexts('ryba/ranger/admin').length > 0
-      # , ->
-      #   @call -> options.yarn_plugin_is_master = true
-      #   @call 'ryba/ranger/plugins/yarn/install'
-
 ## Node Labels HDFS Layout
 
       @hdfs_mkdir
@@ -207,6 +171,7 @@ Wait for the RESOURCEMANAGER component to be declared on the host
 Put the RESOURCEMANAGER component declared on the host as `INSTALLED` desired state
 
       @ambari.hosts.component_install
+        if: options.takeover
         header: 'Set installed'
         url: options.ambari_url
         username: 'admin'
@@ -219,6 +184,7 @@ Put the RESOURCEMANAGER component declared on the host as `INSTALLED` desired st
       # ats.service.keytab become yarn.service.keytab
       @ambari.configs.update
         header: 'Fix hadoop-env'
+        if: options.takeover
         url: options.ambari_url
         username: 'admin'
         password: options.ambari_admin_password

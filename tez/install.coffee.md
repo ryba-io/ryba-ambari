@@ -9,6 +9,7 @@
       @registry.register 'hdp_select', 'ryba/lib/hdp_select'
       @registry.register 'hdfs_upload', 'ryba/lib/hdfs_upload'
       @registry.register ['ambari','configs','update'], 'ryba-ambari-actions/lib/configs/update'
+      @registry.register ['ambari','configs','default'], 'ryba-ambari-actions/lib/configs/set_default'
       @registry.register ['ambari','services','add'], 'ryba-ambari-actions/lib/services/add'
       @registry.register ['ambari','services','wait'], 'ryba-ambari-actions/lib/services/wait'
       @registry.register ['ambari','services','component_add'], 'ryba-ambari-actions/lib/services/component_add'
@@ -21,7 +22,7 @@
 
       @hconfigure
         header: 'Render tez-site'
-        if: options.post_component
+        if: options.post_component and options.takeover
         source: "#{__dirname}/resources/tez-site.xml"
         target: "#{options.cache_dir}/tez-site.xml"
         ssh: false
@@ -29,7 +30,7 @@
         
       @file.render
         header: 'Render tez-env'
-        if: options.post_component
+        if: options.post_component and options.takeover
         source: "#{__dirname}/resources/tez-env.sh.j2"
         target: "#{options.cache_dir}/tez-env.sh"
         local: true
@@ -50,45 +51,47 @@ Environment passed to Hadoop.
 
       @call
         header: 'Upload tez-site'
-        if: options.post_component
+        if: options.post_component and options.takeover
       , (_, callback) ->
           properties.read null, "#{options.cache_dir}/tez-site.xml", (err, props) =>
-            @ambari.configs.update
-              header: 'config update tez-site'
-              url: options.ambari_url
-              username: 'admin'
-              password: options.ambari_admin_password
-              config_type: 'tez-site'
-              cluster_name: options.cluster_name
-              properties: props
-            @next callback
+            options.configurations['tez-site'] = props
+            callback()
 
       @call
         header: 'Upload tez-env'
-        if: options.post_component
+        if: options.post_component and options.takeover
       , (_, callback) ->
           ssh2fs.readFile null, "#{options.cache_dir}/tez-env.sh", (err, content) =>
             try
               throw err if err
               content = content.toString()
-              @ambari.configs.update
-                url: options.ambari_url
-                username: 'admin'
-                merge: true
-                password: options.ambari_admin_password
-                config_type: 'tez-env'
-                cluster_name: options.cluster_name
-                properties: merge {}, options.configurations['tez-env']
-                  , content: content
-              .next callback
+              options.configurations['tez-env'] = merge {}, options.configurations['tez-env'] , content: content
+              callback()
             catch err
               callback err
-  
+
+## Upload Default Configuration
+
+      # @call -> console.log options.configurations
+      @ambari.configs.default
+        header: 'TEZ Configuration'
+        url: options.ambari_url
+        if: options.post_component and options.takeover
+        username: 'admin'
+        password: options.ambari_admin_password
+        cluster_name: options.cluster_name
+        stack_name: options.stack_name
+        stack_version: options.stack_version
+        discover: true
+        configurations: options.configurations
+        target_services: 'TEZ'
+
+
 ## Add TEZ Service
 
       @ambari.services.add
         header: 'TEZ Service'
-        if: options.post_component
+        if: options.post_component and options.takeover
         url: options.ambari_url
         username: 'admin'
         password: options.ambari_admin_password
@@ -106,6 +109,7 @@ Environment passed to Hadoop.
       @ambari.services.component_add
         header: 'TEZ_CLIENT Add'
         url: options.ambari_url
+        if: options.takeover
         username: 'admin'
         password: options.ambari_admin_password
         cluster_name: options.cluster_name
@@ -117,6 +121,7 @@ Environment passed to Hadoop.
       @ambari.hosts.component_add
         header: 'TEZ_CLIENT Host Add'
         url: options.ambari_url
+        if: options.takeover
         username: 'admin'
         password: options.ambari_admin_password
         cluster_name: options.cluster_name
@@ -134,6 +139,7 @@ Environment passed to Hadoop.
 
       @ambari.hosts.component_install
         header: 'TEZ_CLIENT Install'
+        if: options.takeover
         url: options.ambari_url
         username: 'admin'
         password: options.ambari_admin_password
@@ -196,8 +202,8 @@ HDFS directory. Note, the parent directories are created by the
 
 ## Dependencies
 
-    mkcmd = require 'ryba/lib/mkcmd
+    mkcmd = require 'ryba/lib/mkcmd'
     {merge} = require 'nikita/lib/misc'
     fs = require 'fs'
     ssh2fs = require 'ssh2-fs'
-    properties = require '../../lib/properties'
+    properties = require 'ryba/lib/properties'

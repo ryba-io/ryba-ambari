@@ -293,6 +293,7 @@ Enrich `ryba-ambari-takeover/hadoop/hdfs` with hdfs_dn properties.
         srv.options.configurations['hadoop-env']['HADOOP_SECURE_DN_LOG_DIR'] ?= options.log_dir
         srv.options.configurations['hadoop-env']['hadoop_conf_secure_dir'] ?= "#{options.conf_dir}/secure"
         srv.options.configurations['hadoop-env']['hadoop_conf_dir'] ?= "#{options.conf_dir}"
+        srv.options.configurations['hadoop-env']['dtnode_heapsize'] ?= options.heapsize
         # opts
         srv.options.hdfs_dn_opts = options.opts
 

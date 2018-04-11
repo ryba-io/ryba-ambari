@@ -49,6 +49,7 @@ Create ambari-qa principal with its keytab
 
       @ambari.hosts.add
         header: 'Register host'
+        if: options.takeover
         url: options.ambari_url
         username: 'admin'
         password: options.ambari_admin_password
@@ -56,6 +57,7 @@ Create ambari-qa principal with its keytab
 
       @ambari.cluster.node_add
         header: "Add host to Cluster"
+        if: options.takeover
         url: options.ambari_url
         username: 'admin'
         password: options.ambari_admin_password

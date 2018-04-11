@@ -169,7 +169,7 @@ made available in the same directory after any modification.
 
       @ambari.configs.update
         header: 'Scheduler to ambari'
-        if: options.post_component
+        if: options.post_component and options.takeover
         url: options.ambari_url
         username: 'admin'
         password: options.ambari_admin_password
@@ -182,7 +182,7 @@ Update yarn-site.xml
 
       @ambari.configs.update
         header: 'Upload Yarn Site'
-        if: options.post_component
+        if: options.post_component and options.takeover
         url: options.ambari_url
         username: 'admin'
         password: options.ambari_admin_password
@@ -194,7 +194,7 @@ Update yarn-site.xml
 
       @ambari.configs.update
         header: 'Hadoop Policy'
-        if: options.post_component
+        if: options.post_component and options.takeover
         url: options.ambari_url
         username: 'admin'
         password: options.ambari_admin_password
@@ -206,7 +206,7 @@ Update yarn-site.xml
 
       @ambari.configs.update
         header: 'YARN Log4j'
-        if: options.post_component
+        if: options.post_component and options.takeover
         url: options.ambari_url
         username: 'admin'
         password: options.ambari_admin_password
@@ -220,7 +220,7 @@ Render yarn-env.sh files, before uploading to Ambari Server.
 
       @call
         header: 'Yarn Env'
-        if: options.post_component
+        if: options.post_component and options.takeover
       , (_, callback) ->
           ssh2fs.readFile null, "#{options.cache_dir}/yarn-env.sh", (err, content) =>
             try
@@ -257,7 +257,7 @@ Render yarn-env.sh files, before uploading to Ambari Server.
 
       @call
         header: 'YARN Log4j'
-        if: options.post_component
+        if: options.post_component and options.takeover
       , (_, callback) ->
           ssh2fs.readFile null, "#{options.cache_dir}/yarn-log4j.properties", (err, content) =>
             try
@@ -278,7 +278,7 @@ Render yarn-env.sh files, before uploading to Ambari Server.
 
       @ambari.configs.update
         header: 'Upload mapred-site'
-        if: options.post_component
+        if: options.post_component and options.takeover
         url: options.ambari_url
         username: 'admin'
         password: options.ambari_admin_password
@@ -289,7 +289,7 @@ Render yarn-env.sh files, before uploading to Ambari Server.
 
       @call
         header: 'SSl Server'
-        if: options.post_component
+        if: options.post_component and options.takeover
       , (_, callback) ->
           properties.read null, "#{options.cache_dir}/ssl-server.xml", (err, props) =>
             @ambari.configs.update
@@ -304,7 +304,7 @@ Render yarn-env.sh files, before uploading to Ambari Server.
 
       @call
         header: 'SSl Client'
-        if: options.post_component
+        if: options.post_component and options.takeover
       , (_, callback) ->
           properties.read null, "#{options.cache_dir}/ssl-client.xml", (err, props) =>
             @ambari.configs.update
@@ -319,6 +319,7 @@ Render yarn-env.sh files, before uploading to Ambari Server.
       
       @ambari.configs.update
         header: 'config update'
+        if: options.takeover
         url: options.ambari_url
         username: 'admin'
         password: options.ambari_admin_password
@@ -331,7 +332,7 @@ Render yarn-env.sh files, before uploading to Ambari Server.
 ## Ambari Config Groups
           
       @call
-        if: options.post_component
+        if: options.post_component and options.takeover
       , ->
         @each options.config_groups, (opts, cb) ->
           {key, value} = opts
@@ -355,7 +356,7 @@ Render yarn-env.sh files, before uploading to Ambari Server.
 
       @ambari.configs.update
         header: 'Upload ranger-yarn-plugin-properties'
-        if : options.post_component
+        if : options.post_component and options.takeover
         url: options.ambari_url
         username: 'admin'
         password: options.ambari_admin_password
@@ -365,17 +366,17 @@ Render yarn-env.sh files, before uploading to Ambari Server.
 
       @ambari.configs.update
         header: 'Upload ranger-yarn-security'
-        if : options.post_component
+        if : options.post_component and options.takeover
         url: options.ambari_url
         username: 'admin'
         password: options.ambari_admin_password
         config_type: 'ranger-yarn-security'
-        cluster_name: options.cluster_name
+        cluster_name: options.clfuster_name
         properties: options.configurations['ranger-yarn-security']
 
       @ambari.configs.update
         header: 'Upload ranger-yarn-policymgr-ssl'
-        if : options.post_component
+        if : options.post_component and options.takeover
         url: options.ambari_url
         username: 'admin'
         password: options.ambari_admin_password
@@ -385,7 +386,7 @@ Render yarn-env.sh files, before uploading to Ambari Server.
 
       @ambari.configs.update
         header: 'Upload ranger-yarn-audit'
-        if : options.post_component
+        if : options.post_component and options.takeover
         url: options.ambari_url
         username: 'admin'
         password: options.ambari_admin_password
@@ -403,6 +404,7 @@ component to cluster but NOT in `INSTALLED` desired state.
 
       @ambari.services.wait
         header: 'YARN Service WAITED'
+        if: options.takeover
         url: options.ambari_url
         username: 'admin'
         password: options.ambari_admin_password
@@ -411,7 +413,7 @@ component to cluster but NOT in `INSTALLED` desired state.
 
       @ambari.services.component_add
         header: 'RESOURCEMANAGER'
-        if: options.post_component
+        if: options.post_component and options.takeover
         username: 'admin'
         url: options.ambari_url
         password: options.ambari_admin_password
@@ -421,7 +423,7 @@ component to cluster but NOT in `INSTALLED` desired state.
 
       @ambari.services.component_add
         header: 'NODEMANAGER'
-        if: options.post_component
+        if: options.post_component and options.takeover
         url: options.ambari_url
         username: 'admin'
         password: options.ambari_admin_password
@@ -431,7 +433,7 @@ component to cluster but NOT in `INSTALLED` desired state.
         
       @ambari.services.component_add
         header: 'APP_TIMELINE_SERVER'
-        if: options.post_component
+        if: options.post_component and options.takeover
         url: options.ambari_url
         username: 'admin'
         password: options.ambari_admin_password
@@ -441,7 +443,7 @@ component to cluster but NOT in `INSTALLED` desired state.
         
       @ambari.services.component_add
         header: 'YARN_CLIENT' 
-        if: options.post_component
+        if: options.post_component and options.takeover
         url: options.ambari_url
         username: 'admin'
         password: options.ambari_admin_password
@@ -454,7 +456,7 @@ component to cluster but NOT in `INSTALLED` desired state.
       for host in options.rm_hosts
         @ambari.hosts.component_add
           header: 'RESOURCEMANAGER ADD'
-          if: options.post_component
+          if: options.post_component and options.takeover
           url: options.ambari_url
           username: 'admin'
           password: options.ambari_admin_password
@@ -467,7 +469,7 @@ component to cluster but NOT in `INSTALLED` desired state.
       for host in options.nm_hosts
         @ambari.hosts.component_add
           header: 'NODEMANAGER ADD'
-          if: options.post_component
+          if: options.post_component and options.takeover
           url: options.ambari_url
           username: 'admin'
           password: options.ambari_admin_password
@@ -481,7 +483,7 @@ component to cluster but NOT in `INSTALLED` desired state.
       for host in options.ts_hosts
         @ambari.hosts.component_add
           header: 'APP_TIMELINE_SERVER ADD'
-          if: options.post_component
+          if: options.post_component and options.takeover
           url: options.ambari_url
           username: 'admin'
           password: options.ambari_admin_password
@@ -494,7 +496,7 @@ component to cluster but NOT in `INSTALLED` desired state.
       for host in options.client_hosts
         @ambari.hosts.component_add
           header: 'YARN_CLIENT ADD'
-          if: options.post_component
+          if: options.post_component and options.takeover
           url: options.ambari_url
           username: 'admin'
           password: options.ambari_admin_password

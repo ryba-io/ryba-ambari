@@ -18,24 +18,23 @@ Learn more about Pig optimization by reading ["Making Pig Fly"][fly].
 
 ## Request From Ambari to post default configuration for PIG
       
-      @call -> console.log 'remove harde coded stack information'
       @ambari.configs.default
         header: 'PIG Configuration'
         url: options.ambari_url
-        if: options.post_component
+        if: options.post_component and options.takeover
         username: 'admin'
         password: options.ambari_admin_password
         cluster_name: options.cluster_name
         installed_services: options.ambari_stack_services
-        stack_name: 'HDP'
-        stack_version: '2.6'
+        stack_name: options.stack_name
+        stack_version: options.stack_version
         target_services: 'PIG'
 
 ## Add PIG Service
 
       @ambari.services.add
         header: 'PIG Service'
-        if: options.post_component
+        if: options.post_component and options.takeover
         url: options.ambari_url
         username: 'admin'
         password: options.ambari_admin_password
@@ -53,6 +52,7 @@ Learn more about Pig optimization by reading ["Making Pig Fly"][fly].
       @ambari.services.component_add
         header: 'PIG Add'
         url: options.ambari_url
+        if: options.takeover
         username: 'admin'
         password: options.ambari_admin_password
         cluster_name: options.cluster_name
@@ -64,6 +64,7 @@ Learn more about Pig optimization by reading ["Making Pig Fly"][fly].
       @ambari.hosts.component_add
         header: 'PIG Host Add'
         url: options.ambari_url
+        if: options.takeover
         username: 'admin'
         password: options.ambari_admin_password
         cluster_name: options.cluster_name
@@ -72,6 +73,7 @@ Learn more about Pig optimization by reading ["Making Pig Fly"][fly].
 
       @ambari.hosts.component_wait
         header: 'PIG Wait'
+        if: options.takeover
         url: options.ambari_url
         username: 'admin'
         password: options.ambari_admin_password
@@ -81,6 +83,7 @@ Learn more about Pig optimization by reading ["Making Pig Fly"][fly].
 
       @ambari.hosts.component_install
         header: 'PIG Install'
+        if: options.takeover
         url: options.ambari_url
         username: 'admin'
         password: options.ambari_admin_password

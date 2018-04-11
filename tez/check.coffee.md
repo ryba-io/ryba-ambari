@@ -21,4 +21,4 @@
 
 ## Dependencies
 
-    mkcmd = require 'ryba/lib/mkcmd
+    mkcmd = require 'ryba/lib/mkcmd'

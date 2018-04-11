@@ -20,7 +20,7 @@
       options.fqdn ?= service.node.fqdn
       options.env ?= {}
       options.env['JAVA_HOME'] ?= zookeeper_server_options.env['JAVA_HOME']
-      options.env['CLIENT_JVMFLAGS'] ?= '-Djava.security.auth.login.config=/etc/zookeeper/conf/zookeeper-client.jaas'
+      options.env['CLIENT_JVMFLAGS'] ?= '-Djava.security.auth.login.config=/etc/zookeeper/conf/zookeeper_client_jaas.conf'
       options.zookeeper_quorum = for srv in service.deps.zookeeper_server
         continue unless srv.options.config['peerType'] is 'participant'
         "#{srv.node.fqdn}:#{srv.options.config['clientPort']}"
@@ -37,8 +37,6 @@
       options.cluster_name ?= service.deps.ambari_server.options.cluster_name
       
       options.wait_ambari = service.deps.ambari_server.options.wait.rest
-
-
 
 ## Dependencies
 

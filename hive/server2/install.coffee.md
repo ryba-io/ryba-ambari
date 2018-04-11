@@ -145,6 +145,7 @@ Create the directories to store the logs and pid information. The properties
 
       @ambari.hosts.component_wait
         header: 'HIVE_SERVER'
+        if: options.takeover
         url: options.ambari_url
         username: 'admin'
         password: options.ambari_admin_password
@@ -154,6 +155,7 @@ Create the directories to store the logs and pid information. The properties
 
       @ambari.hosts.component_install
         header: 'HIVE_SERVER'
+        if: options.takeover
         url: options.ambari_url
         username: 'admin'
         password: options.ambari_admin_password

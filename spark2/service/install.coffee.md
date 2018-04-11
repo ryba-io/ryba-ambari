@@ -28,7 +28,7 @@ Resources:
       @ambari.configs.default
         header: 'SPARK2 Configuration'
         url: options.ambari_url
-        if: options.post_component
+        if: options.post_component and options.takeover
         username: 'admin'
         password: options.ambari_admin_password
         cluster_name: options.cluster_name
@@ -42,7 +42,7 @@ Resources:
 
       @ambari.kerberos.descriptor.update
         header: 'Kerberos Artifact'
-        if: options.post_component
+        if: options.post_component and options.takeover
         url: options.ambari_url
         username: 'admin'
         password: options.ambari_admin_password
@@ -72,7 +72,7 @@ Resources:
 
       @ambari.services.add
         header: 'SPARK2 Service'
-        if: options.post_component
+        if: options.post_component and options.takeover
         url: options.ambari_url
         username: 'admin'
         password: options.ambari_admin_password
@@ -89,7 +89,7 @@ Resources:
 
       @ambari.services.component_add
         header: 'SPARK2 Add'
-        if: options.post_component
+        if: options.post_component and options.takeover
         url: options.ambari_url
         username: 'admin'
         password: options.ambari_admin_password
@@ -99,7 +99,7 @@ Resources:
 
       @ambari.services.component_add
         header: 'SPARK2_JOBHISTORYSERVER Add'
-        if: options.post_component
+        if: options.post_component and options.takeover
         url: options.ambari_url
         username: 'admin'
         password: options.ambari_admin_password
@@ -112,7 +112,7 @@ Resources:
       for host in options.client_hosts
         @ambari.hosts.component_add
           header: 'SPARK2_CLIENT Host Add'
-          if: options.post_component
+          if: options.post_component and options.takeover
           url: options.ambari_url
           username: 'admin'
           password: options.ambari_admin_password
@@ -123,7 +123,7 @@ Resources:
       for host in options.history_hosts
         @ambari.hosts.component_add
           header: 'SPARK2_JOBHISTORYSERVER Host Add'
-          if: options.post_component
+          if: options.post_component and options.takeover
           url: options.ambari_url
           username: 'admin'
           password: options.ambari_admin_password

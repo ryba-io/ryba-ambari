@@ -128,4 +128,22 @@ It must be installed and registered by ambari-server
 
 ## Interesting links on Ranger Setup and Credentials
 
+## Ambari LOGSEARCH
+Ambari manages solr collection creation/check in the case solr is hosted by ambari-infra
+or external.
+However, in the case the solr is external and version > 7, some solrconfig.xml template
+must be change because they are incompatible with with 7 Change
+
+For Example `<mergeFactor>` should now be configured using `<mergePolicyFactory class="org.apache.solr.index.LogByteSizeMergePolicy">`
+Checkout [documentation](https://lucene.apache.org/solr/guide/6_6/indexconfig-in-solrconfig.html)
+```xml
+<mergePolicyFactory class="solr.TieredMergePolicyFactory">
+  <int name="maxMergeAtOnce">10</int>
+  <int name="segmentsPerTier">10</int>
+</mergePolicyFactory>
+<mergePolicyFactory class="solr.LogByteSizeMergePolicy">
+  <int name="mergeFactor">10</int>
+</mergePolicyFactory>
+```
+
 ## Ambari Background operations orchestrations

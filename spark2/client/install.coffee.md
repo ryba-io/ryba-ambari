@@ -35,6 +35,7 @@ Resources:
 
       @ambari.hosts.component_install
         header: 'SPARK2_CLIENT Install'
+        if: options.takeover
         url: options.ambari_url
         username: 'admin'
         password: options.ambari_admin_password

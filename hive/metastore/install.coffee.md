@@ -57,28 +57,6 @@
               """
               unless_exec: db.cmd options.db, "use #{options.db.database}"
 
-# ## Install Component
-# 
-#       @ambari.hosts.component_wait
-#         header: 'HIVE_METASTORE'
-#         if: options.post_component
-#         url: options.ambari_url
-#         username: 'admin'
-#         password: options.ambari_admin_password
-#         cluster_name: options.cluster_name
-#         component_name: 'HIVE_METASTORE'
-#         hostname: options.fqdn
-# 
-#       @ambari.hosts.component_install
-#         header: 'HIVE_METASTORE'
-#         if: options.post_component
-#         url: options.ambari_url
-#         username: 'admin'
-#         password: options.ambari_admin_password
-#         cluster_name: options.cluster_name
-#         component_name: 'HIVE_METASTORE'
-#         hostname: options.fqdn
-
 ## Dependencies
 
     db = require 'nikita/lib/misc/db'

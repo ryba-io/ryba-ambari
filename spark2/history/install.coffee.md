@@ -55,7 +55,7 @@ IPTables rules are only inserted if the parameter "iptables.action" is set to
 
       @ambari.hosts.component_install
         header: 'SPARK2_JOBHISTORYSERVER Install'
-        url: options.ambari_url
+        url: options.ambari_url and options.takeover
         username: 'admin'
         password: options.ambari_admin_password
         cluster_name: options.cluster_name

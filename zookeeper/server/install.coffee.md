@@ -21,21 +21,6 @@
       @call 'masson/core/krb5_client/wait', options.wait_krb5_client
       @call 'ryba/ambari/server/wait', rest: options.wait_ambari_rest
 
-## Users & Groups
-
-By default, the "zookeeper" package create the following entries:
-
-```bash
-cat /etc/passwd | grep zookeeper
-zookeeper:x:497:498:ZooKeeper:/var/run/zookeeper:/bin/bash
-cat /etc/group | grep hadoop
-hadoop:x:498:hdfs
-```
-
-      @system.group header: 'Group', options.group
-      @system.group header: 'Spnego Group', options.hadoop_group
-      @system.user header: 'User', options.user
-
 ## IPTables
 
 | Service    | Port | Proto  | Parameter             |
@@ -90,16 +75,9 @@ which has no dependency.
 
       @call header: 'Kerberos', ->
         @krb5.addprinc options.krb5.admin,
-          principal: options.krb5.principal
+          principal: options.krb5.principal.replace '_HOST', options.fqdn
           randkey: true
           keytab: options.krb5.keytab
-          uid: options.user.name
-          gid: options.hadoop_group.name
-        @file.jaas
-          target: "#{options.conf_dir}/zookeeper-server.jaas"
-          content: Server:
-            principal: options.krb5.principal
-            keyTab: options.krb5.keytab
           uid: options.user.name
           gid: options.hadoop_group.name
 
@@ -146,6 +124,7 @@ Note, environment is enriched at runtime if a super user is generated
           ssh: false
         @call
           header: 'Read'
+          if: options.takeover
         , (_, callback)->
           ssh2fs.readFile null, "#{options.cache_dir}/zookeeper-env.sh", (err, content) =>
             try
@@ -180,7 +159,7 @@ Update the file "zoo.cfg" with the properties defined by the
 "ryba.zookeeper.config" configuration.
 
       @ambari.configs.update
-        if: options.post_component
+        if: options.post_component and options.takeover
         header: 'Upload zoo.cfg'
         url: options.ambari_url
         username: 'admin'
@@ -195,7 +174,7 @@ Update the file "zoo.cfg" with the properties defined by the
 Write the ZooKeeper logging configuration file.
 
       @ambari.configs.update
-        if: options.post_component
+        if: options.post_component and options.takeover
         header: 'Upload Log4j'
         url: options.ambari_url
         username: 'admin'
@@ -250,7 +229,7 @@ add the ZOOKEEPER component in ambari before addin ZOOKEEPER_SERVER COMPONENT
 
       @ambari.services.add
         header: 'ADD Service'
-        if: options.post_component
+        if: options.post_component and options.takeover
         url: options.ambari_url
         username: 'admin'
         password: options.ambari_admin_password
@@ -267,6 +246,7 @@ add the ZOOKEEPER component in ambari before addin ZOOKEEPER_SERVER COMPONENT
 
       @ambari.services.component_add
         header: 'ADD COMPONENT TO SERVICE'
+        if: options.takeover
         url: options.ambari_url
         username: 'admin'
         password: options.ambari_admin_password
@@ -276,6 +256,7 @@ add the ZOOKEEPER component in ambari before addin ZOOKEEPER_SERVER COMPONENT
 
       @ambari.hosts.component_add
         header: 'ADD COMPONENT TO HOST'
+        if: options.takeover
         url: options.ambari_url
         username: 'admin'
         password: options.ambari_admin_password
@@ -285,6 +266,7 @@ add the ZOOKEEPER component in ambari before addin ZOOKEEPER_SERVER COMPONENT
 
       @ambari.hosts.component_install
         header: 'set Installed'
+        if: options.takeover
         url: options.ambari_url
         username: 'admin'
         password: options.ambari_admin_password

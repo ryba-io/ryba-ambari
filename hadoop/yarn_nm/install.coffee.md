@@ -279,6 +279,7 @@ Put the NODEMANAGER component declared on the host as `INSTALLED` desired state
 
       @ambari.hosts.component_install
         header: 'NODEMANAGER set installed'
+        if: options.takeover
         url: options.ambari_url
         username: 'admin'
         password: options.ambari_admin_password

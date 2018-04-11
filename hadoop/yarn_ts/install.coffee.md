@@ -14,21 +14,6 @@ co-located with any other service.
       @registry.register ['ambari', 'hosts', 'component_wait'], "ryba-ambari-actions/lib/hosts/component_wait"
       @registry.register ['ambari','configs','update'], 'ryba-ambari-actions/lib/configs/update'
 
-## Identities
-
-By default, the "hadoop-yarn-timelineserver" package create the following entries:
-
-```bash
-cat /etc/passwd | grep yarn
-yarn:x:2403:2403:Hadoop YARN User:/var/lib/hadoop-yarn:/bin/bash
-cat /etc/group | grep hadoop
-hadoop:x:499:hdfs
-```
-
-      @system.group header: 'Hadoop Group', options.hadoop_group
-      @system.group header: 'Group', options.group
-      @system.user header: 'User', options.user
-
 ## Wait
 
       @call once: true, 'masson/core/krb5_client/wait', options.wait_krb5_client
@@ -186,6 +171,7 @@ Put the APP_TIMELINE_SERVER component declared on the host as `INSTALLED` desire
       # ats.service.keytab become yarn.service.keytab
       @ambari.configs.update
         header: 'Fix yarn-site'
+        if: options.takeover
         url: options.ambari_url
         username: 'admin'
         password: options.ambari_admin_password
@@ -197,6 +183,7 @@ Put the APP_TIMELINE_SERVER component declared on the host as `INSTALLED` desire
 
       @ambari.hosts.component_install
         header: 'APP_TIMELINE_SERVER set installed'
+        if: options.takeover
         url: options.ambari_url
         username: 'admin'
         password: options.ambari_admin_password

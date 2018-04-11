@@ -17,6 +17,7 @@ differences.
         zookeeper_server: module: 'ryba-ambari-takeover/zookeeper/server'
         log4j: module: 'ryba/log4j', local: true
         ambari_server: module: 'ryba-ambari-takeover/server', single: true
+        ambari_agent: module: 'ryba-ambari-takeover/agent'
       configure: 'ryba-ambari-takeover/zookeeper/server/configure'
       commands:
         'check':

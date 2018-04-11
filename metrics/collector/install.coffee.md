@@ -59,6 +59,7 @@ Put the METRICS_COLLECTOR component declared on the host as `INSTALLED` desired 
 
       @ambari.hosts.component_install
         header: 'METRICS_COLLECTOR set installed'
+        if: options.takeover
         url: options.ambari_url
         username: 'admin'
         password: options.ambari_admin_password

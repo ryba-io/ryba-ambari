@@ -20,7 +20,7 @@
       @ambari.configs.default
         header: 'Ambari Knox Configuration'
         url: options.ambari_url
-        if: options.post_component
+        if: options.post_component and options.takeover
         username: 'admin'
         password: options.ambari_admin_password
         cluster_name: options.cluster_name
@@ -64,7 +64,7 @@
 
       @ambari.services.add
         header: 'Ambari Knox Service'
-        if: options.post_component
+        if: options.post_component and options.takeover
         url: options.ambari_url
         username: 'admin'
         password: options.ambari_admin_password
@@ -81,7 +81,7 @@
 
       @ambari.services.component_add
         header: 'Ambari Knox_GATEWAY Add'
-        if: options.post_component
+        if: options.post_component and options.takeover
         url: options.ambari_url
         username: 'admin'
         password: options.ambari_admin_password
@@ -94,7 +94,7 @@
       for host in options.server_hosts
         @ambari.hosts.component_add
           header: 'Ambari Knox_GATEWAY Host Add'
-          if: options.post_component
+          if: options.post_component and options.takeover
           url: options.ambari_url
           username: 'admin'
           password: options.ambari_admin_password

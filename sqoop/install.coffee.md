@@ -21,7 +21,7 @@ driver used by Sqoop.
 Environment passed to Hadoop.
 
       @ambari.configs.update
-        if: options.post_component
+        if: options.post_component and options.takeover
         header: 'upload sqoop-site'
         url: options.ambari_url
         username: 'admin'
@@ -33,7 +33,7 @@ Environment passed to Hadoop.
 
       @ambari.configs.update
         url: options.ambari_url
-        if: options.post_component
+        if: options.post_component and options.takeover
         username: 'admin'
         merge: true
         password: options.ambari_admin_password
@@ -45,7 +45,7 @@ Environment passed to Hadoop.
 
       @ambari.services.add
         header: 'SQOOP Service'
-        if: options.post_component
+        if: options.post_component and options.takeover
         url: options.ambari_url
         username: 'admin'
         password: options.ambari_admin_password
@@ -63,6 +63,7 @@ Environment passed to Hadoop.
       @ambari.services.component_add
         header: 'SQOOP Add'
         url: options.ambari_url
+        if: options.takeover
         username: 'admin'
         password: options.ambari_admin_password
         cluster_name: options.cluster_name
@@ -74,6 +75,7 @@ Environment passed to Hadoop.
       @ambari.hosts.component_add
         header: 'SQOOP Host Add'
         url: options.ambari_url
+        if: options.takeover
         username: 'admin'
         password: options.ambari_admin_password
         cluster_name: options.cluster_name
@@ -92,6 +94,7 @@ Environment passed to Hadoop.
       @ambari.hosts.component_install
         header: 'SQOOP Install'
         url: options.ambari_url
+        if: options.takeover
         username: 'admin'
         password: options.ambari_admin_password
         cluster_name: options.cluster_name

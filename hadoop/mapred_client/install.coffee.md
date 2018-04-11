@@ -92,6 +92,7 @@ Wait for the MAPREDUCE2_CLIENT component to be declared on the host
 Put the MAPREDUCE2_CLIENT component declared on the host as `INSTALLED` desired state
 
       @ambari.hosts.component_install
+        if: options.takeover
         header: 'MAPREDUCE2_CLIENT set installed'
         url: options.ambari_url
         username: 'admin'

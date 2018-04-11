@@ -7,10 +7,15 @@
 ## Identities
 
       # Group
-      options.group ?= {}
       options.group = name: options.group if typeof options.group is 'string'
+      options.group ?= {}
       options.group.name ?= 'ams'
       options.group.system ?= true
+      # Hadoop Group is also defined in ryba/hadoop/core
+      options.hadoop_group = name: options.hadoop_group if typeof options.hadoop_group is 'string'
+      options.hadoop_group ?= {}
+      options.hadoop_group.name ?= 'hadoop'
+      options.hadoop_group.system ?= true
       # User
       options.user ?= {}
       options.user = name: options.user if typeof options.user is 'string'
@@ -18,8 +23,8 @@
       options.user.system ?= true
       options.user.gid = options.group.name
       options.user.comment ?= 'Ambari Metrics User'
-      options.user.home ?= '/var/run/ams'
-      options.user.groups ?= ''
+      options.user.home ?= '/var/lib/ams'
+      options.user.groups ?= 'hadoop'
       options.user.limits ?= {}
       options.user.limits.nofile ?= 64000
       options.user.limits.nproc ?= 32000
@@ -65,6 +70,10 @@
 ## Ambari Metrics Monitor Configuration
 
       options.monitor_hosts ?= []
+
+## Ambari Metrics Grafana Configuration
+
+      options.grafana_hosts ?= []
 
 ## Ambari Agent
 Register users to ambari agent's user list.

@@ -38,151 +38,12 @@ Note, since Hive 1.3, the port is defined by "'hive.metastore.port'"
         rules: rules
         if: options.iptables
 
-## Identitites
-
-By default, the "hive" and "hive-hcatalog" packages create the following
-entries:
-
-```bash
-cat /etc/passwd | grep hive
-hive:x:493:493:Hive:/var/lib/hive:/sbin/nologin
-cat /etc/group | grep hive
-hive:x:493:
-```
-
-      @system.group header: 'Group', options.group
-      @system.user header: 'User', options.user
-
 ## Ulimit
 
       @system.limits
         header: 'Ulimit'
         user: options.user.name
       , options.user.limits
-
-## Startup
-
-Install the "hive-hcatalog-server" service, symlink the rc.d startup script
-inside "/etc/init.d" and activate it on startup.
-
-Note, the server is not activated on startup but they endup as zombies if HDFS
-isnt yet started.
-
-      # @call header: 'Service', ->
-      #   @service
-      #     name: 'hive'
-      #   # @service
-      #   #   name: 'hive2'
-      #   @hdp_select
-      #     name: 'hive-webhcat'
-      #   @service
-      #     name: 'hive-hcatalog-server'
-      #   @hdp_select
-      #     name: 'hive-metastore'
-      #   @system.tmpfs
-      #     if_os: name: ['redhat','centos'], version: '7'
-      #     mount: options.pid_dir
-      #     uid: options.user.name
-      #     gid: options.group.name
-      #     perm: '0750'
-
-      # @call
-      #   header: 'Upload Libs'
-      #   if: -> options.libs.length
-      # , ->
-      #   @file.download (
-      #     source: lib
-      #     target: "/usr/hdp/current/hive-metastore/lib/#{path.basename lib}"
-      #   ) for lib in options.libs
-      # @system.link
-      #   header: 'Link MySQL Driver'
-      #   if: options.db.engine in ['mariadb', 'mysql']
-      #   source: '/usr/share/java/mysql-connector-java.jar'
-      #   target: '/usr/hdp/current/hive-metastore/lib/mysql-connector-java.jar'
-      # @system.link
-      #   header: 'Link PostgreSQL Driver'
-      #   if: options.db.engine is 'postgresql'
-      #   source: '/usr/share/java/postgresql-jdbc.jar'
-      #   target: '/usr/hdp/current/hive-metastore/lib/postgresql-jdbc.jar'
-
-## Metastore DB
-
-      # @call header: 'Metastore DB', ->
-      #   target_version = 'ls /usr/hdp/current/hive-metastore/lib | grep hive-common- | sed \'s/^hive-common-\\([0-9]\\+.[0-9]\\+.[0-9]\\+\\).*\\.jar$/\\1/g\''
-      #   current_version =
-      #     switch options.db.engine
-      #       when 'mariadb', 'mysql' then db.cmd options.db, admin_username: null, 'select SCHEMA_VERSION from VERSION'
-      #       when 'postgresql' then db.cmd options.db, admin_username: null, 'select \\"SCHEMA_VERSION\\" from \\"VERSION\\"'
-      #   engine = options.db.engine
-      #   engine = 'mysql' if engine is 'mariadb'
-      #   engine = 'postgresql' if engine is 'postgresql'
-        # migration: wdavidw 170907, used to be hadoop conf_dir
-        # @system.execute
-        #   header: 'Init Schema'
-        #   unless_exec: """
-        #   hive \
-        #     --config #{options.conf_dir} \
-        #     --service schemaTool \
-        #     -dbType #{engine} \
-        #     -info
-        #   """
-        #   cmd: """
-        #   hive \
-        #     --config #{options.conf_dir} \
-        #     --service schemaTool \
-        #     -dbType #{engine} \
-        #     -initSchema
-        #   """
-        # @system.execute
-        #   header: 'Read Versions'
-        #   cmd: """
-        #   engine="#{engine}"
-        #   cd /usr/hdp/current/hive-metastore/scripts/metastore/upgrade/${engine} # Required for sql sources
-        #   target_version=`#{target_version}`
-        #   current_version=`#{current_version}`
-        #   if [ "$target_version" == "$current_version" ] ; then exit 0; else exit 1; fi
-        #   """
-        #   code_skipped: 1
-        # # migration: wdavidw 170907, used to be hadoop conf_dir
-        # @system.execute
-        #   header: 'Upgrade'
-        #   if: -> !@status(-1) and !@status(-2)
-        #   cmd: """
-        #   engine="#{engine}"
-        #   current_version=`#{current_version}`
-        #   cd /usr/hdp/current/hive-metastore/scripts/metastore/upgrade/${engine} # Required for sql sources
-        #   hive \
-        #     --config #{options.conf_dir} \
-        #     --service schemaTool \
-        #     -dbType $engine \
-        #     -upgradeSchemaFrom $current_version
-        #   """
-        # # need to create manually some missing table in HDP >= 2.5 (HDP official KB)
-        # # HDP has backported patchs from hive 2.0 to hdp 2.5-1.2.1 version
-        # # but scripts area not up-to-date
-        # # did not test the need on other type of engine
-        # @system.execute
-        #   header: "Upgrade"
-        #   if: options.db.engine in ['mariadb', 'mysql']
-        #   cmd: "#{db.cmd options.db, admin_username: null} < /usr/hdp/current/hive-metastore/scripts/metastore/upgrade/mysql/026-HIVE-12818.mysql.sql"
-        #   unless_exec:  db.cmd options.db, admin_username: null, 'SHOW CREATE TABLE COMPLETED_COMPACTIONS'
-        # @system.execute
-        #   header: 'WRITE_SET'
-        #   if: options.db.engine in ['mariadb', 'mysql']
-        #   cmd: db.cmd options.db, admin_username: null, cmd: """
-        #     CREATE TABLE WRITE_SET (
-        #       WS_DATABASE varchar(128) NOT NULL,
-        #       WS_TABLE varchar(128) NOT NULL,
-        #       WS_PARTITION varchar(767),
-        #       WS_TXNID bigint NOT NULL,
-        #       WS_COMMIT_ID bigint NOT NULL,
-        #       WS_OPERATION_TYPE char(1) NOT NULL
-        #     ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-        #     ALTER TABLE COMPACTION_QUEUE ADD CQ_TBLPROPERTIES varchar(2048);
-        #     ALTER TABLE COMPLETED_COMPACTIONS ADD CC_TBLPROPERTIES varchar(2048);
-        #     ALTER TABLE TXN_COMPONENTS ADD TC_OPERATION_TYPE char(1) NOT NULL;
-        #    """
-        #   unless_exec:  db.cmd options.db, admin_username: null, 'SHOW CREATE TABLE WRITE_SET'
 
 ## Kerberos
 
@@ -312,33 +173,16 @@ own.
       @ambari.hosts.component_wait
         header: 'HIVE_METASTORE wait'
         url: options.ambari_url
+        if: options.takeover
         username: 'admin'
         password: options.ambari_admin_password
         cluster_name: options.cluster_name
         component_name: 'HIVE_METASTORE'
         hostname: options.fqdn
-
-      # @ambari.hosts.component_install
-      #   header: 'HIVE_CLIENT install'
-      #   url: options.ambari_url
-      #   username: 'admin'
-      #   password: options.ambari_admin_password
-      #   cluster_name: options.cluster_name
-      #   component_name: 'HIVE_METASTORE'
-      #   hostname: options.fqdn
-        
-      @ambari.configs.update
-        header: 'Fix hadoop-env'
-        url: options.ambari_url
-        username: 'admin'
-        password: options.ambari_admin_password
-        config_type: 'hadoop-env'
-        cluster_name: options.cluster_name
-        properties:
-          'hdfs_principal_name': options.hdfs_krb5_user.name
 
       @ambari.hosts.component_install
         header: 'HIVE_METASTORE install'
+        if: options.takeover
         url: options.ambari_url
         username: 'admin'
         password: options.ambari_admin_password
@@ -348,6 +192,7 @@ own.
         
       @ambari.configs.update
         header: 'Fix hadoop-env'
+        if: options.takeover
         url: options.ambari_url
         username: 'admin'
         password: options.ambari_admin_password

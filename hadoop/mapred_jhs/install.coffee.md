@@ -134,6 +134,7 @@ Layout is inspired by [Hadoop recommandation](http://hadoop.apache.org/docs/r2.1
 Wait for the HISTORYSERVER component declared on the host
 
       @ambari.hosts.component_wait
+        if: options.takeover
         header: 'HISTORYSERVER WAITED'
         url: options.ambari_url
         username: 'admin'
@@ -147,6 +148,7 @@ Put the HISTORYSERVER component declared on the host as `INSTALLED` desired stat
 
       @ambari.hosts.component_install
         header: 'HISTORYSERVER set installed'
+        if: options.takeover
         url: options.ambari_url
         username: 'admin'
         password: options.ambari_admin_password
@@ -158,6 +160,7 @@ Put the HISTORYSERVER component declared on the host as `INSTALLED` desired stat
       # ats.service.keytab become yarn.service.keytab
       @ambari.configs.update
         header: 'Fix hadoop-env'
+        if: options.takeover
         url: options.ambari_url
         username: 'admin'
         password: options.ambari_admin_password

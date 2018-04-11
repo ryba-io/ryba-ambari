@@ -103,7 +103,7 @@ information inside "yarn.resourcemanager.zk-state-store.parent-path" (default to
 
 Enable JAAS/Kerberos connection between YARN RM and ZooKeeper.
 
-      options.opts.java_properties['java.security.auth.login.config'] ?= "#{options.hadoop_conf_dir}/yarn-rm.jaas"
+      options.opts.java_properties['java.security.auth.login.config'] ?= "#{options.hadoop_conf_dir}/yarn_jaas.conf"
 
 ## High Availability with Manual Failover
 

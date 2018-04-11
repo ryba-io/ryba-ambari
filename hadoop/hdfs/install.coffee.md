@@ -115,7 +115,7 @@ Create HDFS Headless keytab.
 
       @ambari.kerberos.descriptor.update
         header: 'Kerberos Artifact Update'
-        if: options.post_component
+        if: options.post_component and options.takeover
         url: options.ambari_url
         username: 'admin'
         password: options.ambari_admin_password
@@ -241,7 +241,7 @@ the file must be specified.  If the value is empty, no hosts are excluded.
       
       @ambari.services.add
         header: 'HDFS Service'
-        if: options.post_component
+        if: options.post_component and options.takeover
         url: options.ambari_url
         username: 'admin'
         password: options.ambari_admin_password
@@ -256,7 +256,7 @@ Update hdfs-site.xml, yarn-site.xml, mapred-site.xml
 
       @ambari.configs.update
         header: 'Upload core-site'
-        if: options.post_component
+        if: options.post_component and options.takeover
         url: options.ambari_url
         username: 'admin'
         password: options.ambari_admin_password
@@ -266,7 +266,7 @@ Update hdfs-site.xml, yarn-site.xml, mapred-site.xml
 
       @ambari.configs.update
         header: 'Upload hdfs-site'
-        if: options.post_component
+        if: options.post_component and options.takeover
         url: options.ambari_url
         username: 'admin'
         password: options.ambari_admin_password
@@ -276,7 +276,7 @@ Update hdfs-site.xml, yarn-site.xml, mapred-site.xml
       
       @ambari.configs.update
         header: 'Upload Yarn Site'
-        if: options.post_component
+        if: options.post_component and options.takeover
         url: options.ambari_url
         username: 'admin'
         password: options.ambari_admin_password
@@ -288,7 +288,7 @@ Update hdfs-site.xml, yarn-site.xml, mapred-site.xml
 
       @ambari.configs.update
         header: 'Hadoop Policy'
-        if: options.post_component
+        if: options.post_component and options.takeover
         url: options.ambari_url
         username: 'admin'
         password: options.ambari_admin_password
@@ -300,7 +300,7 @@ Update hdfs-site.xml, yarn-site.xml, mapred-site.xml
 
       @ambari.configs.update
         header: 'HDFS Log4j'
-        if: options.post_component
+        if: options.post_component and options.takeover
         url: options.ambari_url
         username: 'admin'
         password: options.ambari_admin_password
@@ -313,7 +313,7 @@ Render hadoop-env.sh and yarn-env.sh files, before uploading to Ambari Server.
 
       @call
         header: 'Hadoop Env'
-        if: options.post_component
+        if: options.post_component and options.takeover
       , (_, callback) ->
           ssh2fs.readFile null, "#{options.cache_dir}/hadoop-env.sh", (err, content) =>
             try
@@ -358,7 +358,7 @@ Render hadoop-env.sh and yarn-env.sh files, before uploading to Ambari Server.
 
       @call
         header: 'HDFS Log4j'
-        if: options.post_component
+        if: options.post_component and options.takeover
       , (_, callback) ->
           ssh2fs.readFile null, "#{options.cache_dir}/hdfs-log4j.properties", (err, content) =>
             try
@@ -377,99 +377,10 @@ Render hadoop-env.sh and yarn-env.sh files, before uploading to Ambari Server.
             catch err
               callback err
 
-      # @call
-      #   header: 'YARN Log4j'
-      #   if: options.post_component
-      # , (_, callback) ->
-      #     ssh2fs.readFile null, "#{options.cache_dir}/yarn-log4j.properties", (err, content) =>
-      #       try
-      #         throw err if err
-      #         content = content.toString()
-      #         @ambari.configs.update
-      #           header: 'config update'
-      #           url: options.ambari_url
-      #           username: 'admin'
-      #           password: options.ambari_admin_password
-      #           config_type: 'yarn-log4j'
-      #           cluster_name: options.cluster_name
-      #           properties: 
-      #             content: content
-      #             # zk_log_dir: options.log_dir
-      #             # zk_pid_dir: '/var/run/zookeeper'
-      #             # zk_user: options.user.name
-      #             # tickTime: options.config['tickTime']
-      #             # initLimit: options.config['initLimit']
-      #             # syncLimit: options.config['syncLimit']
-      #             # clientPort: options.config['clientPort']
-      #             # zookeeper_keytab_path: options.krb5.keytab
-      #             # zookeeper_principal_name: options.krb5.principal
-      #         .next callback
-      #       catch err
-      #         callback err
-
-      # @call
-      #   header: 'Core site'
-      #   if: options.post_component
-      # , (_, callback) ->
-      #     properties.read null, "#{options.cache_dir}/core-site.xml", (err, props) =>
-      #       @ambari.configs.update
-      #         header: 'config update core-site'
-      #         url: options.ambari_url
-      #         username: 'admin'
-      #         password: options.ambari_admin_password
-      #         config_type: 'core-site'
-      #         cluster_name: options.cluster_name
-      #         properties: props
-      #       @next callback
-      # 
-      # @call
-      #   header: 'HDFS site'
-      #   if: options.post_component
-      # , (_, callback) ->
-      #     properties.read null, "#{options.cache_dir}/hdfs-site.xml", (err, props) =>
-      #       @ambari.configs.update
-      #         header: 'config update hdfs-site'
-      #         url: options.ambari_url
-      #         username: 'admin'
-      #         password: options.ambari_admin_password
-      #         config_type: 'hdfs-site'
-      #         cluster_name: options.cluster_name
-      #         properties: props
-      #       @next callback
-      # 
-      # @call
-      #   header: 'Yarn site'
-      #   if: options.post_component
-      # , (_, callback) ->
-      #     properties.read null, "#{options.cache_dir}/yarn-site.xml", (err, props) =>
-      #       @ambari.configs.update
-      #         header: 'config update yarn-site'
-      #         url: options.ambari_url
-      #         username: 'admin'
-      #         password: options.ambari_admin_password
-      #         config_type: 'yarn-site'
-      #         cluster_name: options.cluster_name
-      #         properties: props
-      #       @next callback
-      # 
-      # @call
-      #   header: 'Mapred site'
-      #   if: options.post_component
-      # , (_, callback) ->
-      #     properties.read null, "#{options.cache_dir}/mapred-site.xml", (err, props) =>
-      #       @ambari.configs.update
-      #         header: 'config update mapred-site'
-      #         url: options.ambari_url
-      #         username: 'admin'
-      #         password: options.ambari_admin_password
-      #         config_type: 'mapred-site'
-      #         cluster_name: options.cluster_name
-      #         properties: props
-      #       @next callback
 
       @call
         header: 'SSl Server'
-        if: options.post_component
+        if: options.post_component and options.takeover
       , (_, callback) ->
           properties.read null, "#{options.cache_dir}/ssl-server.xml", (err, props) =>
             @ambari.configs.update
@@ -484,7 +395,7 @@ Render hadoop-env.sh and yarn-env.sh files, before uploading to Ambari Server.
 
       @call
         header: 'SSl Client'
-        if: options.post_component
+        if: options.post_component and options.takeover
       , (_, callback) ->
           properties.read null, "#{options.cache_dir}/ssl-client.xml", (err, props) =>
             @ambari.configs.update
@@ -496,40 +407,18 @@ Render hadoop-env.sh and yarn-env.sh files, before uploading to Ambari Server.
               cluster_name: options.cluster_name
               properties: props
             @next callback
-      
-        # @ambari.configs.update
-        #   header: 'config update'
-        #   url: options.ambari_url
-        #   username: 'admin'
-        #   password: options.ambari_admin_password
-        #   config_type: 'ganglia-env'
-        #   cluster_name: options.cluster_name
-        #   properties:
-        #     gmond_user: 'ganglia'
-        #     gmetad_user: 'ganglia'
-        # 
-      # @ambari.configs.update
-      #   header: 'Scheduler to ambari'
-      #   if: options.post_component
-      #   url: options.ambari_url
-      #   username: 'admin'
-      #   password: options.ambari_admin_password
-      #   config_type: 'capacity-scheduler'
-      #   cluster_name: options.cluster_name
-      #   properties: options.configurations['capacity-scheduler']
-
 
 ## Metrics Properties
   
       @file.properties
-        if: options.ambari_host and options.post_component
+        if: options.ambari_host and options.post_component and options.takeover
         header: 'Metrics Render'
         target: "#{options.cache_dir}/hadoop-metrics2.properties"
         ssh: false
         content: options.configurations['hadoop-metrics-properties']
 
       @file.download
-        if: options.ambari_host and options.component
+        if: options.ambari_host and options.component and options.takeover
         header: 'Metrics Upload'
         target: '/var/lib/ambari-server/resources/stacks/HDP/2.0.6/hooks/before-START/templates/hadoop-metrics2.properties.j2'
         source: "#{options.cache_dir}/hadoop-metrics2.properties"
@@ -539,7 +428,7 @@ Render hadoop-env.sh and yarn-env.sh files, before uploading to Ambari Server.
 ## Ambari Config Groups
           
       @call
-        if: options.post_component
+        if: options.post_component and options.takeover
       , ->
         @each options.config_groups, (opts, cb) ->
           {key, value} = opts
@@ -566,7 +455,7 @@ component to cluster but NOT in `INSTALLED` desired state.
 ### Wait HDFS Service
 
       @call
-        if: options.post_component
+        if: options.post_component and options.takeover
       , ->
 
         @ambari.services.wait

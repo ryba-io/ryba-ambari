@@ -33,20 +33,6 @@ IPTables rules are only inserted if the parameter "iptables.action" is set to
           { chain: 'INPUT', jump: 'ACCEPT', dport: options.hbase_site['hbase.thrift.info.port'], protocol: 'tcp', state: 'NEW', comment: "HMaster Thrift Info Web UI" }
         ]
 
-## Identities
-
-By default, the "hbase" package create the following entries:
-
-```bash
-cat /etc/passwd | grep hbase
-hbase:x:492:492:HBase:/var/run/hbase:/bin/bash
-cat /etc/group | grep hbase
-hbase:x:492:
-```
-
-      @system.group header: 'Group', options.group
-      @system.user header: 'User', options.user
-
 ## HBase Thrift Server Layout
 
       @call header: 'Layout', ->

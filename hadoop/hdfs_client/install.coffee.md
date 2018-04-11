@@ -46,6 +46,7 @@ Wait for the HDFS_CLIENT component to be declared on the host
 
       @ambari.hosts.component_wait
         header: 'HDFS_CLIENT WAITED'
+        if: options.takeover
         url: options.ambari_url
         username: 'admin'
         password: options.ambari_admin_password
@@ -58,6 +59,7 @@ Put the HDFS_CLIENT component declared on the host as `INSTALLED` desired state
 
       @ambari.hosts.component_install
         header: 'HDFS_CLIENT set installed'
+        if: options.takeover
         url: options.ambari_url
         username: 'admin'
         password: options.ambari_admin_password

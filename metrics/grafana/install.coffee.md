@@ -1,7 +1,7 @@
 
-# Ambari Metrics Monitor Install
+# Ambari Metrics Grafana Install
 
-    module.exports =  header: 'Ambari Metrics Monitor Install', handler: (options) ->
+    module.exports =  header: 'Ambari Metrics Grafana Install', handler: (options) ->
     
 ## Register
 
@@ -14,33 +14,55 @@
       @registry.register ['ambari', 'hosts', 'component_wait'], "ryba-ambari-actions/lib/hosts/component_wait"
       @registry.register ['ambari','kerberos','descriptor', 'update'], 'ryba-ambari-actions/lib/kerberos/descriptor/update'
 
-## Packages
+## IPTables
 
-      @service
-        name: 'ambari-metrics-monitor'
+| Service    | Port  | Proto  | Parameter          |
+|------------|-------|--------|--------------------|
+| Grafana UI | 3000  | https  | server.http_port  |
 
-### METRICS_MONITOR component wait
+      @tools.iptables
+        header: 'IPTables'
+        if: options.iptables
+        rules: [
+          { chain: 'INPUT', jump: 'ACCEPT', dport: options.configurations['ams-grafana-ini']['port'] , protocol: 'tcp', state: 'NEW', comment: "Grafana Port ui" }
+        ]
+
+## SSL
+
+      @file.download
+        header: 'SSL Cert'
+        source: options.ssl.cert.source
+        target: options.configurations['ams-grafana-ini']['cert_file']
+        local: options.ssl.cert.local
+      @file.download
+        header: 'SSL Key'
+        source: options.ssl.key.source
+        target: options.configurations['ams-grafana-ini']['cert_key']
+        local: options.ssl.key.local
+
+
+### METRICS_GRAFANA component wait
 Wait for the NODEMANAGER component to be declared on the host
 
       @ambari.hosts.component_wait
-        header: 'METRICS_MONITOR WAITED'
-        url: options.ambari_url
+        header: 'METRICS_GRAFANA WAITED'
         if: options.takeover
+        url: options.ambari_url
         username: 'admin'
         password: options.ambari_admin_password
         cluster_name: options.cluster_name
-        component_name: 'METRICS_MONITOR'
+        component_name: 'METRICS_GRAFANA'
         hostname: options.fqdn
 
-### METRICS_MONITOR component install
-Put the METRICS_MONITOR component declared on the host as `INSTALLED` desired state
+### METRICS_GRAFANA component install
+Put the METRICS_GRAFANA component declared on the host as `INSTALLED` desired state
 
       @ambari.hosts.component_install
-        header: 'METRICS_MONITOR set installed'
-        url: options.ambari_url
+        header: 'METRICS_GRAFANA set installed'
         if: options.takeover
+        url: options.ambari_url
         username: 'admin'
         password: options.ambari_admin_password
         cluster_name: options.cluster_name
-        component_name: 'METRICS_MONITOR'
+        component_name: 'METRICS_GRAFANA'
         hostname: options.fqdn

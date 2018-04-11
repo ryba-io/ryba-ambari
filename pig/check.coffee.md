@@ -67,4 +67,4 @@ unless the "force_check" option is set to "true".
 
 ## Dependencies
 
-    mkcmd = require 'ryba/lib/mkcmd
+    mkcmd = require 'ryba/lib/mkcmd'

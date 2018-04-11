@@ -25,6 +25,7 @@
 
       @ambari.services.component_add
         header: 'HDFS_CLIENT'
+        if: options.takeover
         url: options.ambari_url
         username: 'admin'
         password: options.ambari_admin_password
@@ -37,6 +38,7 @@
 
       @ambari.hosts.component_add
         header: 'HDFS_CLIENT ADD'
+        if: options.takeover
         url: options.ambari_url
         username: 'admin'
         password: options.ambari_admin_password
@@ -46,6 +48,7 @@
 
       @ambari.hosts.component_update
         header: 'HDFS_CLIENT UPDATE'
+        if: options.takeover
         url: options.ambari_url
         username: 'admin'
         password: options.ambari_admin_password

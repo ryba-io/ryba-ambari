@@ -36,6 +36,7 @@ Resources:
       @ambari.hosts.component_install
         header: 'SPARK_JOBHISTORYSERVER Install'
         url: options.ambari_url
+        if: options.takeover
         username: 'admin'
         password: options.ambari_admin_password
         cluster_name: options.cluster_name

@@ -16,6 +16,7 @@
 
       @ambari.services.add
         header: 'HDFS Service'
+        if: options.takeover
         url: options.ambari_url
         username: 'admin'
         password: options.ambari_admin_password

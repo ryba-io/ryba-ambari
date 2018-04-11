@@ -221,11 +221,13 @@ The repository name should match the reposity name in web ui.
       for srv in service.deps.hive
         srv.options.configurations ?= {}
         srv.options.configurations['hive-env'] ?= {}
+        srv.options.configurations['hiveserver2-site'] ?= {}
         # Hive Server2 Properties
         srv.options.configurations['hive-site']['hive.security.authorization.manager'] = 'org.apache.ranger.authorization.hive.authorizer.RangerHiveAuthorizerFactory'
         srv.options.configurations['hiveserver2-site']['hive.security.authorization.manager'] = 'org.apache.ranger.authorization.hive.authorizer.RangerHiveAuthorizerFactory'
         srv.options.configurations['hiveserver2-site']['hive.security.authorization.enabled '] = 'true'
         srv.options.configurations['hive-env']['hive_security_authorization'] = 'Ranger'
+        srv.options.configurations['hiveserver2-site']['hive.security.authorization.enabled'] ?= 'true'
         # service.deps.hive_server2.options.hive_site['hive.security.authenticator.manager'] = 'org.apache.hadoop.hive.ql.security.SessionStateUserAuthenticator'
         # service.deps.hive_server2.options.opts ?= ''
         # service.deps.hive_server2.options.opts += " -Djavax.net.ssl.trustStore=#{service.deps.hadoop_core.options.ssl_client['ssl.client.truststore.location']} "

@@ -44,7 +44,7 @@
 ## Environment
 
       # Layout
-      options.conf_dir ?= '/etc/zookeeper-server/conf'
+      options.conf_dir ?= '/etc/zookeeper/conf'
       options.log_dir ?= '/var/log/zookeeper'
       options.pid_dir ?= '/var/run/zookeeper'
       # Env
@@ -53,9 +53,9 @@
       options.env['ZOO_AUTH_TO_LOCAL'] ?= "RULE:[1:\\$1]RULE:[2:\\$1]"
       options.env['ZOO_LOG_DIR'] ?= "#{options.log_dir}"
       options.env['ZOOPIDFILE'] ?= "#{options.pid_dir}/zookeeper_server.pid"
-      options.env['JAVA_OPTS'] ?= options.opts.base
-      options.env['SERVER_JVMFLAGS'] ?= "-Djava.security.auth.login.config=#{options.conf_dir}/zookeeper-server.jaas ${JAVA_OPTS}"
-      options.env['CLIENT_JVMFLAGS'] ?= "-Djava.security.auth.login.config=#{options.conf_dir}/zookeeper-client.jaas"
+      options.env['JAVA_OPTS'] ?= options.opts.base += 
+      options.env['SERVER_JVMFLAGS'] ?= " -Djava.security.auth.login.config=#{options.conf_dir}/zookeeper_jaas.conf ${JAVA_OPTS}"
+      options.env['CLIENT_JVMFLAGS'] ?= " -Djava.security.auth.login.config=#{options.conf_dir}/zookeeper_client_jaas.conf"
       options.env['JAVA'] ?= '$JAVA_HOME/bin/java'
       options.env['JAVA_HOME'] ?= "#{service.deps.java.options.java_home}"
       options.env['CLASSPATH'] ?= '$CLASSPATH:/usr/share/zookeeper/*'
@@ -116,7 +116,7 @@
 
       options.krb5 ?= {}
       options.krb5.realm ?= service.deps.krb5_client.options.etc_krb5_conf?.libdefaults?.default_realm
-      options.krb5.principal ?= "zookeeper/#{service.node.fqdn}@#{options.krb5.realm}"
+      options.krb5.principal ?= "zookeeper/_HOST@#{options.krb5.realm}"
       options.krb5.keytab ?= '/etc/security/keytabs/zookeeper.service.keytab'
       throw Error 'Required Options: "realm"' unless options.krb5.realm
       options.krb5.admin ?= service.deps.krb5_client.options.admin[options.krb5.realm]
@@ -176,6 +176,25 @@
         fqdn: srv.node.fqdn
         port: srv.options.config['clientPort'] or 2181
 
+## Ambari Server Properties
+
+      options.post_component = service.instances[0].node.fqdn is service.node.fqdn
+      options.ambari_url ?= service.deps.ambari_server.options.ambari_url
+      options.ambari_admin_password ?= service.deps.ambari_server.options.ambari_admin_password
+      options.cluster_name ?= service.deps.ambari_server.options.cluster_name
+      
+      options.wait_ambari_rest = service.deps.ambari_server.options.wait.rest
+
+## Ambari Agent - Register Hosts
+Register users to ambari agent's user list.
+
+      for srv in service.deps.ambari_agent
+        srv.options.users ?= {}
+        srv.options.users['zookeeper'] ?= options.user
+        srv.options.groups ?= {}
+        srv.options.groups['zookeeper'] ?= options.group
+
+
 ## Wait
 
       options.wait_krb5_client = service.deps.krb5_client.options.wait
@@ -185,15 +204,6 @@
         continue unless srv.options.config['peerType'] is 'participant'
         host: srv.node.fqdn
         port: srv.options.config['clientPort'] or '2181'
-
-## Ambari Server Properties
-
-      options.post_component = service.instances[0].node.fqdn is service.node.fqdn
-      options.ambari_url ?= service.deps.ambari_server.options.ambari_url
-      options.ambari_admin_password ?= service.deps.ambari_server.options.ambari_admin_password
-      options.cluster_name ?= service.deps.ambari_server.options.cluster_name
-      
-      options.wait_ambari_rest = service.deps.ambari_server.options.wait.rest
 
 ## Dependencies
 

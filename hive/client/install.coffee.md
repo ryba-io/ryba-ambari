@@ -14,6 +14,7 @@
 
       @ambari.hosts.component_add
         header: 'HCAT'
+        if: options.takeover
         url: options.ambari_url
         username: 'admin'
         password: options.ambari_admin_password
@@ -23,6 +24,7 @@
         
       @ambari.hosts.component_wait
         header: 'HCAT'
+        if: options.takeover
         url: options.ambari_url
         username: 'admin'
         password: options.ambari_admin_password
@@ -32,6 +34,7 @@
 
       @ambari.hosts.component_install
         header: 'HCAT'
+        if: options.takeover
         url: options.ambari_url
         username: 'admin'
         password: options.ambari_admin_password
@@ -41,6 +44,7 @@
 
       @ambari.hosts.component_add
         header: 'HIVE_CLIENT'
+        if: options.takeover
         url: options.ambari_url
         username: 'admin'
         password: options.ambari_admin_password
@@ -50,6 +54,7 @@
 
       @ambari.hosts.component_wait
         header: 'HIVE_CLIENT'
+        if: options.takeover
         url: options.ambari_url
         username: 'admin'
         password: options.ambari_admin_password
@@ -59,6 +64,7 @@
 
       @ambari.hosts.component_install
         header: 'HIVE_CLIENT'
+        if: options.takeover
         url: options.ambari_url
         username: 'admin'
         password: options.ambari_admin_password

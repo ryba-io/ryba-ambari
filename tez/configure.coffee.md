@@ -122,7 +122,6 @@ Enrich the Yarn NodeManager with additionnal IPTables rules.
       for srv in service.deps.yarn_nm
         srv.options.iptables_rules.push { chain: 'INPUT', jump: 'ACCEPT', dport: options.tez_site['tez.am.client.am.port-range'].replace('-',':'), protocol: 'tcp', state: 'NEW', comment: "Tez AM Range" }
 
-
 # ## UI
 # 
 #       options.ui ?= {}
@@ -154,6 +153,8 @@ Enrich the Yarn NodeManager with additionnal IPTables rules.
       options.ambari_url ?= service.deps.ambari_server.options.ambari_url
       options.ambari_admin_password ?= service.deps.ambari_server.options.ambari_admin_password
       options.cluster_name ?= service.deps.ambari_server.options.cluster_name
+      options.stack_name ?= service.deps.ambari_server.options.stack_name
+      options.stack_version ?= service.deps.ambari_server.options.stack_version
 
 ## Ambari Configurations
 Enrich `ryba-ambari-takeover/hive/service` with TEZ properties.

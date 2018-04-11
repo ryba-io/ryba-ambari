@@ -16,11 +16,10 @@
 
 ## Upload Default Configuration
 
-      # @call -> console.log options.configurations
       @ambari.configs.default
         header: 'AMS Configuration'
         url: options.ambari_url
-        if: options.post_component
+        if: options.post_component and options.takeover
         username: 'admin'
         password: options.ambari_admin_password
         cluster_name: options.cluster_name
@@ -34,7 +33,7 @@
 
       @ambari.services.add
         header: 'AMBARI_METRICS Service'
-        if: options.post_component
+        if: options.post_component and options.takeover
         url: options.ambari_url
         username: 'admin'
         password: options.ambari_admin_password
@@ -51,7 +50,7 @@
 
       @ambari.services.component_add
         header: 'METRICS_COLLECTOR Add'
-        if: options.post_component
+        if: options.post_component and options.takeover
         url: options.ambari_url
         username: 'admin'
         password: options.ambari_admin_password
@@ -61,7 +60,7 @@
 
       @ambari.services.component_add
         header: 'METRICS_MONITOR Add'
-        if: options.post_component
+        if: options.post_component and options.takeover
         url: options.ambari_url
         username: 'admin'
         password: options.ambari_admin_password
@@ -69,12 +68,22 @@
         component_name: 'METRICS_MONITOR'
         service_name: 'AMBARI_METRICS'
 
+      @ambari.services.component_add
+        header: 'METRICS_GRAFANA Add'
+        if: options.post_component and options.takeover
+        url: options.ambari_url
+        username: 'admin'
+        password: options.ambari_admin_password
+        cluster_name: options.cluster_name
+        component_name: 'METRICS_GRAFANA'
+        service_name: 'AMBARI_METRICS'
+
 ## Install Component
 
       for host in options.monitor_hosts
         @ambari.hosts.component_add
           header: 'METRICS_MONITOR Host Add'
-          if: options.post_component
+          if: options.post_component and options.takeover
           url: options.ambari_url
           username: 'admin'
           password: options.ambari_admin_password
@@ -85,11 +94,22 @@
       for host in options.collector_hosts
         @ambari.hosts.component_add
           header: 'METRICS_COLLECTOR Host Add'
-          if: options.post_component
+          if: options.post_component and options.takeover
           url: options.ambari_url
           username: 'admin'
           password: options.ambari_admin_password
           cluster_name: options.cluster_name
           component_name: 'METRICS_COLLECTOR'
+          hostname: host
+
+      for host in options.grafana_hosts
+        @ambari.hosts.component_add
+          header: 'METRICS_GRAFANA Host Add'
+          if: options.post_component and options.takeover
+          url: options.ambari_url
+          username: 'admin'
+          password: options.ambari_admin_password
+          cluster_name: options.cluster_name
+          component_name: 'METRICS_GRAFANA'
           hostname: host
 

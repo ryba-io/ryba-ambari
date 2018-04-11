@@ -13,20 +13,6 @@ Install the HBase client package and configure it with secured access.
       @registry.register ['ambari', 'hosts', 'component_install'], "ryba-ambari-actions/lib/hosts/component_install"
       @registry.register ['ambari', 'hosts', 'component_wait'], "ryba-ambari-actions/lib/hosts/component_wait"
 
-## Identities
-
-By default, the "hbase" package create the following entries:
-
-```bash
-cat /etc/passwd | grep hbase
-hbase:x:492:492:HBase:/var/run/hbase:/bin/bash
-cat /etc/group | grep hbase
-hbase:x:492:
-```
-
-      @system.group header: 'Group', options.group
-      @system.user header: 'User', options.user
-
 ## Packages
 
       @service
@@ -62,6 +48,7 @@ hbase:x:492:
 
       @ambari.hosts.component_install
         header: 'HBASE_CLIENT INSTALL'
+        if: options.takeover
         url: options.ambari_url
         username: 'admin'
         password: options.ambari_admin_password

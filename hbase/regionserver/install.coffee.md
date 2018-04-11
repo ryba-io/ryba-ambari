@@ -31,21 +31,6 @@ IPTables rules are only inserted if the parameter "iptables.action" is set to
           { chain: 'INPUT', jump: 'ACCEPT', dport: options.hbase_site['hbase.regionserver.info.port'], protocol: 'tcp', state: 'NEW', comment: "HBase RegionServer Info Web UI" }
         ]
 
-## Identities
-
-By default, the "hbase" package create the following entries:
-
-```bash
-cat /etc/passwd | grep hbase
-hbase:x:492:492:HBase:/var/run/hbase:/bin/bash
-cat /etc/group | grep hbase
-hbase:x:492:
-```
-
-      @system.group header: 'Group', options.group
-      @system.user header: 'User', options.user
-
-
 ## HBase Regionserver Layout
 
       @call header: 'Layout', ->
@@ -161,6 +146,7 @@ Upload the list of registered RegionServers.
 
       @ambari.hosts.component_install
         header: 'HBASE_REGIONSERVER INSTALL'
+        if: options.takeover
         url: options.ambari_url
         username: 'admin'
         password: options.ambari_admin_password

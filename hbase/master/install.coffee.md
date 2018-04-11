@@ -26,34 +26,22 @@ IPTables rules are only inserted if the parameter "iptables.action" is set to
 
       @tools.iptables
         header: 'IPTables'
-        if: options.iptabless
+        if: options.iptables
         rules: [
           { chain: 'INPUT', jump: 'ACCEPT', dport: options.hbase_site['hbase.master.port'], protocol: 'tcp', state: 'NEW', comment: "HBase Master" }
           { chain: 'INPUT', jump: 'ACCEPT', dport: options.hbase_site['hbase.master.info.port'], protocol: 'tcp', state: 'NEW', comment: "HMaster Info Web UI" }
         ]
+      
 
 ## HBase Master Layout
 
-      # @call header: 'Layout', ->
-      #   @system.mkdir
-      #     target: options.pid_dir
-      #     uid: options.user.name
-      #     gid: options.group.name
-      #     mode: 0o0755
-      #   @system.mkdir
-      #     target: options.conf_dir
-      #     uid: options.user.name
-      #     gid: options.group.name
-      #     mode: 0o0755
-
-
-        @system.tmpfs
-          header: 'Run dir'
-          if_os: name: ['redhat','centos'], version: '7'
-          mount: options.pid_dir
-          uid: options.user.name
-          gid: options.group.name
-          perm: '0755'
+      @system.tmpfs
+        header: 'Run dir'
+        if_os: name: ['redhat','centos'], version: '7'
+        mount: options.pid_dir
+        uid: options.user.name
+        gid: options.group.name
+        perm: '0755'
 
 # ## Zookeeper JAAS
 #  for now let ambari create jaas
@@ -114,6 +102,7 @@ principal.
 
       @ambari.hosts.component_install
         header: 'HBASE_MASTER INSTALL'
+        if: options.takeover
         url: options.ambari_url
         username: 'admin'
         password: options.ambari_admin_password

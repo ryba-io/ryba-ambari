@@ -50,6 +50,7 @@ Put the YARN_CLIENT component declared on the host as `INSTALLED` desired state
 
       @ambari.hosts.component_install
         header: 'YARN_CLIENT set installed'
+        if: options.takeover
         url: options.ambari_url
         username: 'admin'
         password: options.ambari_admin_password

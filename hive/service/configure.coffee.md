@@ -86,6 +86,8 @@ Example:
       options.ambari_url ?= service.deps.ambari_server.options.ambari_url
       options.ambari_admin_password ?= service.deps.ambari_server.options.ambari_admin_password
       options.cluster_name ?= service.deps.ambari_server.options.cluster_name
+      options.stack_name ?= service.deps.ambari_server.options.stack_name
+      options.stack_version ?= service.deps.ambari_server.options.stack_version
 
 ## Ambari Configurations
 
@@ -100,43 +102,6 @@ Example:
 
       options.configurations['webcat-site'] ?= {}
       options.configurations['webcat-env'] ?= {}
-      ## HIVE AMBARI DEBUC=G
-      # console.log 'TODO: remove ryba-ambari-takeover/hive/server/configure'
-      # options.configurations['hive-site']['hive.server2.tez.sessions.per.default.queue'] ?= '1'
-      # options.configurations['hive-site']['javax.jdo.option.ConnectionURL'] ?= 'jdbc:mysql://master01.metal.ryba/hive'
-      # # options.configurations['hive-site']['javax.jdo.option.ConnectionPassword'] ?= 'SECRET:hive-site:1:javax.jdo.option.ConnectionPassword'
-      # options.configurations['hive-site']['hive.metastore.uris'] ?= 'thrift://master01.metal.ryba:9083'
-      # options.configurations['hive-site']['hive.security.authorization.enabled'] ?= 'false'
-      # options.configurations['hive-site']['hive.security.authorization.manager'] ?= 'org.apache.hadoop.hive.ql.security.authorization.plugin.sqlstd.SQLStdConfOnlyAuthorizerFactory'
-      # options.configurations['hive-site']['hive.metastore.sasl.enabled'] ?= 'false'
-      # options.configurations['hive-site']['hive.metastore.kerberos.principal'] ?= 'hive/_HOST@EXAMPLE.COM'
-      # options.configurations['hive-site']['hive.support.concurrency'] ?= 'false'
-      # options.configurations['hive-site']['hive.zookeeper.quorum'] ?= 'master02.metal.ryba:2181,master01.metal.ryba:2181,master03.metal.ryba:2181'
-      # options.configurations['hive-site']['hive.exec.dynamic.partition.mode'] ?= 'strict'
-      # options.configurations['hive-site']['hive.txn.manager'] ?= 'org.apache.hadoop.hive.ql.lockmgr.DummyTxnManager'
-      # options.configurations['hive-site']['hive.compactor.worker.threads'] ?= '0'
-      # options.configurations['hive-site']['hive.cluster.delegation.token.store.zookeeper.connectString'] ?= 'master02.metal.ryba:2181,master01.metal.ryba:2181,master03.metal.ryba:2181'
-      # options.configurations['hive-site']['hive.tez.java.opts'] ?= '-server -Djava.net.preferIPv4Stack=true -XX:NewRatio=8 -XX:+UseNUMA -XX:+UseParallelGC -XX:+PrintGCDetails -verbose:gc -XX:+PrintGCTimeStamps'
-      # options.configurations['hive-site']['hive.exec.compress.intermediate'] ?= 'false'
-      # options.configurations['hive-site']['hive.exec.reducers.bytes.per.reducer'] ?= '67108864'
-      # options.configurations['hive-site']['hive.server2.transport.mode'] ?= 'binary'
-      # options.configurations['hive-site']['hive.server2.thrift.port'] ?= '10000'
-      # options.configurations['hive-site']['hive.warehouse.subdir.inherit.perms'] ?= 'true'
-      # options.configurations['hive-site']['hive.auto.convert.join.noconditionaltask.size'] ?= '71582788'
-      # options.configurations['hive-site']['hive.stats.fetch.column.stats'] ?= 'true'
-      # options.configurations['hive-site']['hive.exec.orc.default.compress'] ?= 'ZLIB'
-      # options.configurations['hive-site']['hive.server2.authentication'] ?= 'NONE'
-      # options.configurations['hive-site']['hive.server2.authentication.kerberos.principal'] ?= 'hive/_HOST@EXAMPLE.COM'
-      # options.configurations['hive-site']['hive.server2.authentication.spnego.principal'] ?= '/etc/security/keytabs/spnego.service.keytab'
-      # options.configurations['hive-site']['hive.server2.authentication.spnego.keytab'] ?= 'HTTP/_HOST@EXAMPLE.COM'
-      # options.configurations['hive-env']['hive_security_authorization'] = 'SQLStdAuth'
-      # options.configurations['hive-env']['hive_user_nofile_limit'] ?= '32000'
-      # options.configurations['hive-env']['hive_user_nproc_limit'] ?= '16000'
-      # options.configurations['hive-env']['hive.metastore.heapsize'] ?= '512'
-      # options.configurations['hive-env']['hive.heapsize'] ?= '1421'
-      # options.configurations['hive-env']['webhcat_user'] ?= 'hcat'
-      # options.configurations['hive-env']['hcat_user'] ?= 'hcat'
-      ## END AMBARi REQUIRED DEFAuTL
       
       
 ## Ambari hive-env

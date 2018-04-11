@@ -41,6 +41,7 @@ IPTables rules are only inserted if the parameter "iptables.action" is set to
 
       @ambari.hosts.component_wait
         header: 'Ambari Knox_GATEWAY WAIT'
+        if: options.takeover
         url: options.ambari_url
         username: 'admin'
         password: options.ambari_admin_password
@@ -50,6 +51,7 @@ IPTables rules are only inserted if the parameter "iptables.action" is set to
 
       @ambari.hosts.component_install
         header: 'Ambari Knox_GATEWAY INSTALL'
+        if: options.takeover
         url: options.ambari_url
         username: 'admin'
         password: options.ambari_admin_password

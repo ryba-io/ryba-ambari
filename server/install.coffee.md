@@ -25,6 +25,7 @@ executing this module.
 
       @ambari.cluster.add
         header: 'Cluster add'
+        if: options.takeover
         url: options.ambari_url
         username: 'admin'
         password: options.ambari_admin_password
@@ -34,7 +35,7 @@ executing this module.
 
       @system.execute
         header: 'VDF File'
-        if: options.vdf_source?
+        if: options.vdf_source? and options.takeover
         cmd: """
           curl --fail --request POST \
             -u admin:#{options.ambari_admin_password} \
@@ -51,6 +52,7 @@ executing this module.
 
       @ambari.cluster.provisioning_state
         header: 'Set Installed'
+        if: options.takeover
         url: options.ambari_url
         username: 'admin'
         password: options.ambari_admin_password
@@ -59,6 +61,7 @@ executing this module.
 
       @ambari.configs.update
         header: 'cluster-env stack'
+        if: options.takeover
         url: options.ambari_url
         username: 'admin'
         password: options.ambari_admin_password
@@ -68,6 +71,7 @@ executing this module.
 
       @ambari.configs.update
         header: 'cluster-env main'
+        if: options.takeover
         url: options.ambari_url
         username: 'admin'
         password: options.ambari_admin_password
@@ -77,6 +81,7 @@ executing this module.
 
       @ambari.configs.update
         header: 'upload krb5-conf'
+        if: options.takeover
         url: options.ambari_url
         username: 'admin'
         password: options.ambari_admin_password
@@ -86,6 +91,7 @@ executing this module.
 
       @ambari.configs.update
         header: 'upload kerberos-env'
+        if: options.takeover
         url: options.ambari_url
         username: 'admin'
         password: options.ambari_admin_password
@@ -97,6 +103,7 @@ executing this module.
       
       @system.execute
         header: 'Keberos Credential'
+        if: options.takeover
         cmd: """
           curl --request POST \
             -u admin:#{options.ambari_admin_password} \
@@ -108,7 +115,7 @@ executing this module.
       
       @ambari.kerberos.descriptor.update
         header: 'Kerberos Artifact'
-        if: options.post_component
+        if: options.post_component and options.takeover
         url: options.ambari_url
         username: 'admin'
         password: options.ambari_admin_password
@@ -121,6 +128,7 @@ executing this module.
       
       @ambari.services.add
         header: 'KERBEROS Service'
+        if: options.takeover
         url: options.ambari_url
         username: 'admin'
         password: options.ambari_admin_password
@@ -132,6 +140,7 @@ executing this module.
         {key, value} = opts
         @ambari.configs.groups_add
           header: "#{key}"
+          if: options.takeover
           url: options.ambari_url
           username: 'admin'
           password: options.ambari_admin_password

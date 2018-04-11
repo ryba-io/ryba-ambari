@@ -19,7 +19,7 @@
 
       @ambari.kerberos.descriptor.update
         header: 'Kerberos Artifact'
-        if: options.post_component
+        if: options.post_component and options.takeover
         url: options.ambari_url
         username: 'admin'
         password: options.ambari_admin_password
@@ -94,7 +94,7 @@
       @ambari.configs.default
         header: 'OOZIE Configuration'
         url: options.ambari_url
-        if: options.post_component
+        if: options.post_component and options.takeover
         username: 'admin'
         password: options.ambari_admin_password
         cluster_name: options.cluster_name
@@ -108,7 +108,7 @@
       
       @ambari.services.add
         header: 'OOZIE Service'
-        if: options.post_component
+        if: options.post_component and options.takeover
         url: options.ambari_url
         username: 'admin'
         password: options.ambari_admin_password
@@ -122,13 +122,14 @@ add `OOZIE_SERVER`, `OOZIE_CLIENT`.
       @ambari.services.wait
         header: 'OOZIE Service WAITED'
         url: options.ambari_url
+        if: options.takeover
         username: 'admin'
         password: options.ambari_admin_password
         cluster_name: options.cluster_name
         name: 'OOZIE'
 
       @ambari.services.component_add
-        if: options.post_component
+        if: options.post_component and options.takeover
         header: 'OOZIE_SERVER'
         url: options.ambari_url
         username: 'admin'
@@ -138,7 +139,7 @@ add `OOZIE_SERVER`, `OOZIE_CLIENT`.
         service_name: 'OOZIE'
 
       @ambari.services.component_add
-        if: options.post_component
+        if: options.post_component and options.takeover
         header: 'OOZIE_CLIENT'
         url: options.ambari_url
         username: 'admin'
@@ -151,7 +152,7 @@ add `OOZIE_SERVER`, `OOZIE_CLIENT`.
       for host in options.server_hosts
         @ambari.hosts.component_add
           header: 'OOZIE_SERVER'
-          if: options.post_component
+          if: options.post_component and options.takeover
           url: options.ambari_url
           username: 'admin'
           password: options.ambari_admin_password
@@ -162,7 +163,7 @@ add `OOZIE_SERVER`, `OOZIE_CLIENT`.
       for host in options.client_hosts
         @ambari.hosts.component_add
           header: 'OOZIE_CLIENT'
-          if: options.post_component
+          if: options.post_component and options.takeover
           url: options.ambari_url
           username: 'admin'
           password: options.ambari_admin_password

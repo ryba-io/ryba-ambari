@@ -110,7 +110,7 @@ Upload the list of registered RegionServers.
       
       @ambari.services.add
         header: 'HBASE Service'
-        if: options.post_component
+        if: options.post_component and options.takeover 
         url: options.ambari_url
         username: 'admin'
         password: options.ambari_admin_password
@@ -120,10 +120,9 @@ Upload the list of registered RegionServers.
 ## HBASE-SITE
 Update hbase-site.xml
 
-      @call -> console.log options.configurations['hbase-site']
       @ambari.configs.update
         header: 'Upload hbase-site'
-        if: options.post_component
+        if: options.post_component and options.takeover
         url: options.ambari_url
         username: 'admin'
         password: options.ambari_admin_password
@@ -135,7 +134,7 @@ Update hbase-site.xml
 
       @ambari.configs.update
         header: 'Upload hbase-logj4j'
-        if: options.post_component
+        if: options.post_component and options.takeover
         url: options.ambari_url
         username: 'admin'
         password: options.ambari_admin_password
@@ -147,7 +146,7 @@ Update hbase-site.xml
 
       @ambari.configs.update
         header: 'Upload hbase-policy'
-        if: options.post_component
+        if: options.post_component and options.takeover
         url: options.ambari_url
         username: 'admin'
         password: options.ambari_admin_password
@@ -161,7 +160,7 @@ Render hadoop-env.sh and yarn-env.sh files, before uploading to Ambari Server.
 
       @call
         header: 'HBase Env'
-        if: options.post_component
+        if: options.post_component and options.takeover
       , (_, callback) ->
           ssh2fs.readFile null, "#{options.cache_dir}/hbase-env.sh", (err, content) =>
             try
@@ -202,7 +201,7 @@ Render hadoop-env.sh and yarn-env.sh files, before uploading to Ambari Server.
 
       @call
         header: 'HBase Log4j'
-        if: options.post_component
+        if: options.post_component and options.takeover
       , (_, callback) ->
           ssh2fs.readFile null, "#{options.cache_dir}/hbase-log4j.properties", (err, content) =>
             try
@@ -228,7 +227,7 @@ components to cluster but NOT in `INSTALLED` desired state.
 ### Wait HBase Service
 
       @call
-        if: options.post_component
+        if: options.post_component and options.takeover
       , ->
 
         @ambari.services.wait

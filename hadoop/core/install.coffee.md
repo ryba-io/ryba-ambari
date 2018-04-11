@@ -7,7 +7,7 @@
 
       @registry.register ['ambari','hosts','rack'], 'ryba-ambari-actions/lib/hosts/rack'
       @registry.register 'hdp_select', 'ryba/lib/hdp_select'
-
+      
 
 ## Packages
 
@@ -127,7 +127,7 @@ Configure the topology script to enable rack awareness to Hadoop.
 
       @ambari.hosts.rack
         header: "Set rack"
-        if: options.rack_info
+        if: options.rack_info and options.takeover
         url: options.ambari_url
         username: 'admin'
         password: options.ambari_admin_password

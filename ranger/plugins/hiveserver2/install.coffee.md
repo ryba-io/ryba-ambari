@@ -89,7 +89,7 @@ tested.
     quote = require 'regexp-quote'
     path = require 'path'
     mkcmd = require 'ryba/lib/mkcmd'
-    properties = require '../ryba/lib/properties'
+    properties = require 'ryba/lib/properties'
     fs = require 'ssh2-fs'
 
 [plugin]: https://docs.hortonworks.com/HDPDocuments/HDP2/HDP-2.4.0/bk_installing_manually_book/content/installing_ranger_plugins.html#installing_ranger_hive_plugin

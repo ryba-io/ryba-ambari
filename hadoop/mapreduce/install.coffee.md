@@ -86,7 +86,7 @@ Update mapred-env.sh
 
 
       @call
-        if: options.post_component
+        if: options.post_component and options.takeover
       , (_, callback) ->
           ssh2fs.readFile null, "#{options.cache_dir}/mapred-env.sh", (err, content) =>
             try
@@ -117,7 +117,7 @@ Update mapred-env.sh
       
       @ambari.services.add
         header: 'MAPREDUCE2 Service'
-        if: options.post_component
+        if: options.post_component and options.takeover
         url: options.ambari_url
         username: 'admin'
         password: options.ambari_admin_password
@@ -126,7 +126,7 @@ Update mapred-env.sh
 
       @ambari.services.wait
         header: 'MAPREDUCE2 Wait'
-        if: options.post_component
+        if: options.post_component and options.takeover
         url: options.ambari_url
         username: 'admin'
         password: options.ambari_admin_password
@@ -136,6 +136,7 @@ Update mapred-env.sh
       @ambari.services.component_add
         header: 'HISTORYSERVER'
         url: options.ambari_url
+        if: options.takeover
         username: 'admin'
         password: options.ambari_admin_password
         cluster_name: options.cluster_name
@@ -145,6 +146,7 @@ Update mapred-env.sh
       @ambari.services.component_add
         header: 'MAPREDUCE2_CLIENT'
         url: options.ambari_url
+        if: options.takeover
         username: 'admin'
         password: options.ambari_admin_password
         cluster_name: options.cluster_name
@@ -155,6 +157,7 @@ Update mapred-env.sh
         @ambari.hosts.component_add
           header: 'HISTORYSERVER ADD'
           url: options.ambari_url
+          if: options.takeover
           username: 'admin'
           password: options.ambari_admin_password
           cluster_name: options.cluster_name
@@ -165,6 +168,7 @@ Update mapred-env.sh
         @ambari.hosts.component_add
           header: 'MAPREDUCE2_CLIENT ADD'
           url: options.ambari_url
+          if: options.takeover
           username: 'admin'
           password: options.ambari_admin_password
           cluster_name: options.cluster_name

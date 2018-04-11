@@ -205,6 +205,7 @@ Create the rangeradmin and rangerlogger databases.
 
       @ambari.configs.update
         header: 'ranger-admin-site'
+        if: options.takeover
         url: options.ambari_url
         username: 'admin'
         password: options.ambari_admin_password
@@ -214,6 +215,7 @@ Create the rangeradmin and rangerlogger databases.
 
       @ambari.configs.update
         header: 'ranger-ugsync-site'
+        if: options.takeover
         url: options.ambari_url
         username: 'admin'
         password: options.ambari_admin_password
@@ -223,6 +225,7 @@ Create the rangeradmin and rangerlogger databases.
 
       @ambari.configs.update
         header: 'ranger-env'
+        if: options.takeover
         url: options.ambari_url
         username: 'admin'
         password: options.ambari_admin_password
@@ -232,6 +235,7 @@ Create the rangeradmin and rangerlogger databases.
 
       @ambari.configs.update
         header: 'admin-properties'
+        if: options.takeover
         url: options.ambari_url
         username: 'admin'
         password: options.ambari_admin_password
@@ -240,7 +244,30 @@ Create the rangeradmin and rangerlogger databases.
         properties: options.install
 
       @call
+        if: options.post_component and options.takeover
+      , (_, callback) ->
+          ssh2fs.readFile null, "#{__dirname}/../resources/solr/solrconfig.xml.#{options.download}.j2", (err, content) =>
+            try
+              throw err if err
+              content = content.toString()
+              options.configurations = merge {}, options.configurations,
+                'ranger-solr-configuration':
+                  'content': content
+              @ambari.configs.update
+                header: 'ranger-solr-configuration'
+                url: options.ambari_url
+                username: 'admin'
+                password: options.ambari_admin_password
+                config_type: 'ranger-solr-configuration'
+                cluster_name: options.cluster_name
+                properties: options.configurations['ranger-solr-configuration']
+              @next callback
+            catch err
+              callback err
+
+      @call
         header: 'admin-log4j'
+        if: options.post_component and options.takeover
       , (_, callback)->
         ssh2fs.readFile null, "#{__dirname}/../resources/log4j.properties", (err, content) =>
           try
@@ -263,6 +290,7 @@ Create the rangeradmin and rangerlogger databases.
       @ambari.services.add
         header: 'Service RANGER'
         url: options.ambari_url
+        if: options.takeover
         username: 'admin'
         password: options.ambari_admin_password
         cluster_name: options.cluster_name
@@ -270,6 +298,7 @@ Create the rangeradmin and rangerlogger databases.
 
       @ambari.services.wait
         header: 'Service WAITED'
+        if: options.takeover
         url: options.ambari_url
         username: 'admin'
         password: options.ambari_admin_password
@@ -278,6 +307,7 @@ Create the rangeradmin and rangerlogger databases.
 
       @ambari.services.component_add
         header: 'RANGER_ADMIN'
+        if: options.takeover
         url: options.ambari_url
         username: 'admin'
         password: options.ambari_admin_password
@@ -287,6 +317,7 @@ Create the rangeradmin and rangerlogger databases.
       
       @ambari.hosts.component_add
         header: 'RANGER_ADMIN ADD'
+        if: options.takeover
         url: options.ambari_url
         username: 'admin'
         password: options.ambari_admin_password
@@ -296,6 +327,7 @@ Create the rangeradmin and rangerlogger databases.
 
       @ambari.hosts.component_wait
         header: 'RANGER_ADMIN'
+        if: options.takeover
         url: options.ambari_url
         username: 'admin'
         password: options.ambari_admin_password
@@ -305,6 +337,7 @@ Create the rangeradmin and rangerlogger databases.
 
       @ambari.hosts.component_install
         header: 'RANGER_ADMIN'
+        if: options.takeover
         url: options.ambari_url
         username: 'admin'
         password: options.ambari_admin_password
@@ -319,5 +352,6 @@ Create the rangeradmin and rangerlogger databases.
     quote = require 'regexp-quote'
     db = require 'nikita/lib/misc/db'
     ssh2fs = require 'ssh2-fs'
+    {merge} = require 'nikita/lib/misc'
 
 [instruction-24-25]:http://docs.hortonworks.com/HDPDocuments/HDP2/HDP-2.5.0/bk_command-line-upgrade/content/upgrade-ranger_24.html

@@ -15,7 +15,7 @@ Client code accessing a cluster finds the cluster by querying ZooKeeper.
         hbase_regionserver: module: 'ryba-ambari-takeover/hbase/regionserver', required: true
         ranger_admin: module: 'ryba/ranger/admin', single: true
         ranger_hbase: module: 'ryba/ranger/plugins/hbase'
-        ambari_server: module: 'ryba/ambari/server', required: true, single: true
+        ambari_server: module: 'ryba-ambari-takeover/server', single: true, required: true
       configure:
         'ryba-ambari-takeover/hbase/client/configure'
       commands:
