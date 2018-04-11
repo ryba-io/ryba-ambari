@@ -347,8 +347,8 @@ Enrich `ryba-ambari-takeover/hive/service` with hive/server2 properties.
         #hive-site
         srv.options.configurations['hive-site'] ?= {}
         enrich_config options.hive_site, srv.options.configurations['hive-site']
-        srv.options.configurations['hivemetastore-site']
-        enrich_config options.hive_site, srv.options.configurations['hivemetastore-site']
+        # srv.options.configurations['hivemetastore-site']
+        # enrich_config options.hive_site, srv.options.configurations['hivemetastore-site']
         #hive-env
         srv.options.configurations['hive-env'] ?= {}
         srv.options.configurations['hive-env']['hive.metastore.heapsize'] ?= '1024'

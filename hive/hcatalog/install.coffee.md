@@ -179,9 +179,28 @@ own.
         cluster_name: options.cluster_name
         component_name: 'HIVE_METASTORE'
         hostname: options.fqdn
+      @ambari.hosts.component_wait
+        header: 'HIVE_CLIENT wait'
+        url: options.ambari_url
+        if: options.takeover
+        username: 'admin'
+        password: options.ambari_admin_password
+        cluster_name: options.cluster_name
+        component_name: 'HIVE_CLIENT'
+        hostname: options.fqdn
+
 
       @ambari.hosts.component_install
         header: 'HIVE_METASTORE install'
+        if: options.takeover
+        url: options.ambari_url
+        username: 'admin'
+        password: options.ambari_admin_password
+        cluster_name: options.cluster_name
+        component_name: 'HIVE_METASTORE'
+        hostname: options.fqdn
+      @ambari.hosts.component_install
+        header: 'HIVE_CLIENT install'
         if: options.takeover
         url: options.ambari_url
         username: 'admin'

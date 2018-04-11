@@ -14,22 +14,6 @@
       @registry.register ['ambari','services','component_add'], 'ryba-ambari-actions/lib/services/component_add'
       @registry.register ['ambari', 'hosts', 'component_add'], "ryba-ambari-actions/lib/hosts/component_add"
       
-## Upload Default Configuration
-
-      # @call -> console.log options.configurations
-      @ambari.configs.default
-        header: 'HIVE Configuration'
-        url: options.ambari_url
-        if: options.post_component
-        username: 'admin'
-        password: options.ambari_admin_password
-        cluster_name: options.cluster_name
-        stack_name: options.stack_name
-        stack_version: options.stack_version
-        discover: true
-        configurations: options.configurations
-        target_services: 'HIVE'
-
 ## WEBHCAT Environment
 
       @call header: 'Render wehbcat-env', ->
@@ -49,7 +33,7 @@
           ]
       @call
         header: 'Upload webhcat-env'
-        if: options.post_component
+        if: options.post_component and options.takeover
       , (_, callback) ->
           ssh2fs.readFile null, "#{options.cache_dir}/webhcat-env.sh", (err, content) =>
             try
@@ -81,15 +65,8 @@
             try
               throw err if err
               content = content.toString()
-              @ambari.configs.update
-                url: options.ambari_url
-                username: 'admin'
-                merge: true
-                password: options.ambari_admin_password
-                config_type: 'webhcat-log4j'
-                cluster_name: options.cluster_name
-                properties: content: content
-              .next callback
+              options.configurations['webhcat-env'] ?= content:  content
+              callback()
             catch err
               callback err
 
@@ -97,7 +74,7 @@
 
       @call
         header: 'Upload hcat-env'
-        if: options.post_component
+        if: options.takeover
       , (_, callback) ->
           ssh2fs.readFile null, "#{__dirname}/../resources/hcat-env.sh.j2", (err, content) =>
             try
@@ -112,7 +89,7 @@
 
       @call
         header: 'Upload hive-env'
-        if: options.post_component
+        if: options.takeover
       , (_, callback) ->
           ssh2fs.readFile null, "#{__dirname}/../resources/hive-env.sh.j2", (err, content) =>
             try
@@ -123,67 +100,68 @@
             catch err
               callback err
 
-## HIVE Exec-Log4j
+## Upload Default Configuration
 
-      @file.render
-        header: 'Render hive-exec-log4j2'
-        if: options.post_component
-        source: "#{__dirname}/../resources/hive-exec-log4j.properties.j2"
-        local: true
-        target: "#{options.cache_dir}/hive-exec-log4j.properties"
-        context: options
-        ssh: false
-      @call
-        header: 'Upload hive-exec-log4j2'
-        if: options.post_component
-      , (_, callback) ->
-          ssh2fs.readFile null, "#{options.cache_dir}/hive-exec-log4j.properties", (err, content) =>
-            try
-              throw err if err
-              content = content.toString()
-              @ambari.configs.update
-                if: options.takeover
-                url: options.ambari_url
-                username: 'admin'
-                merge: true
-                password: options.ambari_admin_password
-                config_type: 'hive-exec-log4j2'
-                cluster_name: options.cluster_name
-                properties: content: content
-              .next callback
-            catch err
-              callback err
+      # @call -> console.log options.configurations
+      @ambari.configs.default
+        header: 'HIVE Configuration'
+        url: options.ambari_url
+        if: options.post_component and options.takeover
+        username: 'admin'
+        password: options.ambari_admin_password
+        cluster_name: options.cluster_name
+        stack_name: options.stack_name
+        stack_version: options.stack_version
+        discover: true
+        configurations: options.configurations
+        target_services: 'HIVE'
 
-## HIVE Log4j
 
-      @file.properties
-        header: 'Render hive-log4j2'
-        if: options.post_component
-        target: "#{options.cache_dir}/hive-log4j.properties"
-        content: options.hive_log4j
-        backup: true
-        ssh: false
-
-      @call
-        header: 'Upload hive-log4j2'
-        if: options.post_component
-      , (_, callback) ->
-          ssh2fs.readFile null, "#{options.cache_dir}/hive-log4j.properties", (err, content) =>
-            try
-              throw err if err
-              content = content.toString()
-              @ambari.configs.update
-                url: options.ambari_url
-                if: options.takeover
-                username: 'admin'
-                merge: true
-                password: options.ambari_admin_password
-                config_type: 'hive-log4j2'
-                cluster_name: options.cluster_name
-                properties: content: content
-              .next callback
-            catch err
-              callback err
+# ## HIVE Exec-Log4j
+# 
+#       @file.render
+#         header: 'Render hive-exec-log4j2'
+#         if: options.post_component and options.takeover
+#         source: "#{__dirname}/../resources/hive-exec-log4j.properties.j2"
+#         local: true
+#         target: "#{options.cache_dir}/hive-exec-log4j.properties"
+#         context: options
+#         ssh: false
+#       @call
+#         header: 'Upload hive-exec-log4j2'
+#         if: options.post_component and options.takeover
+#       , (_, callback) ->
+#           ssh2fs.readFile null, "#{options.cache_dir}/hive-exec-log4j.properties", (err, content) =>
+#             try
+#               throw err if err
+#               content = content.toString()
+#               options.configurations['hive-exec-log4j2'] =  merge {},  options.configurations['hive-exec-log4j2'], content: content
+#               callback()
+#             catch err
+#               callback err
+# 
+# ## HIVE Log4j
+# 
+#       @file.properties
+#         header: 'Render hive-log4j2'
+#         if: options.post_component and options.takeover
+#         target: "#{options.cache_dir}/hive-log4j.properties"
+#         content: options.hive_log4j
+#         backup: true
+#         ssh: false
+# 
+#       @call
+#         header: 'Upload hive-log4j2'
+#         if: options.post_component
+#       , (_, callback) ->
+#           ssh2fs.readFile null, "#{options.cache_dir}/hive-log4j.properties", (err, content) =>
+#             try
+#               throw err if err
+#               content = content.toString()
+#               options.configurations['hive-log4j2'] =  merge {},  options.configurations['hive-log4j2'], content: content
+#               callback()
+#             catch err
+#               callback err
 
 ## RANGER PLUGIN Properties
 
@@ -239,7 +217,7 @@
         name: 'HIVE'
 
 ## Add and enable HIVE component
-add `HIVE_SERVER`, `HCAT`, `HIVE_CLIENT`, `HIVE_METASTORE`, `HIVE_SERVER_INTERACTIVE` (LLAP)
+add `HIVE_SERVER`, `HCAT`, `HIVE_CLIENT`, `HIVE_METASTORE` (LLAP)
  `WEBHCAT_SERVER` components to cluster in `INIT` state.
 
       @ambari.services.wait
@@ -341,6 +319,15 @@ add `HIVE_SERVER`, `HCAT`, `HIVE_CLIENT`, `HIVE_METASTORE`, `HIVE_SERVER_INTERAC
           password: options.ambari_admin_password
           cluster_name: options.cluster_name
           component_name: 'HIVE_METASTORE'
+          hostname: host
+        @ambari.hosts.component_add
+          header: 'HIVE_METASTORE FIX'
+          if: options.post_component and options.takeover
+          url: options.ambari_url
+          username: 'admin'
+          password: options.ambari_admin_password
+          cluster_name: options.cluster_name
+          component_name: 'HIVE_CLIENT'
           hostname: host
 
       for host in options.hcatalog_hosts
