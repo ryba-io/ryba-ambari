@@ -432,141 +432,15 @@ principal.
         cluster_name: options.cluster_name
         component_name: 'OOZIE_SERVER'
         hostname: options.fqdn
-
-
-#         @system.execute
-#            cmd: "su -l #{options.user.name} -c '/usr/hdp/current/oozie-server/bin/ooziedb.sh create -sqlfile /tmp/oozie.sql -run Validate DB Connection'"
-#            unless_exec: db.cmd options.db, "select data from OOZIE_SYS where name='oozie.version'"
-#         @system.execute
-#            cmd: "su -l #{options.user.name} -c '/usr/hdp/current/oozie-server/bin/ooziedb.sh upgrade -run'"
-#            unless_exec: "[[ `#{version_local}` == `#{version_remote}` ]]"
-# 
-# # Share libs
-# 
-# Upload the Oozie sharelibs folder. The location of the ShareLib is specified by
-# the oozie.service.WorkflowAppService.system.libpath configuration property.
-# Inside this directory, multiple versions may cooexiste inside "lib_{timestamp}"
-# directories.
-# 
-# Oozie will automatically clean up old ShareLib "lib_{timestamp}" directories
-# based on the following rules:
-# 
-# *   After ShareLibService.temp.sharelib.retention.days days (default: 7)
-# *   Will always keep the latest 2
-# 
-# Internally, the "sharelib create" and "sharelib upgrade" commands are used to
-# upload the files.
-# 
-# Note from 4.2.0 version :
-# Upgrade command is deprecated, one should use create command to create new version of sharelib.
-# The create command executes a diff between the local Sharelib and the hdfs current sharelib,
-# then it uploads the diffs to the new versionned lib_ directory.
-# At start, server picks the sharelib from latest time-stamp directory.
-# 
-# The `oozie admin -shareliblist` command can be used by the final user to list
-# the ShareLib contents without having to go into HDFS.
-# 
-#       @call 'ryba-ambari-takeover/hadoop/hdfs_nn/wait', once: true, options.wait_hdfs_nn, conf_dir: options.hadoop_conf_dir
-#       @call
-#         header: 'Share lib Wait'
-#         unless: options.upload_share_lib
-#       , ->
-#         # Not sure this options.upload_share_lib condition is really necessary,
-#         # Maybe it would be acceptable to run the sharelib generation concurrently
-#         # in case of multiple Oozie Servers.
-#         console.log 'todo'
-#       @call
-#         header: 'Share lib'
-#         if: options.upload_share_lib
-#       , ->
-#         @hdfs_mkdir
-#           target: "/user/#{options.user.name}/share/lib"
-#           user: "#{options.user.name}"
-#           group:  "#{options.group.name}"
-#           mode: 0o0755
-#           krb5_user: options.hdfs_krb5_user
-#         # Extract the released sharelib locally
-#         @call
-#           unless_exec:"""
-#           version=`ls /usr/hdp/current/oozie-server/lib | grep oozie-client | sed 's/^oozie-client-\\(.*\\)\\.jar$/\\1/g'`
-#           cat /usr/hdp/current/oozie-server/share/lib/sharelib.properties | grep build.version | grep $version
-#           """
-#         , ->
-#           @system.execute
-#             header: 'Remove old local version'
-#             cmd:"rm -Rf /usr/hdp/current/oozie-server/share"
-#           @tools.extract
-#             header: 'Extract released version'
-#             source: "/usr/hdp/current/oozie-server/oozie-sharelib.tar.gz"
-#             target: "/usr/hdp/current/oozie-server"
-#             unless_exec: "test -d /usr/hdp/current/oozie-server/share"
-#           @system.execute
-#              cmd:"chmod -R 0755 /usr/hdp/current/oozie-server/share/"
-#         # Copy additions to the local sharelib
-#         # @call ->
-#         #   for sublib of options.sharelib
-#         #     for addition in options.sharelib[sublib]
-#         #       @system.copy
-#         #         header: "Dependency #{sublib}"
-#         #         source: "#{addition}"
-#         #         target: "/usr/hdp/current/oozie-server/share/lib/#{sublib}"
-#         #         mode: 0o0755
-#         # use bash script to copy hbase-client jar to oozie sharelib to avoid
-#         # too much ssh action
-#         #https://community.hortonworks.com/content/supportkb/49407/how-to-set-up-oozie-to-connect-to-secured-hbase-cl-1.html
-#         @call
-#           header: "HBase Sharelib"
-#           if: options.hbase.enabled
-#         , ->
-#           @service
-#             name: 'hbase'
-#           @system.mkdir
-#             target: '/usr/hdp/current/oozie-server/share/lib/hbase'
-#           @system.execute
-#             header: 'Copy jars'
-#             code_skipped: 2
-#             cmd: """
-#             count=0
-#             for name in `ls -l /usr/hdp/current/hbase-client/lib/ | grep ^- | egrep '(htrace)|(hbase-)' | grep -v test | awk '{print $9}'`;
-#             do
-#               if test -f /usr/hdp/current/oozie-server/share/lib/hbase/$name;
-#                 then
-#                   echo "file: $name  status: ok";
-#                 else
-#                   cp /usr/hdp/current/hbase-client/lib/$name /usr/hdp/current/oozie-server/share/lib/hbase/$name
-#                   count=$((count+1))
-#                   echo "file: $name  status: copied";
-#               fi;
-#               done;
-#             if [ $count -eq 0 ] ; then exit 2 ; else exit 0; fi
-#             """
-#         # Deploy a versionned sharelib
-#         @system.execute
-#           if: -> @status -1 or @status -2 or @status -3 or @status -4
-#           header: 'Deploy to HDFS'
-#           cmd: mkcmd.hdfs options.hdfs_krb5_user, """
-#           su -l oozie -c "/usr/hdp/current/oozie-server/bin/oozie-setup.sh sharelib create -fs #{options.default_fs} /usr/hdp/current/oozie-server/share"
-#           hdfs dfs -chmod -R 755 /user/#{options.user.name}
-#           """
-#           trap: true
-# 
-# ## Log4J properties
-# 
-#       # Instructions mention updating convertion pattern to the same value as
-#       # default, skip for now
-#       #TODO: Declare all properties during configure and use write_properties
-#       @file
-#         header: 'Log4J properties'
-#         target: "#{options.conf_dir}/oozie-log4j.properties"
-#         source: "#{__dirname}/../resources/oozie-log4j.properties"
-#         local: true
-#         backup: true
-#         write: for k, v of options.log4j.properties
-#           match: RegExp "^#{quote k}=.*$", 'mg'
-#           replace: "#{k}=#{v}"
-#           append: true
-# 
-    
+      # 
+      # @call ->
+      #   @system.execute
+      #      cmd: "su -l #{options.user.name} -c '/usr/hdp/current/oozie-server/bin/ooziedb.sh create -sqlfile /tmp/oozie.sql -run Validate DB Connection'"
+      #      unless_exec: db.cmd options.db, "select data from OOZIE_SYS where name='oozie.version'"
+      #   @system.execute
+      #      cmd: "su -l #{options.user.name} -c '/usr/hdp/current/oozie-server/bin/ooziedb.sh upgrade -run'"
+      #      unless_exec: "[[ `#{version_local}` == `#{version_remote}` ]]"
+      # 
       @call header: 'War', ->
         @system.execute
           header: 'Stop before WAR'
