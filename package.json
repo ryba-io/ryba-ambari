@@ -1,0 +1,24 @@
+{
+  "name": "ryba-ambari-takeover",
+  "version": "0.0.1",
+  "description": "setup ambari on a ryba setup cluster",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lucasbak/ryba-ambari-takeover.git"
+  },
+  "author": "Lucas BAKALIAN",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/lucasbak/ryba-ambari-takeover/issues"
+  },
+  "homepage": "https://github.com/lucasbak/ryba-ambari-takeover#readme",
+  "dependencies": {
+    "coffeescript": "^2.0.2",
+    "masson": "^0.1.5",
+    "ryba": "0.0.7"
+  }
+}

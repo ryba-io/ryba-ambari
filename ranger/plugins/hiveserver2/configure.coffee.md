@@ -303,6 +303,7 @@ SSL can be configured to use SSL if ranger admin has SSL enabled.
         options.ambari_url ?= service.deps.ambari_server.options.ambari_url
         options.ambari_admin_password ?= service.deps.ambari_server.options.ambari_admin_password
         options.cluster_name ?= service.deps.ambari_server.options.cluster_name
+        options.takeover = service.deps.ambari_server.options.takeover
 
 ## Enable Plugin in Ranger Admin
 

@@ -263,6 +263,7 @@ the same database. It uses zookeeper for enabling HA.
       options.cluster_name ?= service.deps.ambari_server.options.cluster_name
       options.stack_version ?= service.deps.ambari_server.options.stack_version
       options.stack_name ?= service.deps.ambari_server.options.stack_name
+      options.takeover = service.deps.ambari_server.options.takeover
 
 ## Ambari Oozie Configuration
 Enrich `ryba-ambari-takeover/oozie/service` with master properties.

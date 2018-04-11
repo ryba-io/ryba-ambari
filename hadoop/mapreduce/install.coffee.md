@@ -14,32 +14,6 @@
       @registry.register 'hconfigure', 'ryba/lib/hconfigure'
       @registry.register 'hdp_select', 'ryba/lib/hdp_select'
 
-## Identities
-
-By default, the "hadoop-client" package rely on the "hadoop", "hadoop-hdfs",
-"hadoop-mapreduce" and "hadoop-yarn" dependencies and create the following
-entries:
-
-```bash
-cat /etc/passwd | grep hadoop
-hdfs:x:496:497:Hadoop HDFS:/var/lib/hadoop-hdfs:/bin/bash
-yarn:x:495:495:Hadoop Yarn:/var/lib/hadoop-yarn:/bin/bash
-mapred:x:494:494:Hadoop MapReduce:/var/lib/hadoop-mapreduce:/bin/bash
-cat /etc/group | egrep "hdfs|yarn|mapred"
-hadoop:x:498:hdfs,yarn,mapred
-hdfs:x:497:
-yarn:x:495:
-mapred:x:494:
-```
-
-Note, the package "hadoop" will also install the "dbus" user and group which are
-not handled here.
-
-      for group in [options.hadoop_group, options.mapred.group]
-        @system.group header: "Group #{group.name}", group
-      for user in [options.mapred.user]
-        @system.user header: "user #{user.name}", user
-
 ## Packages
 
 Install the "hadoop-client" and "openssl" packages as well as their
@@ -61,15 +35,6 @@ made available in the same directory after any modification.
 ## Upload Configs
 Update mapred-env.sh
 
-      # @ambari.configs.update
-      #   header: 'Upload mapred-site'
-      #   if: options.post_component
-      #   url: options.ambari_url
-      #   username: 'admin'
-      #   password: options.ambari_admin_password
-      #   config_type: 'mapred-site'
-      #   cluster_name: options.cluster_name
-      #   properties: options.configurations['mapred-site']
 
       @call
         header: 'mapred-env'

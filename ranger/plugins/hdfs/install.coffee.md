@@ -59,7 +59,7 @@ migration: wdavidw 170918, NameNodes are not yet started.
 
       @ambari.configs.update
         header: 'Upload ranger-hdfs-plugin-properties'
-        if : options.post_component
+        if : options.post_component and options.takeover
         url: options.ambari_url
         username: 'admin'
         password: options.ambari_admin_password
@@ -69,7 +69,7 @@ migration: wdavidw 170918, NameNodes are not yet started.
 
       @ambari.configs.update
         header: 'Upload ranger-hdfs-security'
-        if : options.post_component
+        if : options.post_component and options.takeover
         url: options.ambari_url
         username: 'admin'
         password: options.ambari_admin_password
@@ -79,7 +79,7 @@ migration: wdavidw 170918, NameNodes are not yet started.
 
       @ambari.configs.update
         header: 'Upload ranger-hdfs-policymgr-ssl'
-        if : options.post_component
+        if : options.post_component and options.takeover
         url: options.ambari_url
         username: 'admin'
         password: options.ambari_admin_password
@@ -89,7 +89,7 @@ migration: wdavidw 170918, NameNodes are not yet started.
 
       @ambari.configs.update
         header: 'Upload ranger-hdfs-audit'
-        if : options.post_component
+        if : options.post_component and options.takeover
         url: options.ambari_url
         username: 'admin'
         password: options.ambari_admin_password

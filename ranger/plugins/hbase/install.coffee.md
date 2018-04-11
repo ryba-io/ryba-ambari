@@ -41,7 +41,7 @@ we execute this task using the rest api.
 
       @ambari.configs.update
         header: 'Upload ranger-hbase-plugin-properties'
-        if : options.post_component
+        if : options.post_component and options.takeover
         url: options.ambari_url
         username: 'admin'
         password: options.ambari_admin_password
@@ -51,7 +51,7 @@ we execute this task using the rest api.
 
       @ambari.configs.update
         header: 'Upload ranger-hbase-security'
-        if : options.post_component
+        if : options.post_component and options.takeover
         url: options.ambari_url
         username: 'admin'
         password: options.ambari_admin_password
@@ -61,7 +61,7 @@ we execute this task using the rest api.
 
       @ambari.configs.update
         header: 'Upload ranger-hbase-policymgr-ssl'
-        if : options.post_component
+        if : options.post_component and options.takeover
         url: options.ambari_url
         username: 'admin'
         password: options.ambari_admin_password
@@ -71,7 +71,7 @@ we execute this task using the rest api.
 
       @ambari.configs.update
         header: 'Upload ranger-hbase-audit'
-        if : options.post_component
+        if : options.post_component and options.takeover
         url: options.ambari_url
         username: 'admin'
         password: options.ambari_admin_password

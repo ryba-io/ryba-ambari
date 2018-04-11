@@ -35,7 +35,7 @@
       options.ambari_url ?= service.deps.ambari_server.options.ambari_url
       options.ambari_admin_password ?= service.deps.ambari_server.options.ambari_admin_password
       options.cluster_name ?= service.deps.ambari_server.options.cluster_name
-      
+      options.takeover = service.deps.ambari_server.options.takeover
       options.wait_ambari = service.deps.ambari_server.options.wait.rest
 
 ## Dependencies

@@ -58,7 +58,7 @@
 
       options.ambari_url ?= service.deps.ambari_server_local.options.ambari_url
       options.ambari_admin_password ?= service.deps.ambari_server_local.options.admin_password
-
+      options.takeover = service.deps.ambari_server_local.options.takeover
       throw Error 'Required options.cluster_name for provisioning' unless options.cluster_name
       throw Error 'Required options.stack_name  (HDP) for provisioning' unless options.stack_name
       throw Error 'Required options.stack_version  (2.6) for provisioning' unless options.stack_version
@@ -219,7 +219,7 @@ The key is the identity name, and the value should contain principal information
         AlertDefinition:
           source:
             default_port: '19889'
-            uri : "{{mapred-site/mapreduce.jobhistory.webapp.address}}"
+            uri : "{{mapred-site/mapreduce.jobhistory.webapp.https.address}}"
 
 ## Wait
 
