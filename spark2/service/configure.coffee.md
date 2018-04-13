@@ -99,6 +99,7 @@ Enable SSL as it is fully supprted starting from spark2
       options.stack_name = service.deps.ambari_server.options.stack_name
       options.stack_version = service.deps.ambari_server.options.stack_version
       options.takeover = service.deps.ambari_server.options.takeover
+      options.baremetal = service.deps.ambari_server.options.baremetal
 
 ## Ambari Agent
 Register users to ambari agent's user list.

@@ -421,6 +421,7 @@ source code, the list of supported prefixes is: "namenode", "resourcemanager",
       options.stack_name = service.deps.ambari_server.options.stack_name
       options.stack_version = service.deps.ambari_server.options.stack_version
       options.takeover = service.deps.ambari_server.options.takeover
+      options.baremetal = service.deps.ambari_server.options.baremetal
 
 ## Dependencies
 

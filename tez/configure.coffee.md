@@ -156,6 +156,7 @@ Enrich the Yarn NodeManager with additionnal IPTables rules.
       options.stack_name ?= service.deps.ambari_server.options.stack_name
       options.stack_version ?= service.deps.ambari_server.options.stack_version
       options.takeover = service.deps.ambari_server.options.takeover
+      options.baremetal = service.deps.ambari_server.options.baremetal
 
 ## Ambari Configurations
 Enrich `ryba-ambari-takeover/hive/service` with TEZ properties.

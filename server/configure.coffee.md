@@ -59,6 +59,7 @@
       options.ambari_url ?= service.deps.ambari_server_local.options.ambari_url
       options.ambari_admin_password ?= service.deps.ambari_server_local.options.admin_password
       options.takeover ?= service.deps.ambari_server_local.options.takeover
+      options.baremetal ?= service.deps.ambari_server_local.options.baremetal
       throw Error 'Required options.cluster_name for provisioning' unless options.cluster_name
       throw Error 'Required options.stack_name  (HDP) for provisioning' unless options.stack_name
       throw Error 'Required options.stack_version  (2.6) for provisioning' unless options.stack_version

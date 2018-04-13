@@ -179,6 +179,7 @@ Enrich `ryba-ambari-takeover/knox/service` with gateway_site properties.
       options.stack_name = service.deps.ambari_server.options.stack_name
       options.stack_version = service.deps.ambari_server.options.stack_version
       options.takeover = service.deps.ambari_server.options.takeover
+      options.baremetal = service.deps.ambari_server.options.baremetal
 
 ## Wait
 

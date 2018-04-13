@@ -213,6 +213,7 @@ Metrics information are entirely derived from the Master.
       options.ambari_admin_password ?= service.deps.ambari_server.options.ambari_admin_password
       options.cluster_name ?= service.deps.ambari_server.options.cluster_name
       options.takeover = service.deps.ambari_server.options.takeover
+      options.baremetal = service.deps.ambari_server.options.baremetal
 
 ## HBase Configuration
 Enrich `ryba-ambari-takeover/hbase/master` with regionservers properties.

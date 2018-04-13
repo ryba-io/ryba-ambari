@@ -36,7 +36,11 @@
 ## Register Authentication
 
       service.deps.kafka_broker.options.config['authorizer.class.name'] = 'org.apache.ranger.authorization.kafka.authorizer.RangerKafkaAuthorizer'
-
+      for srv in service.deps.kafka_service
+        srv.options.configurations ?= {}
+        srv.options.configurations['kafka-broker'] ?= {}
+        srv.options.configurations['kafka-broker']['authorizer.class.name'] = 'org.apache.ranger.authorization.kafka.authorizer.RangerKafkaAuthorizer'
+        
 ## Plugin User
 
       options.plugin_user ?=
@@ -188,6 +192,93 @@ from Hadoop Core.
           options.install['XAAUDIT.DB.DATABASE_NAME'] ?= 'NONE'
           options.install['XAAUDIT.DB.USER_NAME'] ?= 'NONE'
           options.install['XAAUDIT.DB.PASSWORD'] ?= 'NONE'
+
+
+## Ambari Config - Hive Plugin Audit
+
+        options.configurations ?= {}
+        options.configurations['ranger-kafka-audit'] ?= {}
+        options.configurations['ranger-kafka-audit']['xasecure.audit.is.enabled'] ?= 'true'
+        # audit to hdfs
+        options.configurations['ranger-kafka-audit']['xasecure.audit.destination.hdfs'] ?= options.install['XAAUDIT.HDFS.IS_ENABLED']
+        options.configurations['ranger-kafka-audit']['xasecure.audit.destination.hdfs.batch.filespool.dir'] ?= options.install['XAAUDIT.HDFS.FILE_SPOOL_DIR']
+        options.configurations['ranger-kafka-audit']['xasecure.audit.destination.hdfs.dir'] ?= options.install['XAAUDIT.HDFS.HDFS_DIR']
+        # audit to solr
+        options.configurations['ranger-kafka-audit']['xasecure.audit.destination.solr'] ?= options.install['XAAUDIT.SOLR.IS_ENABLED']
+        options.configurations['ranger-kafka-audit']['xasecure.audit.destination.solr.batch.filespool.dir'] ?= options.install['XAAUDIT.SOLR.FILE_SPOOL_DIR']
+        options.configurations['ranger-kafka-audit']['xasecure.audit.destination.solr.zookeepers'] ?= options.install['XAAUDIT.SOLR.ZOOKEEPER']
+        options.configurations['ranger-kafka-audit']['xasecure.audit.solr.solr_url'] ?= options.install['XAAUDIT.SOLR.URL']
+        options.configurations['ranger-kafka-audit']['xasecure.audit.jaas.inmemory.loginModuleName'] ?= 'com.sun.security.auth.module.Krb5LoginModule'
+        options.configurations['ranger-kafka-audit']['xasecure.audit.jaas.inmemory.loginModuleControlFlag'] ?= 'required'
+        options.configurations['ranger-kafka-audit']['xasecure.audit.jaas.inmemory.Client.option.useKeyTab'] ?= 'true'
+        options.configurations['ranger-kafka-audit']['xasecure.audit.jaas.inmemory.Client.option.debug'] ?= 'true'
+        options.configurations['ranger-kafka-audit']['xasecure.audit.jaas.inmemory.Client.option.doNotPrompt'] ?= 'yes'
+        options.configurations['ranger-kafka-audit']['xasecure.audit.jaas.inmemory.Client.option.storeKey'] ?= 'yes'
+        options.configurations['ranger-kafka-audit']['xasecure.audit.jaas.inmemory.Client.option.serviceName'] ?= 'solr'
+        options.configurations['ranger-kafka-audit']['xasecure.audit.jaas.inmemory.Client.option.keyTab'] ?= service.deps.kafka_broker.options.kerberos['principal']
+        options.configurations['ranger-kafka-audit']['xasecure.audit.jaas.inmemory.Client.option.principal'] ?= service.deps.kafka_broker.options.kerberos['keyTab']
+
+## Ambari Config - Kafka Plugin SSL
+SSL can be configured to use SSL if ranger admin has SSL enabled.
+ 
+        options.ssl = merge {}, service.deps.ssl?.options, options.ssl
+        options.configurations['ranger-kafka-policymgr-ssl'] ?= {}
+        if service.deps.ranger_admin.options.site['ranger.service.https.attrib.ssl.enabled'] is 'true'
+          options.configurations['ranger-kafka-policymgr-ssl']['xasecure.policymgr.clientssl.keystore'] ?= "#{service.deps.hadoop_core.options.ssl.conf_dir}/ranger-kafka-plugin-keystore"
+          options.configurations['ranger-kafka-policymgr-ssl']['xasecure.policymgr.clientssl.keystore.password'] ?= service.deps.hadoop_core.options.ssl_server['ssl.server.keystore.password']
+          options.configurations['ranger-kafka-policymgr-ssl']['xasecure.policymgr.clientssl.truststore'] ?= "#{service.deps.hadoop_core.options.ssl.conf_dir}/ranger-kafka-plugin-truststore"
+          options.configurations['ranger-kafka-policymgr-ssl']['xasecure.policymgr.clientssl.truststore.password'] ?= service.deps.hadoop_core.options.ssl_server['ssl.server.truststore.password']
+          options.configurations['ranger-kafka-policymgr-ssl']['xasecure.policymgr.clientssl.keystore.credential.file'] ?= "jceks://file/etc/ranger/#{options.service_repo.name}/cred.jceks"
+          options.configurations['ranger-kafka-policymgr-ssl']['xasecure.policymgr.clientssl.truststore.credential.file'] ?=  "jceks://file/etc/ranger/#{options.service_repo.name}/cred.jceks"
+
+## Ambari Config - Hive Plugin Properties
+
+        options.configurations['ranger-kafka-plugin-properties'] ?= {}
+        options.configurations['ranger-kafka-plugin-properties']['ranger-kafka-plugin-enabled'] ?= 'Yes' 
+        options.configurations['ranger-kafka-plugin-properties']['REPOSITORY_CONFIG_USERNAME'] ?= options.service_repo.configs.username
+        options.configurations['ranger-kafka-plugin-properties']['REPOSITORY_CONFIG_PASSWORD'] ?= options.service_repo.configs.password
+        options.configurations['ranger-kafka-plugin-properties']['common.name.for.certificate'] ?= options.service_repo.configs['commonNameForCertificate']
+        options.configurations['ranger-kafka-plugin-properties']['hadoop.rpc.protection'] ?= options.service_repo.configs['hadoop.rpc.protection']
+        options.configurations['ranger-kafka-plugin-properties']['policy_user'] ?= options.service_repo.configs['policy.download.auth.users']
+        options.configurations['ranger-kafka-plugin-properties']['zookeeper.connect'] ?= options.service_repo.configs['zookeeper.connect']
+        for k, v of options.install
+          if k.indexOf('XAAUDIT') isnt -1
+            options.configurations['ranger-kafka-plugin-properties'][k] ?= v
+
+## Ambari Config - Hive Plugin Security
+
+        options.configurations['ranger-kafka-security'] ?= {}
+        options.configurations['ranger-kafka-security']['ranger.plugin.kafka.service.name'] ?= options.service_repo.name
+        options.configurations['ranger-kafka-security']['ranger.plugin.kafka.policy.rest.url'] ?= options.install['POLICY_MGR_URL']
+        options.configurations['ranger-kafka-security']['ranger.plugin.kafka.policy.cache.dir'] ?= "/etc/ranger/#{options.service_repo.name}/policycache"
+        options.configurations['ranger-kafka-security']['ranger.plugin.kafka.policy.pollIntervalMs'] ?= "30000"
+        options.configurations['ranger-kafka-security']['ranger.plugin.kafka.policy.rest.ssl.config.file'] ?= "#{options.conf_dir}/conf/ranger-policymgr-ssl.xml"
+        options.configurations['ranger-kafka-security']['ranger.plugin.kafka.policy.source.impl'] ?= 'org.apache.ranger.admin.client.RangerAdminRESTClient'
+
+## Ambari Config REST Api
+
+        #ambari server configuration
+        options.post_component = service.instances[0].node.fqdn is service.node.fqdn
+        options.ambari_host = service.node.fqdn is service.deps.ambari_server.node.fqdn
+        options.ambari_url ?= service.deps.ambari_server.options.ambari_url
+        options.ambari_admin_password ?= service.deps.ambari_server.options.ambari_admin_password
+        options.cluster_name ?= service.deps.ambari_server.options.cluster_name
+        options.takeover = service.deps.ambari_server.options.takeover
+
+## Enable Plugin in Ranger Admin
+
+        service.deps.ranger_admin.options.configurations['ranger-env']['ranger-kafka-plugin-enabled'] = 'Yes'
+
+## Enrich Kafka Service  with Ranger Properties
+For Kafka, ranger related properties should be posted before any service is installed or
+started, as Ambari required to configuration dictionnaries to exist `ranger-kafka-plugin-properties` 
+        
+        for srv in service.deps.kafka_service
+          srv.options.configurations ?= {}
+          srv.options.configurations['ranger-kafka-security'] ?= merge {}, srv.options.configurations['ranger-kafka-security'], options.configurations['ranger-kafka-security']
+          srv.options.configurations['ranger-kafka-plugin-properties'] ?= merge {}, srv.options.configurations['ranger-kafka-plugin-properties'], options.configurations['ranger-kafka-plugin-properties']
+          srv.options.configurations['ranger-kafka-policymgr-ssl'] ?= merge {}, srv.options.configurations['ranger-kafka-policymgr-ssl'], options.configurations['ranger-kafka-policymgr-ssl']
+          srv.options.configurations['ranger-kafka-audit'] ?= merge {}, srv.options.configurations['ranger-kafka-audit'], options.configurations['ranger-kafka-audit']
 
 ## Wait
 

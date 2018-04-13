@@ -115,7 +115,7 @@ Create HDFS Headless keytab.
 
       @ambari.kerberos.descriptor.update
         header: 'Kerberos Artifact Update'
-        if: options.post_component and options.takeover
+        if: options.post_component and (options.takeover or options.baremetal)
         url: options.ambari_url
         username: 'admin'
         password: options.ambari_admin_password

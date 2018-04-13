@@ -29,11 +29,11 @@
       options.ambari_admin_password ?= service.deps.ambari_server.options.ambari_admin_password
       options.cluster_name ?= service.deps.ambari_server.options.cluster_name
       options.takeover = service.deps.ambari_server.options.takeover
+      options.baremetal = service.deps.ambari_server.options.baremetal
 
 ## Ambari Metrics Service Configuration
 
       for srv in service.deps.metrics_service
-
         #register host
         srv.options.monitor_hosts ?= []
         srv.options.monitor_hosts.push service.node.fqdn if srv.options.monitor_hosts.indexOf(service.node.fqdn) is -1
