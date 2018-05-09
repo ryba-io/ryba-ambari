@@ -22,8 +22,10 @@ differences.
       commands:
         'check':
           'ryba-ambari-takeover/zookeeper/server/check'
+        'start':
+          'ryba-ambari-takeover/zookeeper/server/start'
         'install': [
           'ryba-ambari-takeover/zookeeper/server/install'
           'ryba-ambari-takeover/zookeeper/server/start'
-          'ryba/zookeeper/server/check'
+          'ryba-ambari-takeover/zookeeper/server/check'
         ]
