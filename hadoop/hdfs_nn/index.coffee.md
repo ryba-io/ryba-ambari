@@ -36,5 +36,13 @@ does not store the data of these files itself. It’s important that this metada
         'stop': 'ryba-ambari-takeover/hadoop/hdfs_nn/stop'
         'check': 'ryba-ambari-takeover/hadoop/hdfs_nn/check'
         'status': 'ryba-ambari-takeover/hadoop/hdfs_nn/status'
+        'takeover': [
+          'ryba-ambari-takeover/hadoop/hdfs_nn/wait'
+          'ryba-ambari-takeover/hadoop/hdfs_nn/install'
+          'ryba-ambari-takeover/hadoop/hdfs_nn/takeover'
+          'ryba-ambari-takeover/hadoop/hdfs_nn/start'
+          'ryba-ambari-takeover/hadoop/hdfs_nn/wait'
+          'ryba-ambari-takeover/hadoop/hdfs_nn/check'
+        ]
 
 [keys]: https://github.com/apache/hadoop-common/blob/trunk/hadoop-hdfs-project/hadoop-hdfs/src/main/java/org/apache/hadoop/hdfs/DFSConfigKeys.java

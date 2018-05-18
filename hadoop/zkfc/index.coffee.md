@@ -40,4 +40,12 @@ The [ZKFailoverController (ZKFC)](https://hadoop.apache.org/docs/r2.3.0/hadoop-y
         'stop': 'ryba-ambari-takeover/hadoop/zkfc/stop'
         'check': 'ryba-ambari-takeover/hadoop/zkfc/check'
         'status': 'ryba-ambari-takeover/hadoop/zkfc/status'
+        'takeover': [
+          'ryba-ambari-takeover/hadoop/zkfc/wait'
+          'ryba-ambari-takeover/hadoop/zkfc/install'
+          'ryba-ambari-takeover/hadoop/zkfc/takeover'
+          'ryba-ambari-takeover/hadoop/zkfc/start'
+          'ryba-ambari-takeover/hadoop/zkfc/wait'
+          'ryba-ambari-takeover/hadoop/zkfc/check'
+        ]
 

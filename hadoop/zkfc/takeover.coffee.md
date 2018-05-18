@@ -1,19 +1,19 @@
 
-# HAdoop HDFS JournalNode
+# HAdoop HDFS zkfc
 
 Wait transactions to be synced
 
-    module.exports = header: 'HDFS NN Ambari TakeOver', handler: (options) ->
+    module.exports = header: 'HDFS ZKFC Ambari TakeOver', handler: (options) ->
       @service.stop
         header: 'Stop'
-        name: 'hadoop-hdfs-namenode'
+        name: 'hadoop-hdfs-zkfc'
       @system.remove
         header: 'Remove systemd file'
-        target: '/usr/lib/systemd/system/hadoop-hdfs-namenode.service'
+        target: '/usr/lib/systemd/system/hadoop-hdfs-zkfc.service'
         code_skipped: 1
       @system.remove
         header: 'Remove initd file'
-        target: '/etc/init.d/hadoop-hdfs-namenode'
+        target: '/etc/init.d/hadoop-hdfs-zkfc'
         code_skipped: 1
       @system.execute
         header: 'Daemon reload'

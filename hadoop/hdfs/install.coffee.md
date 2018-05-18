@@ -308,6 +308,49 @@ Update hdfs-site.xml, yarn-site.xml, mapred-site.xml
         cluster_name: options.cluster_name
         properties: options.hdfs_log4j
 
+## Upload Ranger HDFS Configuration to Ambari
+
+      @ambari.configs.update
+        header: 'Upload ranger-hdfs-plugin-properties'
+        if : options.post_component and options.takeover
+        url: options.ambari_url
+        username: 'admin'
+        password: options.ambari_admin_password
+        config_type: 'ranger-hdfs-plugin-properties'
+        cluster_name: options.cluster_name
+        properties: options.configurations['ranger-hdfs-plugin-properties']
+
+      @ambari.configs.update
+        header: 'Upload ranger-hdfs-security'
+        if : options.post_component and options.takeover
+        url: options.ambari_url
+        username: 'admin'
+        password: options.ambari_admin_password
+        config_type: 'ranger-hdfs-security'
+        cluster_name: options.cluster_name
+        properties: options.configurations['ranger-hdfs-security']
+
+      @ambari.configs.update
+        header: 'Upload ranger-hdfs-policymgr-ssl'
+        if : options.post_component and options.takeover
+        url: options.ambari_url
+        username: 'admin'
+        password: options.ambari_admin_password
+        config_type: 'ranger-hdfs-policymgr-ssl'
+        cluster_name: options.cluster_name
+        properties: options.configurations['ranger-hdfs-policymgr-ssl']
+
+      @ambari.configs.update
+        header: 'Upload ranger-hdfs-audit'
+        if : options.post_component and options.takeover
+        url: options.ambari_url
+        username: 'admin'
+        password: options.ambari_admin_password
+        config_type: 'ranger-hdfs-audit'
+        cluster_name: options.cluster_name
+        properties: options.configurations['ranger-hdfs-audit']
+
+
 ## HADOOP-ENV
 Render hadoop-env.sh and yarn-env.sh files, before uploading to Ambari Server.
 

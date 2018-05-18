@@ -11,7 +11,7 @@
 Wait for the DataNodes and NameNodes to be started.
 
       @call 'ryba-ambari-takeover/hadoop/hdfs_dn/wait', once: true, options.wait_hdfs_dn
-      @call 'ryba-ambari-takeover/hadoop/hdfs_nn/wait', once: true, conf_dir: options.hadoop_conf_dir, options.wait
+      @call 'ryba-ambari-takeover/hadoop/hdfs_nn/wait', once: true, hdfs_krb5_user: options.hdfs_krb5_user, conf_dir: options.hadoop_conf_dir, options.wait
 
 ## HDFS layout
 

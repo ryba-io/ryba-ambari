@@ -14,7 +14,7 @@ through SSH over another one where the public key isn't yet deployed.
 Wait for the HDFS NameNode to be started.
 
       # TODO: replaced wait with assertion
-      @call once: true, 'ryba-ambari-takeover/hadoop/hdfs_nn/wait', options.wait
+      @call once: true, 'ryba-ambari-takeover/hadoop/hdfs_nn/wait', once: true, hdfs_krb5_user: options.hdfs_krb5_user, conf_dir: options.hadoop_conf_dir, options.wait
 
 ## Check HTTP
 
