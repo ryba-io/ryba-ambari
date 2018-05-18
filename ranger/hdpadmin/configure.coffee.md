@@ -27,7 +27,7 @@ variables but also inject some function to be executed.
       
       # Layout
       options.conf_dir ?= '/etc/ranger/admin/conf'
-      options.pid_dir ?= '/var/run/ranger/admin'
+      options.pid_dir ?= '/var/run/ranger'
       options.log_dir ?= '/var/log/ranger/admin'
       # Misc
       options.clean_logs ?= false
@@ -117,9 +117,9 @@ User can be External and Internal. Only Internal users can be created from the r
         options.install['cookie_domain'] ?= "#{service.node.fqdn}"
         options.install['cookie_path'] ?= '/'
         options.install['admin_principal'] ?= "rangeradmin/#{service.node.fqdn}@#{options.krb5.realm}"
-        options.install['admin_keytab'] ?= '/etc/security/keytabs/ranger.admin.service.keytab'
+        options.install['admin_keytab'] ?= '/etc/security/keytabs/rangeradmin.service.keytab'
         options.install['lookup_principal'] ?= "rangerlookup/#{service.node.fqdn}@#{options.krb5.realm}"
-        options.install['lookup_keytab'] ?= "/etc/security/keytabs/ranger.lookup.service.keytab"
+        options.install['lookup_keytab'] ?= "/etc/security/keytabs/rangerlookup.service.keytab"
         # equivalent to ranger-admin-site properties
         options.site['ranger.admin.kerberos.principal'] ?= options.install['admin_principal']
         options.site['ranger.admin.kerberos.keytab'] ?= options.install['admin_keytab']
@@ -129,7 +129,7 @@ User can be External and Internal. Only Internal users can be created from the r
         options.site['ranger.spnego.kerberos.keytab'] ?= options.install['spnego_keytab']
         options.site['ranger.admin.kerberos.cookie.domain'] ?= options.install['cookie_domain']
         options.site['ranger.admin.kerberos.cookie.path'] ?= options.install['cookie_path']
-        if options.solr_type in ['cloud','cloud_docker']
+        if options.solr_type in ['cloud','cloud_docker',  'external']
           #Configuring in memory jaas property for ranger to sol
           options.site['xasecure.audit.destination.solr.force.use.inmemory.jaas.config'] ?= 'true'
           options.site['xasecure.audit.jaas.inmemory.loginModuleName'] ?= 'com.sun.security.auth.module.Krb5LoginModule'
@@ -285,7 +285,7 @@ If you have configured a Solr Cloud Docker in your cluster, you can configure li
           throw Error "Missing Solr options.solr.cluster_config.ssl_enabled property example: true" unless options.solr.cluster_config.ssl_enabled?
           throw Error "Missing Solr options.solr.cluster_config.hosts: ['master01.ryba', 'master02.ryba']" unless options.solr.cluster_config.hosts?
           throw Error "Missing Solr options.solr.cluster_config.zk_urls: master01.metal.ryba:2181" unless options.solr.cluster_config.zk_urls?
-          throw Error "Missing Solr options.solr.cluster_config.zk_connect: master01.metal.ryba:2181/solr_infra" unless options.solr.cluster_config.zk_connect?
+          throw Error "Missing Solr options.solr.cluster_config.zk_node: /solr_infra" unless options.solr.cluster_config.zk_node?
           throw Error "Missing Solr options.solr.cluster_config.master: master01.metal.ryba" unless options.solr.cluster_config.master?
           throw Error "Missing Solr options.solr.cluster_config.port: 8983" unless options.solr.cluster_config.port?
           throw Error "Missing Solr options.solr.cluster_config.authentication: kerberos" unless options.solr.cluster_config.authentication?
@@ -294,6 +294,7 @@ If you have configured a Solr Cloud Docker in your cluster, you can configure li
           if options.solr.cluster_config.authentication? is 'kerberos'
             throw Error "Missing Solr options.solr.cluster_config.admin_principal: " unless options.solr.cluster_config.admin_principal?
             throw Error "Missing Solr options.solr.cluster_config.admin_password: " unless options.solr.cluster_config.admin_password?
+          options.solr.cluster_config.zk_connect ?= path.join options.solr.cluster_config.zk_urls , '/', options.solr.cluster_config.zk_node
           options.solr.cluster_config.collection ?=
             'name': 'ranger_audits'
             'numShards': options.solr.cluster_config['hosts'].length
@@ -547,6 +548,8 @@ Ryba injects function to the different contexts.
       options.configurations['ranger-env']['create_db_dbuser'] ?= 'false'
       options.configurations['ranger-env']['admin_username'] ?= 'admin'
       options.configurations['ranger-env']['admin_password'] ?= options.admin.password
+      options.configurations['ranger-env']['ranger_admin_username'] ?= 'admin'
+      options.configurations['ranger-env']['ranger_admin_password'] ?= options.admin.password
       options.configurations['ranger-env']['xasecure.audit.destination.hdfs'] ?= 'true'
       options.configurations['ranger-env']['xasecure.audit.destination.hdfs.dir'] ?= "#{service.deps.hdfs_nn[0].options.core_site['fs.defaultFS']}/ranger/audit"
       options.configurations['ranger-env']['xasecure.audit.destination.solr'] ?= "true"
@@ -647,6 +650,7 @@ Ryba injects function to the different contexts.
 
     quote = require 'regexp-quote'
     {merge} = require 'nikita/lib/misc'
+    path = require 'path'
 
 [ranger-2.4.0]:(http://docs.hortonworks.com/HDPDocuments/HDP2/HDP-2.4.0/bk_installing_manually_book/content/configure-the-ranger-policy-administration-authentication-moades.html)
 [ranger-ssl]:(https://docs.hortonworks.com/HDPDocuments/HDP2/HDP-2.4.0/bk_Security_Guide/content/configure_non_ambari_ranger_ssl.html) 

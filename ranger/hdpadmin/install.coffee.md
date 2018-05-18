@@ -97,6 +97,14 @@ Create the rangeradmin and rangerlogger databases.
               flush privileges;
               """
               unless_exec: db.cmd options.db, "use #{options.install['audit_db_name']}"
+            @system.execute
+              cmd: db.cmd options.db, """
+              use #{options.install['db_name']};
+              insert into x_db_version_h SET version='DEFAULT_ADMIN_UPDATE', active='Y', \ 
+              updated_at='2017-12-21 13:58:22', updated_by='#{options.fqdn}', \
+              inst_by='#{options.fqdn}';
+              """
+              unless_exec: db.cmd options.db, "select * from #{options.install['db_name']}.x_db_version_h where version='DEFAULT_ADMIN_UPDATE'  | grep '1 rows'"
 
       # @db.user options.db, database: null, username: options.install['db_user'], password: options.install['db_password'],
       #   header: 'User'
@@ -178,6 +186,7 @@ Create the rangeradmin and rangerlogger databases.
 
 ## Ranger Admin Principal
 
+      @call -> console.log options.install['admin_keytab']
       @krb5.addprinc options.krb5.admin,
         if: options.plugins.principal
         header: 'Ranger Repositories principal'
@@ -205,7 +214,6 @@ Create the rangeradmin and rangerlogger databases.
 
       @ambari.configs.update
         header: 'ranger-admin-site'
-        if: options.takeover
         url: options.ambari_url
         username: 'admin'
         password: options.ambari_admin_password
@@ -215,7 +223,6 @@ Create the rangeradmin and rangerlogger databases.
 
       @ambari.configs.update
         header: 'ranger-ugsync-site'
-        if: options.takeover
         url: options.ambari_url
         username: 'admin'
         password: options.ambari_admin_password
@@ -225,7 +232,7 @@ Create the rangeradmin and rangerlogger databases.
 
       @ambari.configs.update
         header: 'ranger-env'
-        if: options.takeover
+        if: options.takeover or options.baremetal
         url: options.ambari_url
         username: 'admin'
         password: options.ambari_admin_password
@@ -235,7 +242,6 @@ Create the rangeradmin and rangerlogger databases.
 
       @ambari.configs.update
         header: 'admin-properties'
-        if: options.takeover
         url: options.ambari_url
         username: 'admin'
         password: options.ambari_admin_password
@@ -243,9 +249,7 @@ Create the rangeradmin and rangerlogger databases.
         cluster_name: options.cluster_name
         properties: options.install
 
-      @call
-        if: options.post_component and options.takeover
-      , (_, callback) ->
+      @call (_, callback) ->
           ssh2fs.readFile null, "#{__dirname}/../resources/solr/solrconfig.xml.#{options.download}.j2", (err, content) =>
             try
               throw err if err
@@ -267,7 +271,7 @@ Create the rangeradmin and rangerlogger databases.
 
       @call
         header: 'admin-log4j'
-        if: options.post_component and options.takeover
+        if: options.post_component
       , (_, callback)->
         ssh2fs.readFile null, "#{__dirname}/../resources/log4j.properties", (err, content) =>
           try
@@ -290,7 +294,6 @@ Create the rangeradmin and rangerlogger databases.
       @ambari.services.add
         header: 'Service RANGER'
         url: options.ambari_url
-        if: options.takeover
         username: 'admin'
         password: options.ambari_admin_password
         cluster_name: options.cluster_name
@@ -298,7 +301,6 @@ Create the rangeradmin and rangerlogger databases.
 
       @ambari.services.wait
         header: 'Service WAITED'
-        if: options.takeover
         url: options.ambari_url
         username: 'admin'
         password: options.ambari_admin_password
@@ -307,7 +309,6 @@ Create the rangeradmin and rangerlogger databases.
 
       @ambari.services.component_add
         header: 'RANGER_ADMIN'
-        if: options.takeover
         url: options.ambari_url
         username: 'admin'
         password: options.ambari_admin_password
@@ -317,7 +318,6 @@ Create the rangeradmin and rangerlogger databases.
       
       @ambari.hosts.component_add
         header: 'RANGER_ADMIN ADD'
-        if: options.takeover
         url: options.ambari_url
         username: 'admin'
         password: options.ambari_admin_password
@@ -327,7 +327,6 @@ Create the rangeradmin and rangerlogger databases.
 
       @ambari.hosts.component_wait
         header: 'RANGER_ADMIN'
-        if: options.takeover
         url: options.ambari_url
         username: 'admin'
         password: options.ambari_admin_password
@@ -337,7 +336,6 @@ Create the rangeradmin and rangerlogger databases.
 
       @ambari.hosts.component_install
         header: 'RANGER_ADMIN'
-        if: options.takeover
         url: options.ambari_url
         username: 'admin'
         password: options.ambari_admin_password
@@ -345,6 +343,9 @@ Create the rangeradmin and rangerlogger databases.
         component_name: 'RANGER_ADMIN'
         hostname: options.fqdn
 
+      @system.execute
+        header: 'Fix Setup Execution'
+        cmd: "chown -R #{options.user.name}:#{options.user.name} /etc/ranger/admin"
 ## Dependencies
 
     glob = require 'glob'

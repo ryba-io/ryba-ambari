@@ -37,3 +37,10 @@ access control over Hadoop data access components like Apache Hive and Apache HB
           'ryba-ambari-takeover/ranger/hdpadmin/status'
         'stop':
           'ryba-ambari-takeover/ranger/hdpadmin/stop'
+        'takeover': [
+          'ryba-ambari-takeover/ranger/hdpadmin/wait'
+          'ryba-ambari-takeover/ranger/hdpadmin/install'
+          'ryba-ambari-takeover/ranger/hdpadmin/takeover'
+          'ryba-ambari-takeover/ranger/hdpadmin/start'
+          'ryba-ambari-takeover/ranger/hdpadmin/wait'
+        ]
