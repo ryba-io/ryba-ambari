@@ -253,7 +253,17 @@ configure `policy-mgr-ssl` ambari configuration to make the plugin communicate o
 ## Enable Plugin in Ranger Admin
 
         service.deps.ranger_admin.options.configurations['ranger-env']['ranger-hdfs-plugin-enabled'] = 'Yes'
-
+        
+## Enrich HDFS Service  with Ranger Properties
+For Hive, ranger related properties should be posted before any service is installed or
+started, as Ambari required to configuration dictionnaries to exist `ranger-hdfs-plugin-properties` 
+        
+        for srv in service.deps.hdfs
+          srv.options.configurations ?= {}
+          srv.options.configurations['ranger-hdfs-security'] ?= merge {}, srv.options.configurations['ranger-hdfs-security'], options.configurations['ranger-hdfs-security']
+          srv.options.configurations['ranger-hdfs-plugin-properties'] ?= merge {}, srv.options.configurations['ranger-hdfs-plugin-properties'], options.configurations['ranger-hdfs-plugin-properties']
+          srv.options.configurations['ranger-hdfs-policymgr-ssl'] ?= merge {}, srv.options.configurations['ranger-hdfs-policymgr-ssl'], options.configurations['ranger-hdfs-policymgr-ssl']
+          srv.options.configurations['ranger-hdfs-audit'] ?= merge {}, srv.options.configurations['ranger-hdfs-audit'], options.configurations['ranger-hdfs-audit']
 ## Wait
 
       options.wait_ranger_admin = service.deps.ranger_admin.options.wait
