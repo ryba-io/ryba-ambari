@@ -31,6 +31,14 @@ watching them for changes to the edit log.
           'ryba-ambari-takeover/hadoop/hdfs_jn/start'
           'ryba-ambari-takeover/hadoop/hdfs_jn/check'
         ]
+        'takeover': [
+          'ryba-ambari-takeover/hadoop/hdfs_jn/wait'
+          'ryba-ambari-takeover/hadoop/hdfs_jn/install'
+          'ryba-ambari-takeover/hadoop/hdfs_jn/takeover'
+          'ryba-ambari-takeover/hadoop/hdfs_jn/start'
+          'ryba-ambari-takeover/hadoop/hdfs_jn/wait'
+          'ryba-ambari-takeover/hadoop/hdfs_jn/check'
+        ]
         'start': 'ryba-ambari-takeover/hadoop/hdfs_jn/start'
         'stop': 'ryba-ambari-takeover/hadoop/hdfs_jn/stop'
         'check': 'ryba-ambari-takeover/hadoop/hdfs_jn/check'

@@ -80,9 +80,15 @@ Example:
       options.krb5.realm ?= service.deps.krb5_client.options.etc_krb5_conf?.libdefaults?.default_realm
       throw Error 'Required Options: "realm"' unless options.krb5.realm
       options.krb5.admin ?= service.deps.krb5_client.options.admin[options.krb5.realm]
+      #takeover config
       options.hdfs_site['dfs.journalnode.kerberos.internal.spnego.principal'] = "HTTP/_HOST@#{options.krb5.realm }"
-      options.hdfs_site['dfs.journalnode.kerberos.principal'] = "jn/_HOST@#{options.krb5.realm }"
-      options.hdfs_site['dfs.journalnode.keytab.file'] = '/etc/security/keytabs/jn.service.keytab'
+      options.hdfs_site['dfs.journalnode.kerberos.principal'] = "HTTP/_HOST@#{options.krb5.realm }"
+      options.hdfs_site['dfs.journalnode.keytab.file'] = '/etc/security/keytabs/spnego.service.keytab'
+      ## start should be config
+      # options.hdfs_site['dfs.journalnode.kerberos.internal.spnego.principal'] = "HTTP/_HOST@#{options.krb5.realm }"
+      # options.hdfs_site['dfs.journalnode.kerberos.principal'] = "jn/_HOST@#{options.krb5.realm }"
+      # options.hdfs_site['dfs.journalnode.keytab.file'] = '/etc/security/keytabs/jn.service.keytab'
+      # end should be config
       options.opts.java_properties['java.security.auth.login.config'] ?= "#{options.conf_dir}/hdfs_jn_jaas.conf"
 
 ## SSL
@@ -191,6 +197,7 @@ Enrich `ryba-ambari-takeover/hadoop/hdfs` with hdfs_jn properties.
         else srv.options.hdfs_site['dfs.journalnode.https-address'] or '0.0.0.0:8481'
         [_, port] = address.split ':'
         host: srv.node.fqdn, port: port
+      options.hosts = service.deps.hdfs_jn.map (srv) -> srv.node.fqdn 
 
 ## Dependencies
 

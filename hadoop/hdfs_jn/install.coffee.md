@@ -129,6 +129,3 @@ Put the JOURNALNODE component declared on the host as `INSTALLED` desired state
         component_name: 'JOURNALNODE'
         hostname: options.fqdn
 
-## Dependencies
-
-    mkcmd = require 'ryba/lib/mkcmd'

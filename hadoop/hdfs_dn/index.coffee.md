@@ -35,6 +35,12 @@ information and heartbeats to both.
           'ryba-ambari-takeover/hadoop/hdfs_dn/start'
           'ryba-ambari-takeover/hadoop/hdfs_dn/check'
         ]
+        'takeover': [
+          'ryba-ambari-takeover/hadoop/hdfs_dn/wait'
+          'ryba-ambari-takeover/hadoop/hdfs_dn/takeover'
+          'ryba-ambari-takeover/hadoop/hdfs_dn/start'
+          'ryba-ambari-takeover/hadoop/hdfs_dn/check'
+        ]
         'start': 'ryba-ambari-takeover/hadoop/hdfs_dn/start'
         'stop': 'ryba-ambari-takeover/hadoop/hdfs_dn/stop'
         'check': 'ryba-ambari-takeover/hadoop/hdfs_dn/check'
