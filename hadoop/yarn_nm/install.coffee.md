@@ -13,7 +13,7 @@
 ## Wait
 
       @call 'masson/core/krb5_client/wait', once: true, options.wait_krb5_client
-      @call 'ryba-ambari-takeover/hadoop/hdfs_nn/wait', once: true, options.wait_hdfs_nn, conf_dir: options.hadoop_conf_dir
+      @call 'ryba-ambari-takeover/hadoop/hdfs_nn/wait', once: true, options.wait_hdfs_nn, conf_dir: options.hadoop_conf_dir, hdfs_krb5_user: options.hdfs_krb5_user
 
 ## IPTables
 

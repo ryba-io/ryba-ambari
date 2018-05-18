@@ -371,7 +371,7 @@ Render yarn-env.sh files, before uploading to Ambari Server.
         username: 'admin'
         password: options.ambari_admin_password
         config_type: 'ranger-yarn-security'
-        cluster_name: options.clfuster_name
+        cluster_name: options.cluster_name
         properties: options.configurations['ranger-yarn-security']
 
       @ambari.configs.update

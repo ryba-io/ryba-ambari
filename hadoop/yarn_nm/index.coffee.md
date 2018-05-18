@@ -47,3 +47,11 @@ applications.
           'ryba-ambari-takeover/hadoop/yarn_nm/status'
         'stop':
           'ryba-ambari-takeover/hadoop/yarn_nm/stop'
+        'takeover': [
+          'ryba-ambari-takeover/hadoop/yarn_nm/wait'
+          'ryba-ambari-takeover/hadoop/yarn_nm/install'
+          'ryba-ambari-takeover/hadoop/yarn_nm/takeover'
+          'ryba-ambari-takeover/hadoop/yarn_nm/start'
+          'ryba-ambari-takeover/hadoop/yarn_nm/wait'
+          'ryba-ambari-takeover/hadoop/yarn_nm/check'
+        ]

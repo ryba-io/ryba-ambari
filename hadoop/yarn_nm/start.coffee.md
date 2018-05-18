@@ -13,7 +13,6 @@ Wait for Kerberos, ZooKeeper and HDFS to be started.
 
       @call 'masson/core/krb5_client/wait', once: true, options.wait_krb5_client
       @call 'ryba-ambari-takeover/zookeeper/server/wait', once: true, options.wait_zookeeper_server
-      @call 'ryba-ambari-takeover/hadoop/hdfs_nn/wait', once: true, options.wait_hdfs_nn, conf_dir: options.conf_dir
       @call 'ryba-ambari-takeover/hadoop/yarn_rm/wait', once: true, options.wait_yarn_rm
 
 ## Start Service
