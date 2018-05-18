@@ -28,5 +28,4 @@ Wait for Kerberos to be started.
         cluster_name: options.cluster_name
         component_name: 'ZOOKEEPER_SERVER'
         hostname: options.fqdn
-        debug: true
 

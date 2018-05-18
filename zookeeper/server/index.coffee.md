@@ -29,3 +29,11 @@ differences.
           'ryba-ambari-takeover/zookeeper/server/start'
           'ryba-ambari-takeover/zookeeper/server/check'
         ]
+        'takeover': [
+          'ryba-ambari-takeover/zookeeper/server/wait'
+          'ryba-ambari-takeover/zookeeper/server/install'
+          'ryba-ambari-takeover/zookeeper/server/takeover'
+          'ryba-ambari-takeover/zookeeper/server/start'
+          'ryba-ambari-takeover/zookeeper/server/wait'
+          'ryba-ambari-takeover/zookeeper/server/check'
+        ]

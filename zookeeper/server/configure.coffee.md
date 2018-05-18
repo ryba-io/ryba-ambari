@@ -117,7 +117,7 @@
       options.krb5 ?= {}
       options.krb5.realm ?= service.deps.krb5_client.options.etc_krb5_conf?.libdefaults?.default_realm
       options.krb5.principal ?= "zookeeper/_HOST@#{options.krb5.realm}"
-      options.krb5.keytab ?= '/etc/security/keytabs/zookeeper.service.keytab'
+      options.krb5.keytab ?= '/etc/security/keytabs/zk.service.keytab'
       throw Error 'Required Options: "realm"' unless options.krb5.realm
       options.krb5.admin ?= service.deps.krb5_client.options.admin[options.krb5.realm]
 
