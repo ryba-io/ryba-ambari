@@ -17,11 +17,11 @@ executing this module.
       @registry.register ['ambari','services','add'], 'ryba-ambari-actions/lib/services/add'
       @registry.register ['ambari','kerberos','descriptor', 'update'], 'ryba-ambari-actions/lib/kerberos/descriptor/update'
 
-      options.cluster_env_stack_properties['stack_features'] = fs.readFileSync('/home/bakalian/ryba/ryba-env-metal/resources/stack_features.json').toString()
+      options.cluster_env_stack_properties['stack_features'] = fs.readFileSync("#{options.stack_features_file}").toString()
       # options.cluster_env_stack_properties['stack_tools'] = fs.readFileSync('/home/bakalian/ryba/ryba-env-metal/resources/stack_tools.json').toString()
-      options.cluster_env_stack_properties['repo_suse_rhel_template'] = fs.readFileSync('/home/bakalian/ryba/ryba-env-metal/resources/repo_suse_rhel_template.repo').toString()
-      options.cluster_env_stack_properties['stack_packages'] = fs.readFileSync('/home/bakalian/ryba/ryba-env-metal/resources/stack_packages.json').toString()
-      options.cluster_env_stack_properties['stack_tools'] = fs.readFileSync('/home/bakalian/ryba/ryba-env-metal/resources/stack_tools.json').toString()
+      options.cluster_env_stack_properties['repo_suse_rhel_template'] = fs.readFileSync("#{options.stack_repo_suse_file}").toString()
+      options.cluster_env_stack_properties['stack_packages'] = fs.readFileSync("#{options.stack_package}").toString()
+      options.cluster_env_stack_properties['stack_tools'] = fs.readFileSync("#{options.stack_tools}").toString()
 
       @ambari.cluster.add
         header: 'Cluster add'
