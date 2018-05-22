@@ -213,6 +213,30 @@ parameters autopurge.snapRetainCount and autopurge.purgeInterval.
         when: options.purge
         user: options.user.name
 
+## Ambari Config Groups
+          
+      @call
+        if: options.post_component and options.takeover
+      , ->
+        @each options.config_groups, (opts, cb) ->
+          {key, value} = opts
+          @ambari.configs.groups_add
+            header: "#{key}"
+            url: options.ambari_url
+            username: 'admin'
+            password: options.ambari_admin_password
+            cluster_name: options.cluster_name
+            group_name: key
+            tag: key
+            description: "#{key} config groups"
+            hosts: value.hosts
+            desired_configs: 
+              type: value.type
+              tag: value.tag
+              properties: value.properties
+          @next cb
+
+
 ## Write myid
 
 myid is a unique id that must be generated for each node of the zookeeper cluster

@@ -196,6 +196,18 @@ Register users to ambari agent's user list.
         srv.options.groups ?= {}
         srv.options.groups['zookeeper'] ?= options.group
 
+## Ambari Config Groups
+`config_groups` contains final object that install will submit to ambari.
+`groups` is the array of config_groups name to which the host belongs to.
+
+      options.config_groups ?= {}
+      options.groups ?= []
+      for srv in service.deps.hdfs
+        for name in options.groups
+          srv.options.config_groups ?= {}
+          srv.options.config_groups[name] ?= {}
+          srv.options.config_groups[name]['hosts'] ?= []
+          srv.options.config_groups[name]['hosts'].push service.node.fqdn unless srv.options.config_groups[name]['hosts'].indexOf(service.node.fqdn) > -1
 
 ## Wait
 
