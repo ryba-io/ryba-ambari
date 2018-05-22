@@ -44,7 +44,14 @@
           'ryba-ambari-takeover/hadoop/yarn_rm/status'
         'stop':
           'ryba-ambari-takeover/hadoop/yarn_rm/stop'
-
+        'takeover': [
+          'ryba-ambari-takeover/hadoop/yarn_rm/wait'
+          'ryba-ambari-takeover/hadoop/yarn_rm/install'
+          'ryba-ambari-takeover/hadoop/yarn_rm/takeover'
+          'ryba-ambari-takeover/hadoop/yarn_rm/start'
+          'ryba-ambari-takeover/hadoop/yarn_rm/wait'
+          'ryba-ambari-takeover/hadoop/yarn_rm/check'
+        ]
 
 [restart]: http://hadoop.apache.org/docs/current/hadoop-yarn/hadoop-yarn-site/ResourceManagerRestart.html
 [ml_root_acl]: http://lucene.472066.n3.nabble.com/Yarn-HA-Zookeeper-ACLs-td4138735.html
