@@ -21,11 +21,13 @@ Create System Service Account & user/client accounts
 
       @system.group  header: 'Test Group', options.test_group
       @system.user  header: 'Test User', options.test_user
-      
-      for name, group of options.groups
-        @system.group header: "Group #{name}", group
-      for name, user of options.users
-        @system.user header: "User #{name}", user
+      @call
+        if: options.baremetal
+      , ->
+        for name, group of options.groups
+          @system.group header: "Group #{name}", group
+        for name, user of options.users
+          @system.user header: "User #{name}", user
 
 ## Kerberos Test User
 Create ambari-qa principal with its keytab
@@ -49,7 +51,7 @@ Create ambari-qa principal with its keytab
 
       @ambari.hosts.add
         header: 'Register host'
-        if: options.takeover
+        if: options.takeover or options.baremetal
         url: options.ambari_url
         username: 'admin'
         password: options.ambari_admin_password
@@ -57,7 +59,7 @@ Create ambari-qa principal with its keytab
 
       @ambari.cluster.node_add
         header: "Add host to Cluster"
-        if: options.takeover
+        if: options.takeover or options.baremetal
         url: options.ambari_url
         username: 'admin'
         password: options.ambari_admin_password

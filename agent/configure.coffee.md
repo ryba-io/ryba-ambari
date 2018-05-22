@@ -33,6 +33,8 @@
 ## Ambari TakeOver Configuration
 
       options.cluster_name ?= service.deps.ambari_server_takeover[0].options.cluster_name
+      options.takeover = service.deps.ambari_server[0].options.takeover
+      options.baremetal = service.deps.ambari_server[0].options.baremetal
 
 ### User Provisionning
 Contains object of user that ambari-agent should create on all hosts. By default
