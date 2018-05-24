@@ -318,7 +318,7 @@ Inherits log4j configuration from the `ryba/log4j`. The rendered file uses the v
         nameservice =  if options.nameservice then ".#{options.nameservice}" or ''
         hostname = if options.nameservice then ".#{srv.node.hostname}" else ''
         if srv.options.hdfs_site["dfs.namenode.rpc-address#{nameservice}#{hostname}"]
-         [fqdn, port] = srv.options.hdfs_site["dfs.namenode.rpc-address#{nameservice}#{hostname}"].split(':')
+          [fqdn, port] = srv.options.hdfs_site["dfs.namenode.rpc-address#{nameservice}#{hostname}"].split(':')
         else 
           fqdn = srv.node.fqdn
           port = 8020

@@ -87,11 +87,11 @@ properties than needed.
 Merge hdfs_site, yarn_site, core_site configuration from each components.
 
       options.configurations ?= {}
-      options.configurations['core-site'] = {}
+      options.configurations['core-site'] ?= {}
       # ambari missing properties
       options.configurations['core-site']['io.compression.codec.lzo.class'] ?= 'com.hadoop.compression.lzo.LzoCodec'
         
-      options.configurations['hdfs-site'] = {}
+      options.configurations['hdfs-site'] ?= {}
         
       # ambari missing properties
       options.configurations['hdfs-site']['dfs.hosts.exclude'] = '/etc/hadoop/conf/dfs.exclude'
@@ -220,7 +220,7 @@ Register users to ambari agent's user list.
           srv.options.config_groups[name] ?= {}
           srv.options.config_groups[name]['hosts'] ?= []
           srv.options.config_groups[name]['hosts'].push service.node.fqdn unless srv.options.config_groups[name]['hosts'].indexOf(service.node.fqdn) > -1
-          
+      
 ## Dependencies
 
     {merge} = require 'nikita/lib/misc'
