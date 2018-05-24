@@ -114,7 +114,7 @@ Create HDFS Headless keytab.
 ## Kerberos Descriptor Artifact
 
       @ambari.kerberos.descriptor.update
-        header: 'Kerberos Artifact Update'
+        header: 'Kerberos Artifact Update NN'
         if: options.post_component and (options.takeover or options.baremetal)
         url: options.ambari_url
         username: 'admin'
@@ -125,6 +125,19 @@ Create HDFS Headless keytab.
         service: 'HDFS'
         component: 'NAMENODE'
         identities: options.identities['hdfs']
+
+      @ambari.kerberos.descriptor.update
+        header: 'Kerberos Artifact Update JN'
+        if: options.post_component and (options.takeover or options.baremetal)
+        url: options.ambari_url
+        username: 'admin'
+        password: options.ambari_admin_password
+        stack_name: options.stack_name
+        stack_version: options.stack_version
+        cluster_name: options.cluster_name
+        service: 'HDFS'
+        component: 'JOURNALNODE'
+        identities: options.identities['journalnode_jn']
 
 ## Include/Exclude
 
@@ -252,7 +265,6 @@ the file must be specified.  If the value is empty, no hosts are excluded.
 
 ## HDFS-SITE, YARN-SITE, MAPRED-SITE
 Update hdfs-site.xml, yarn-site.xml, mapred-site.xml
-
 
       @ambari.configs.update
         header: 'Upload core-site'

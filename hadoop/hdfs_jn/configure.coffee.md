@@ -89,7 +89,30 @@ Example:
       # options.hdfs_site['dfs.journalnode.kerberos.principal'] = "jn/_HOST@#{options.krb5.realm }"
       # options.hdfs_site['dfs.journalnode.keytab.file'] = '/etc/security/keytabs/jn.service.keytab'
       # end should be config
+      
       options.opts.java_properties['java.security.auth.login.config'] ?= "#{options.conf_dir}/hdfs_jn_jaas.conf"
+      
+## Ambari Kerberos Principal and Keytab
+
+      for srv in service.deps.hdfs
+        srv.options.identities ?= {}
+        srv.options.identities['journalnode_jn'] ?= {}
+        srv.options.identities['journalnode_jn']['principal'] ?= {}
+        srv.options.identities['journalnode_jn']['principal']['configuration'] ?= 'hdfs-site/dfs.journalnode.kerberos.principal'
+        srv.options.identities['journalnode_jn']['principal']['type'] ?= 'service'
+        srv.options.identities['journalnode_jn']['principal']['local_username'] ?= options.user.name
+        srv.options.identities['journalnode_jn']['principal']['value'] ?= options.hdfs_site['dfs.journalnode.kerberos.principal'] 
+        srv.options.identities['journalnode_jn']['name'] ?= 'journalnode_jn'
+        srv.options.identities['journalnode_jn']['keytab'] ?= {}
+        srv.options.identities['journalnode_jn']['keytab']['owner'] ?= {}
+        srv.options.identities['journalnode_jn']['keytab']['owner']['access'] ?= 'r' 
+        srv.options.identities['journalnode_jn']['keytab']['owner']['name'] ?= options.user.name 
+        srv.options.identities['journalnode_jn']['keytab']['group'] ?= {}
+        srv.options.identities['journalnode_jn']['keytab']['group']['access'] ?= 'r'
+        srv.options.identities['journalnode_jn']['keytab']['group']['name'] ?= options.hadoop_group.name
+        srv.options.identities['journalnode_jn']['keytab']['file'] ?= options.hdfs_site['dfs.journalnode.kerberos.principal'] 
+        srv.options.identities['journalnode_jn']['keytab']['configuration'] ?= 'hdfs-site/dfs.journalnode.kerberos.principal'
+
 
 ## SSL
 
