@@ -534,6 +534,7 @@ Ryba injects function to the different contexts.
       options.wait.http.username = 'admin'
       options.wait.http.password = options.admin.password
       options.wait.http.url = "#{options.install['policymgr_external_url']}/service/users/1"
+      options.http ?= options.wait.http
 
 ## Ambari Configuration
 
