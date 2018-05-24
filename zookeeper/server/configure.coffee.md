@@ -164,7 +164,7 @@
       #ambari server configuration
       if service.deps.ambari_server
         #ambari services layout
-        options.post_component = service.instances[0].node.fqdn is service.node.fqdn
+        options.post_component = options.inject # ?= service.instances[0].node.fqdn is service.node.fqdn
         options.ambari_url ?= service.deps.ambari_server.options.ambari_url
         options.ambari_admin_password ?= service.deps.ambari_server.options.ambari_admin_password
         options.cluster_name ?= service.deps.ambari_server.options.cluster_name
@@ -178,13 +178,6 @@
         fqdn: srv.node.fqdn
         port: srv.options.config['clientPort'] or 2181
 
-## Ambari Server Properties
-
-      options.post_component = service.instances[0].node.fqdn is service.node.fqdn
-      options.ambari_url ?= service.deps.ambari_server.options.ambari_url
-      options.ambari_admin_password ?= service.deps.ambari_server.options.ambari_admin_password
-      options.cluster_name ?= service.deps.ambari_server.options.cluster_name
-      
       options.wait_ambari_rest = service.deps.ambari_server.options.wait.rest
 
 ## Ambari Agent - Register Hosts
@@ -202,7 +195,7 @@ Register users to ambari agent's user list.
 
       options.config_groups ?= {}
       options.groups ?= []
-      for srv in service.deps.hdfs
+      for srv in service.deps.zookeeper_server
         for name in options.groups
           srv.options.config_groups ?= {}
           srv.options.config_groups[name] ?= {}

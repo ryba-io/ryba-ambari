@@ -2,7 +2,7 @@
 # Zookeeper Server Install
 
     module.exports = header: 'ZooKeeper Server Ambari Install', handler: (options) ->
-
+    
 ## Register
 
       @registry.register 'hdp_select', 'ryba/lib/hdp_select'
@@ -15,6 +15,7 @@
       @registry.register ['ambari','services','component_add'], 'ryba-ambari-actions/lib/services/component_add'
       @registry.register ['ambari', 'hosts', 'component_add'], "ryba-ambari-actions/lib/hosts/component_add"
       @registry.register ['ambari', 'hosts', 'component_install'], "ryba-ambari-actions/lib/hosts/component_install"
+      @registry.register ['ambari','configs','groups_add'], 'ryba-ambari-actions/lib/configs/groups/add'
 
 ## Wait
 
