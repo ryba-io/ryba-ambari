@@ -44,6 +44,19 @@
       options.krb5 ?= merge {}, service.deps.ambari_server.options.krb5, options.krb5
       options.configurations ?= {}
       options.configurations['ams-hbase-security-site'] ?= {}
+      
+
+## heapsize
+
+      options.configurations['ams-env'] ?= {}
+      options.configurations['ams-env']['metrics_collector_heapsize'] ?= '512'
+      options.configurations['ams-env']['hbase_master_heapsize'] ?= '512'
+      options.configurations['ams-env']['hbase_master_maxperm_size'] ?= '128'
+      options.configurations['ams-env']['hbase_master_xmn_size'] ?= '102'
+      options.configurations['ams-env']['hbase_regionserver_heapsize'] ?= '768'
+      options.configurations['ams-env']['hbase_regionserver_xmn_ratio'] ?= '102'
+      options.configurations['ams-env']['regionserver_xmn_size'] ?= '768'
+
 
 ## Kerberos
 
