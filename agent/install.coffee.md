@@ -21,13 +21,15 @@ Create System Service Account & user/client accounts
 
       @system.group  header: 'Test Group', options.test_group
       @system.user  header: 'Test User', options.test_user
-      @call
-        if: options.baremetal
-      , ->
+      @call ->
         for name, group of options.groups
-          @system.group header: "Group #{name}", group
+          @system.group
+            if: (group.uid in options.only) or (group.name in options.only) or (options.only.length is 0)
+            header: "Group #{name}", group
         for name, user of options.users
-          @system.user header: "User #{name}", user
+          @system.user
+            if: (user.uid in options.only) or (user.name in options.only) or (options.only?.length is 0)
+            header: "User #{name}", user
 
 ## Kerberos Test User
 Create ambari-qa principal with its keytab
