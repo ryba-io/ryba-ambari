@@ -111,8 +111,10 @@ Register users to ambari agent's user list.
 Upload Solr template file for LOGSEARCH collections creations.
 
       for srv in service.deps.ambari_service
-        if parseFloat(options.stack_version) >= 2.6
+        if parseFloat(options.stack_version) >= 2.5
           [version] = /^[0-9](.[0-9]){1}/.exec options.solr.cluster_config.version
+          # if  /[0-9](.[0-9]){2}/.test options.solr.cluster_config.version
+          # version = "#{options.solr.cluster_config.version.split('.')[0]}.#{options.solr.cluster_config.version.split('.')[1]}"
           if parseFloat(version) >= 7.0
             options.download ?= '7'
           else if parseFloat(version) >= 6.0
@@ -121,6 +123,7 @@ Upload Solr template file for LOGSEARCH collections creations.
             options.download ?= '5'
           else
             throw Error 'Solr Version Not Supported'
+      
 ## Wait
 
       options.wait = {}

@@ -17,7 +17,7 @@
           'ryba-ambari-takeover/logsearch/server/install'
           'ryba-ambari-takeover/logsearch/server/start'
         ]
-       'start': 'ryba-ambari-takeover/logsearch/server/start'
-       'stop': 'ryba-ambari-takeover/logsearch/server/stop'
+        'start': 'ryba-ambari-takeover/logsearch/server/start'
+        'stop': 'ryba-ambari-takeover/logsearch/server/stop'
 
 [Ambari-server]: http://ambari.apache.org

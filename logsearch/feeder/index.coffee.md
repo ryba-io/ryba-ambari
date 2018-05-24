@@ -18,7 +18,7 @@
           'ryba-ambari-takeover/logsearch/feeder/install'
           'ryba-ambari-takeover/logsearch/feeder/start'
         ]
-       'start': 'ryba-ambari-takeover/logsearch/feeder/start'
-       'stop': 'ryba-ambari-takeover/logsearch/feeder/stop'
+        'start': 'ryba-ambari-takeover/logsearch/feeder/start'
+        'stop': 'ryba-ambari-takeover/logsearch/feeder/stop'
 
 [Ambari-server]: http://ambari.apache.org
