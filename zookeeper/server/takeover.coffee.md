@@ -17,7 +17,7 @@ Wait transactions to be synced
         code_skipped: 1
       @system.execute
         header: 'Daemon reload'
-        cmd: 'systemctl daemon-reload'
+        cmd: 'systemctl daemon-reload;systemctl reset-failed'
         code_skipped: 1
       @system.remove
         header: 'Remove old keytab'
