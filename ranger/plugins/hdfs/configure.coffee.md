@@ -76,8 +76,8 @@ Repository creating is only executed from one NameNode.
         'configs':
           # 'username': 'ranger_plugin_hdfs'
           # 'password': 'RangerPluginHDFS123!'
-          'username': service.deps.ranger_admin.options.plugins.principal
-          'password': service.deps.ranger_admin.options.plugins.password
+          'username': service.deps.hdfs[0].options.hdfs.krb5_user.principal
+          'password': service.deps.hdfs[0].options.hdfs.krb5_user.password
           'fs.default.name': service.deps.hdfs_nn.options.core_site['fs.defaultFS']
           'hadoop.security.authentication': service.deps.hdfs_nn.options.core_site['hadoop.security.authentication']
           'dfs.namenode.kerberos.principal': service.deps.hdfs_nn.options.hdfs_site['dfs.namenode.kerberos.principal']
