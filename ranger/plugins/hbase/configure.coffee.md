@@ -101,8 +101,8 @@ make configuration effective.
         'configs':
           # 'username': 'ranger_plugin_hbase'
           # 'password': 'RangerPluginHBase123!'
-          'username': service.deps.ranger_admin.options.plugins.principal
-          'password': service.deps.ranger_admin.options.plugins.password
+          'username': service.deps.hbase[0].options.admin.principal
+          'password': service.deps.hbase[0].options.admin.password
           'hadoop.security.authorization': service.deps.hadoop_core.options.core_site['hadoop.security.authorization']
           'hbase.master.kerberos.principal': service.deps.hbase_master[0].options.hbase_site['hbase.master.kerberos.principal']
           'hadoop.security.authentication': service.deps.hadoop_core.options.core_site['hadoop.security.authentication']
@@ -253,6 +253,17 @@ configure `policy-mgr-ssl` ambari configuration to make the plugin communicate o
 ## Enable Plugin in Ranger Admin
 
         service.deps.ranger_admin.options.configurations['ranger-env']['ranger-hbase-plugin-enabled'] = 'Yes'
+
+## Enrich HBase Service  with Ranger Properties
+For HBase, ranger related properties should be posted before any service is installed or
+started, as Ambari required to configuration dictionnaries to exist `ranger-hbase-plugin-properties` 
+        
+        for srv in service.deps.hbase
+          srv.options.configurations ?= {}
+          srv.options.configurations['ranger-hbase-security'] ?= merge {}, srv.options.configurations['ranger-hbase-security'], options.configurations['ranger-hbase-security']
+          srv.options.configurations['ranger-hbase-plugin-properties'] ?= merge {}, srv.options.configurations['ranger-hbase-plugin-properties'], options.configurations['ranger-hbase-plugin-properties']
+          srv.options.configurations['ranger-hbase-policymgr-ssl'] ?= merge {}, srv.options.configurations['ranger-hbase-policymgr-ssl'], options.configurations['ranger-hbase-policymgr-ssl']
+          srv.options.configurations['ranger-hbase-audit'] ?= merge {}, srv.options.configurations['ranger-hbase-audit'], options.configurations['ranger-hbase-audit']
 
 ## Wait
 

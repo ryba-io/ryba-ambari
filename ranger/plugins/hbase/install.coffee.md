@@ -37,47 +37,6 @@ we execute this task using the rest api.
         gid: options.hbase_group.name
         mode: 0o0750
 
-## Upload configuration to Ambari
-
-      @ambari.configs.update
-        header: 'Upload ranger-hbase-plugin-properties'
-        if : options.post_component and options.takeover
-        url: options.ambari_url
-        username: 'admin'
-        password: options.ambari_admin_password
-        config_type: 'ranger-hbase-plugin-properties'
-        cluster_name: options.cluster_name
-        properties: options.configurations['ranger-hbase-plugin-properties']
-
-      @ambari.configs.update
-        header: 'Upload ranger-hbase-security'
-        if : options.post_component and options.takeover
-        url: options.ambari_url
-        username: 'admin'
-        password: options.ambari_admin_password
-        config_type: 'ranger-hbase-security'
-        cluster_name: options.cluster_name
-        properties: options.configurations['ranger-hbase-security']
-
-      @ambari.configs.update
-        header: 'Upload ranger-hbase-policymgr-ssl'
-        if : options.post_component and options.takeover
-        url: options.ambari_url
-        username: 'admin'
-        password: options.ambari_admin_password
-        config_type: 'ranger-hbase-policymgr-ssl'
-        cluster_name: options.cluster_name
-        properties: options.configurations['ranger-hbase-policymgr-ssl']
-
-      @ambari.configs.update
-        header: 'Upload ranger-hbase-audit'
-        if : options.post_component and options.takeover
-        url: options.ambari_url
-        username: 'admin'
-        password: options.ambari_admin_password
-        config_type: 'ranger-hbase-audit'
-        cluster_name: options.cluster_name
-        properties: options.configurations['ranger-hbase-audit']
 
 Note, by default, we're are using the same Ranger principal for every
 plugin and the principal is created by the Ranger Admin service. Chances
