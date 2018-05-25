@@ -12,6 +12,7 @@
       @registry.register ['ambari','services','component_add'], 'ryba-ambari-actions/lib/services/component_add'
       @registry.register ['ambari', 'hosts', 'component_add'], "ryba-ambari-actions/lib/hosts/component_add"
       @registry.register ['ambari', 'hosts', 'component_update'], "ryba-ambari-actions/lib/hosts/component_update"
+      @registry.register ['ambari','configs','groups_add'], 'ryba-ambari-actions/lib/configs/groups/add'
       @registry.register 'hconfigure', 'ryba/lib/hconfigure'
       @registry.register 'hdp_select', 'ryba/lib/hdp_select'
 
@@ -343,6 +344,29 @@ components to cluster but NOT in `INSTALLED` desired state.
             cluster_name: options.cluster_name
             component_name: 'HBASE_CLIENT'
             hostname: host
+
+## Ambari Config Groups
+          
+      @call
+        if: options.post_component and options.takeover
+      , ->
+        @each options.config_groups, (opts, cb) ->
+          {key, value} = opts
+          @ambari.configs.groups_add
+            header: "#{key}"
+            url: options.ambari_url
+            username: 'admin'
+            password: options.ambari_admin_password
+            cluster_name: options.cluster_name
+            group_name: key
+            tag: key
+            description: "#{key} config groups"
+            hosts: value.hosts
+            desired_configs: 
+              type: value.type
+              tag: value.tag
+              properties: value.properties
+          @next cb
 
 ## Dependencies
 

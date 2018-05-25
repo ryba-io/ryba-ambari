@@ -13,6 +13,7 @@ J Mohamed Zahoor goes into some more detail on the Master Architecture in this b
         java: module: 'masson/commons/java', local: true
         test_user: module: 'ryba/commons/test_user', local: true, auto: true
         hdfs: module: 'ryba-ambari-takeover/hadoop/hdfs', required: true
+        hbase: module: 'ryba-ambari-takeover/hbase/service'
         hdfs_nn: module: 'ryba-ambari-takeover/hadoop/hdfs_nn', required: true
         zookeeper_server: module: 'ryba-ambari-takeover/zookeeper/server', required: true
         hadoop_core: module: 'ryba-ambari-takeover/hadoop/core', local: true, required: true
@@ -24,4 +25,3 @@ J Mohamed Zahoor goes into some more detail on the Master Architecture in this b
       commands:
         'install': [
           'ryba-ambari-takeover/hbase/service/install'
-        ]
