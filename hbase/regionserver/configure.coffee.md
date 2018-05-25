@@ -63,10 +63,10 @@
       options.opts.base ?= ''
       options.opts.java_properties ?= {}
       options.opts.jvm ?= {}
-      options.opts.jvm['-Xms'] ?= options.heapsize
-      options.opts.jvm['-Xmx'] ?= options.heapsize
-      options.opts.jvm['-XX:NewSize='] ?= options.newsize #should be 1/8 of hbase regionserver heapsize
-      options.opts.jvm['-XX:MaxNewSize='] ?= options.newsize #should be 1/8 of hbase regionserver heapsize
+      # options.opts.jvm['-Xms'] ?= options.heapsize
+      # options.opts.jvm['-Xmx'] ?= options.heapsize
+      # options.opts.jvm['-XX:NewSize='] ?= options.newsize #should be 1/8 of hbase regionserver heapsize
+      # options.opts.jvm['-XX:MaxNewSize='] ?= options.newsize #should be 1/8 of hbase regionserver heapsize
 
 ## Registration
 
@@ -99,7 +99,7 @@
       options.hbase_site['hbase.regionserver.global.memstore.size'] = '0.4' # Default in HDP Companion Files
       options.hbase_site['hbase.coprocessor.region.classes'] =  service.deps.hbase_master[0].options.hbase_site['hbase.coprocessor.region.classes']
       # Jaas file
-      options.opts.java_properties['java.security.auth.login.config'] ?= "#{options.conf_dir}/hbase_regionserver_jaas.conf"
+      # options.opts.java_properties['java.security.auth.login.config'] ?= "#{options.conf_dir}/hbase_regionserver_jaas.conf"
       # Copy the Master keytab if a colocalised Master is found and if their principals are equal.
       local_master = service.deps.hbase_master.filter( (srv) -> srv.node.fqdn is service.node.fqdn)[0]
       are_principal_equal = local_master.options.hbase_site['hbase.master.kerberos.principal'] is options.hbase_site['hbase.regionserver.kerberos.principal'] if local_master

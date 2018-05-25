@@ -56,10 +56,10 @@
       options.opts.base ?= ''
       options.opts.java_properties ?= {}
       options.opts.jvm ?= {}
-      options.opts.jvm['-Xms'] ?= options.heapsize
-      options.opts.jvm['-Xmx'] ?= options.heapsize
-      options.opts.jvm['-XX:NewSize='] ?= options.newsize #should be 1/8 of hbase master heapsize
-      options.opts.jvm['-XX:MaxNewSize='] ?= options.newsize #should be 1/8 of hbase master heapsize
+      # options.opts.jvm['-Xms'] ?= options.heapsize
+      # options.opts.jvm['-Xmx'] ?= options.heapsize
+      # options.opts.jvm['-XX:NewSize='] ?= options.newsize #should be 1/8 of hbase master heapsize
+      # options.opts.jvm['-XX:MaxNewSize='] ?= options.newsize #should be 1/8 of hbase master heapsize
 
 ## RegionServers
 
@@ -131,18 +131,19 @@ job to HBase. Secure bulk loading is implemented by a coprocessor, named
       options.hbase_site['hbase.superuser'] ?= options.admin.name
       options.hbase_site['hbase.bulkload.staging.dir'] ?= '/apps/hbase/staging'
       # Jaas file
-      options.opts.java_properties['java.security.auth.login.config'] ?= "#{options.conf_dir}/hbase_master_jaas.conf"
+      # options.opts.java_properties['java.security.auth.login.config'] ?= "#{options.conf_dir}/hbase_master_jaas.conf"
 
 ## Configuration for Local Access
 
       # migration: wdavidw 170902, shouldnt this only apply to the RegionServer ?
       # # HDFS NN
-      # for srv in service.deps.hdfs_nn
-      #   srv.options.hdfs_site ?= {}
-      #   srv.options.hdfs_site['dfs.block.local-path-access.user'] ?= ''
-      #   users = srv.options.hdfs_site['dfs.block.local-path-access.user'].split(',').filter (str) -> str isnt ''
-      #   users.push 'hbase' unless options.user.name in users
-      #   srv.options.hdfs_site['dfs.block.local-path-access.user'] = users.sort().join ','
+      for srv in service.deps.hdfs
+        srv.options.configurations ?= {}
+        srv.options.configurations['hdfs-site'] ?= {}
+        srv.options.configurations['hdfs-site']['dfs.block.local-path-access.user'] ?= ''
+        users = srv.options.configurations['hdfs-site']['dfs.block.local-path-access.user'].split(',').filter (str) -> str isnt ''
+        users.push 'hbase' unless options.user.name in users
+        srv.options.configurations['hdfs-site']['dfs.block.local-path-access.user'] = users.sort().join ','
       # # HDFS DN
       # srv = service.deps.hdfs_dn
       # srv.options.hdfs_site['dfs.block.local-path-access.user'] ?= ''

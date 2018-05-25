@@ -85,7 +85,7 @@ Upload the list of registered RegionServers.
           HBASE_OPTS += " #{k}#{v}" for k, v of options.opts.jvm
           @file.render
             header: 'Render'
-            source: "#{__dirname}/../resources/hbase-env.sh.j2"
+            source: "#{__dirname}/../resources/hbase-env.sh.ambari.j2"
             target: "#{options.cache_dir}/hbase-env.sh"
             ssh: false
             context: merge options.configurations['hbase-env'],
@@ -155,7 +155,7 @@ Update hbase-site.xml
         properties: options.configurations['hbase-policy']
 
 
-## HADOOP-ENV
+## HBASE-ENV
 Render hadoop-env.sh and yarn-env.sh files, before uploading to Ambari Server.
 
       @call
@@ -185,6 +185,7 @@ Render hadoop-env.sh and yarn-env.sh files, before uploading to Ambari Server.
                   hbase_user_nproc_limit:  options.configurations['hbase-env'].hbase_user_nproc_limit
                   hbase_master_heapsize:  options.configurations['hbase-env'].hbase_master_heapsize
                   regionserver_heapsize:  options.configurations['hbase-env'].regionserver_heapsize
+                  hbase_regionserver_heapsize: options.configurations['hbase-env'].regionserver_heapsize
                   hbase_regionserver_xmn_ratio: options.configurations['hbase-env'].hbase_regionserver_xmn_ratio
                   hbase_regionserver_xmn_max: options.configurations['hbase-env'].hbase_regionserver_xmn_max
                   hbase_java_io_tmpdir: options.configurations['hbase-env'].hbase_java_io_tmpdir
