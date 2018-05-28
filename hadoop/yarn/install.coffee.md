@@ -119,7 +119,7 @@ made available in the same directory after any modification.
           YARN_TIMELINESERVER_OPTS += " #{k}#{v}" for k, v of options.yarn_ts_opts.jvm
           @file.render
             header: 'Render'
-            source: "#{__dirname}/../resources/yarn-env.sh.j2"
+            source: "#{__dirname}/../resources/yarn-env.sh.ambari.j2"
             target: "#{options.cache_dir}/yarn-env.sh"
             ssh: false
             context: merge options.configurations['yarn-env'],

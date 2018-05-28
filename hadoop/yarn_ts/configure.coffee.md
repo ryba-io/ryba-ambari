@@ -46,10 +46,10 @@
       options.opts.base ?= ''
       options.opts.java_properties ?= {}
       options.opts.jvm ?= {}
-      options.opts.jvm['-Xms'] ?= options.heapsize
-      options.opts.jvm['-Xmx'] ?= options.heapsize
-      options.opts.jvm['-XX:NewSize='] ?= options.newsize #should be 1/8 of heapsize
-      options.opts.jvm['-XX:MaxNewSize='] ?= options.newsize #should be 1/8 of heapsize
+      # options.opts.jvm['-Xms'] ?= options.heapsize
+      # options.opts.jvm['-Xmx'] ?= options.heapsize
+      # options.opts.jvm['-XX:NewSize='] ?= options.newsize #should be 1/8 of heapsize
+      # options.opts.jvm['-XX:MaxNewSize='] ?= options.newsize #should be 1/8 of heapsize
 
 ## Configuration
 
