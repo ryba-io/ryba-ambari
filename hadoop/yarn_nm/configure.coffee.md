@@ -16,8 +16,8 @@
 ## Identities
 
       options.hadoop_group = merge {}, service.deps.hadoop_core.options.hadoop_group, options.hadoop_group
-      options.group = merge {}, service.deps.hadoop_core.options.yarn.group, options.group
-      options.user = merge {}, service.deps.hadoop_core.options.yarn.user, options.user
+      options.group = merge {}, service.deps.yarn[0].options.yarn.group, options.group
+      options.user = merge {}, service.deps.yarn[0].options.yarn.user, options.user
 
 ## Kerberos
 

@@ -14,8 +14,8 @@
 ## Identities
 
       options.hadoop_group = merge {}, service.deps.hadoop_core.options.hadoop_group, options.hadoop_group
-      options.group = merge {}, service.deps.hadoop_core.options.yarn.group, options.group
-      options.user = merge {}, service.deps.hadoop_core.options.yarn.user, options.user
+      options.group = merge {}, service.deps.yarn[0].options.yarn.group, options.group
+      options.user = merge {}, service.deps.yarn[0].options.yarn.user, options.user
 
 ## Kerberos
 
@@ -103,7 +103,7 @@ information inside "yarn.resourcemanager.zk-state-store.parent-path" (default to
 
 Enable JAAS/Kerberos connection between YARN RM and ZooKeeper.
 
-      options.opts.java_properties['java.security.auth.login.config'] ?= "#{options.hadoop_conf_dir}/yarn_jaas.conf"
+      # options.opts.java_properties['java.security.auth.login.config'] ?= "#{options.hadoop_conf_dir}/yarn_jaas.conf"
 
 ## High Availability with Manual Failover
 
