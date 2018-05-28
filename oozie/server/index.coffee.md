@@ -28,6 +28,7 @@ Please check Oozie page
         hive_webhcat: module: 'ryba-ambari-takeover/hive/webhcat'
         # spark_client: module: 'ryba/spark/client', local: true, auto: true, implicit: true
         oozie: module: 'ryba-ambari-takeover/oozie/service', required: true
+        oozie_local: module: 'ryba-ambari-takeover/oozie/service', required: true, local: true
         oozie_server: module: 'ryba-ambari-takeover/oozie/server'
         log4j: module: 'ryba/log4j', local: true
         ambari_server: module: 'ryba-ambari-takeover/server', single: true, required: true

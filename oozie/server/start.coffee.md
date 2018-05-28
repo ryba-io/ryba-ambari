@@ -40,3 +40,4 @@ Wait for all the dependencies.
         cluster_name: options.cluster_name
         name: 'OOZIE_SERVER'
         hostname: options.fqdn
+

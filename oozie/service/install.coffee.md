@@ -14,6 +14,7 @@
       @registry.register ['ambari','services','component_add'], 'ryba-ambari-actions/lib/services/component_add'
       @registry.register ['ambari', 'hosts', 'component_add'], "ryba-ambari-actions/lib/hosts/component_add"
       @registry.register ['ambari','kerberos','descriptor', 'update'], 'ryba-ambari-actions/lib/kerberos/descriptor/update'
+      @registry.register ['ambari','configs','groups_add'], 'ryba-ambari-actions/lib/configs/groups/add'
 
 ## Kerberos Descriptor
 
@@ -70,6 +71,7 @@
         target: options.hadoop_lib_home
         filetype: 'directory'
       @file.render
+        if: options.post_component
         header: 'Render oozie-env'
         target: "#{options.cache_dir}/oozie-env.sh"
         source: "#{__dirname}/../resources/oozie-env.sh.j2"
@@ -78,7 +80,9 @@
         write: writes
         ssh: false
         backup: true
-      @call (_, cb) ->
+      @call
+        if: options.post_component
+      , (_, cb) ->
         ssh2fs.readFile null, "#{options.cache_dir}/oozie-env.sh", (err, content) =>
           try
             throw err if err
@@ -171,6 +175,75 @@ add `OOZIE_SERVER`, `OOZIE_CLIENT`.
           component_name: 'OOZIE_CLIENT'
           hostname: host
 
+## Ambari Config Groups
+          
+      @call
+        if: options.post_component and options.takeover
+      , ->
+        if (options.server_hosts.length > 1) and options.ssl.enabled
+          @each options.server_hosts, (opts, next) ->
+            host = opts.key
+            protocol = if options.ssl.enabled then 'https://' else 'http://'
+            group_name = "oozie_ha_env_ssl_#{host.split(".")[0]}"
+            writes.push
+              match: /^export OOZIE_BASE_URL=.*$/mg
+              replace: "export OOZIE_BASE_URL=\"#{protocol}#{host}:#{options.http_port}/oozie\""
+            @file.render
+              debug: true
+              if: options.post_component
+              header: "Render oozie-env + #{host}"
+              target: "#{options.cache_dir}/oozie-env-#{host}.sh"
+              source: "#{__dirname}/../resources/oozie-env.sh.j2"
+              local: true
+              context: options.configurations['oozie-env']
+              write: writes
+              ssh: false
+              backup: true
+            @call
+              if: options.post_component
+            , (_, cb) ->
+              ssh2fs.readFile null, "#{options.cache_dir}/oozie-env-#{host}.sh", (err, content) =>
+                try
+                  throw err if err
+                  content = content.toString()
+                  @ambari.configs.groups_add
+                    header: "#{group_name}"
+                    url: options.ambari_url
+                    username: 'admin'
+                    password: options.ambari_admin_password
+                    cluster_name: options.cluster_name
+                    group_name: group_name
+                    tag: group_name
+                    description: "#{group_name} config groups"
+                    hosts: host
+                    desired_configs: 
+                      type: 'oozie-env'
+                      tag: group_name
+                      properties: content: content
+                  @next cb
+                catch err
+                  console.log err
+                  cb
+            @next next
+                # catch err
+                #   cb err
+        # @each options.config_groups, (opts, cb) ->
+        #   {key, value} = opts
+        #   @ambari.configs.groups_add
+        #     header: "#{key}"
+        #     url: options.ambari_url
+        #     username: 'admin'
+        #     password: options.ambari_admin_password
+        #     cluster_name: options.cluster_name
+        #     group_name: key
+        #     tag: key
+        #     description: "#{key} config groups"
+        #     hosts: value.hosts
+        #     desired_configs: 
+        #       type: value.type
+        #       tag: value.tag
+        #       properties: value.properties
+        #   @next cb
 
 ## Dependencies
 

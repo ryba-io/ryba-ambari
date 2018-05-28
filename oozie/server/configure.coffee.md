@@ -73,7 +73,7 @@ Example
 
 ## Security
 
-      options.ssl = merge {}, service.deps.ssl?.options, service.deps.oozie[0].options.ssl, options.ssl
+      options.ssl = merge {}, service.deps.ssl?.options, service.deps.oozie_local.options.ssl, options.ssl
       options.ssl.enabled ?= !!service.deps.ssl
 
 ## Configuration
@@ -276,6 +276,7 @@ Enrich `ryba-ambari-takeover/oozie/service` with master properties.
       for srv in service.deps.oozie
         srv.options.configurations ?= {}
         srv.options.configurations['oozie-site'] ?= {}
+        srv.options.http_port ?= options.http_port
         enrich_config options.oozie_site , srv.options.configurations['oozie-site']
         #add hosts
         srv.options.server_hosts ?= []

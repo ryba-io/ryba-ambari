@@ -369,13 +369,13 @@ Copy or symlink the MySQL JDBC driver JAR into the /var/lib/oozie/ directory fol
         keytab: options.oozie_site['oozie.service.HadoopAccessorService.keytab.file']
         uid: options.user.name
         gid: options.group.name
-      # @system.copy
-      #   header: 'SPNEGO'
-      #   source: '/etc/security/keytabs/spnego.service.keytab'
-      #   target: "#{options.oozie_site['oozie.authentication.kerberos.keytab']}"
-      #   uid: options.user.name
-      #   gid: options.group.name
-      #   mode: 0o0600
+      @system.copy
+        header: 'SPNEGO'
+        source: '/etc/security/keytabs/spnego.service.keytab'
+        target: "#{options.oozie_site['oozie.authentication.kerberos.keytab']}"
+        uid: options.user.name
+        gid: options.group.name
+        mode: 0o0600
 
 ## SQL Database Creation
 
