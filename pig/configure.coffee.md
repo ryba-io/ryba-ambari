@@ -93,6 +93,8 @@ Example:
       options.cluster_name ?= service.deps.ambari_server.options.cluster_name
       options.takeover = service.deps.ambari_server.options.takeover
       options.baremetal = service.deps.ambari_server.options.baremetal
+      options.stack_name ?= service.deps.ambari_server.options.stack_name
+      options.stack_version ?= service.deps.ambari_server.options.stack_version
 
 ## Ambari Agent
 Register users to ambari agent's user list.

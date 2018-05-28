@@ -20,13 +20,13 @@
 
 ## Render Configuration
 
-      @hconfigure
-        header: 'Render tez-site'
-        if: options.post_component and options.takeover
-        source: "#{__dirname}/resources/tez-site.xml"
-        target: "#{options.cache_dir}/tez-site.xml"
-        ssh: false
-        properties: options.tez_site
+      # @hconfigure
+      #   header: 'Render tez-site'
+      #   if: options.post_component and options.takeover
+      #   source: "#{__dirname}/resources/tez-site.xml"
+      #   target: "#{options.cache_dir}/tez-site.xml"
+      #   ssh: false
+      #   properties: options.tez_site
         
       @file.render
         header: 'Render tez-env'
@@ -49,13 +49,13 @@
 
 Environment passed to Hadoop.
 
-      @call
-        header: 'Upload tez-site'
-        if: options.post_component and options.takeover
-      , (_, callback) ->
-          properties.read null, "#{options.cache_dir}/tez-site.xml", (err, props) =>
-            options.configurations['tez-site'] = props
-            callback()
+      # @call
+      #   header: 'Upload tez-site'
+      #   if: options.post_component and options.takeover
+      # , (_, callback) ->
+      #     properties.read null, "#{options.cache_dir}/tez-site.xml", (err, props) =>
+      #       options.configurations['tez-site'] = props
+      #       callback()
 
       @call
         header: 'Upload tez-env'
@@ -72,7 +72,6 @@ Environment passed to Hadoop.
 
 ## Upload Default Configuration
 
-      # @call -> console.log options.configurations
       @ambari.configs.default
         header: 'TEZ Configuration'
         url: options.ambari_url
