@@ -137,6 +137,7 @@ Create HDFS Headless keytab.
         cluster_name: options.cluster_name
         service: 'HDFS'
         component: 'JOURNALNODE'
+        source: 'COMPOSITE'
         identities: options.identities['journalnode_jn']
 
 ## Include/Exclude
