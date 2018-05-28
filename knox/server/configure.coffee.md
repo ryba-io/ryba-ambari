@@ -66,7 +66,7 @@ Knox reads its own env variable to retrieve configuration.
 
 ## SSL
 
-      options.ssl = merge {}, service.deps.ssl?.options, service.deps.knox[0].ssl, options.ssl
+      options.ssl = merge {}, service.deps.ssl?.options, options.ssl
       options.ssl.enabled ?= !!service.deps.ssl
       # options.truststore ?= {}
       if options.ssl.enabled
