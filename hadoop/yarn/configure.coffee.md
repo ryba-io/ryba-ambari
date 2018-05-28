@@ -55,7 +55,7 @@ properties than needed.
       options.ambari_url ?= service.deps.ambari_server.options.ambari_url
       options.ambari_admin_password ?= service.deps.ambari_server.options.ambari_admin_password
       options.cluster_name ?= service.deps.ambari_server.options.cluster_name
-      options.takeover = service.deps.ambari_server.options.takeover
+      options.takeover = service.deps.ambari_server.options.takeover  
       options.baremetal = service.deps.ambari_server.options.baremetal
       options.configurations ?= {}
 
@@ -69,14 +69,14 @@ properties than needed.
 ## HDFS, YARN, Mapred site
 Merge hdfs_site, yarn_site, core_site configuration from each components.
         
-      options.configurations['hdfs-site'] = {}
-      options.configurations['mapred-site'] = {}
-      options.configurations['yarn-site'] = {}
+      options.configurations['hdfs-site'] ?= {}
+      options.configurations['mapred-site'] ?= {}
+      options.configurations['yarn-site'] ?= {}
       options.configurations['yarn-site']['yarn.resourcemanager.webapp.address'] ?= 'localhost:8090'
       options.configurations['capacity-scheduler'] ?= {}
       options.configurations['capacity-scheduler']['capacity-scheduler'] ?= 'null'
-      options.configurations['hadoop-metrics-properties'] = {}
-      options.configurations['ssl-server'] = {}
+      options.configurations['hadoop-metrics-properties'] ?= {}
+      options.configurations['ssl-server'] ?= {}
 
 ## YARN Admin ACL
 

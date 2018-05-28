@@ -72,7 +72,7 @@ properties than needed.
 ## HDFS, YARN, Mapred site
 Merge hdfs_site, yarn_site, core_site configuration from each components.
 
-      options.configurations['mapred-site'] = {}
+      options.configurations['mapred-site'] ?= {}
         
 ## HADOOP, YARN Env
 Inhertis Env properties from hadoop_core components. For Components `HADOOP_DATANODE_OPTS`,
