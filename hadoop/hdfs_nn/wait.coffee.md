@@ -26,8 +26,8 @@ HA Namenodes with Kerberos:
 
     module.exports = header: 'HDFS NN Wait', handler: (options) ->
       
-      throw Error "Required Option: conf_dir" unless options.conf_dir
-      throw Error "Required Option: krb5_user" unless options.hdfs_krb5_user
+      # throw Error "Required Option: conf_dir" unless options.conf_dir
+      # throw Error "Required Option: krb5_user" unless options.hdfs_krb5_user
 
 ## Wait IPC Ports
 
@@ -53,8 +53,9 @@ majority of DataNodes also need to be running.
       # if 'ryba-ambari-takeover/hadoop/hdfs_client', then `hdfs dfsadmin`
       # else use curl
       @wait.execute
+        
         header: 'Safemode'
-        cmd: mkcmd options.hdfs_krb5_user, """
+        cmd: mkcmd (options.hdfs_krb5_user or options.krb5_user), """
         hdfs --config '#{options.conf_dir}' dfsadmin -safemode get | grep OFF
         """
         interval: 3000

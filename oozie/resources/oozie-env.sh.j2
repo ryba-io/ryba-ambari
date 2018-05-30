@@ -82,3 +82,5 @@ if [[ `java -version 2>&1 | head -n 1 | sed 's/.*"1\.\([0-9]*\)\..*/\1/'` < 8 ]]
 else
   export CATALINA_OPTS="${CATALINA_OPTS} -Xmx{{oozie_heapsize}}"
 fi
+
+export HADOOP_OPTS="-Dhdp.version=$HDP_VERSION $HADOOP_OPTS"

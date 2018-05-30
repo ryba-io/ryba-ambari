@@ -14,3 +14,4 @@ export HADOOP_MAPRED_PID_DIR="{{options.pid_dir}}"
 #export HADOOP_MAPRED_NICENESS= #The scheduling priority for daemons. Defaults to 0.
 export HADOOP_MAPRED_LOG_DIR="{{HADOOP_MAPRED_LOG_DIR}}"
 export HADOOP_MAPRED_PID_DIR="{{HADOOP_MAPRED_PID_DIR}}"
+export HADOOP_OPTS="-Dhdp.version=$HDP_VERSION $HADOOP_OPTS"
