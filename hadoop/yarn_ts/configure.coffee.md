@@ -127,6 +127,17 @@
       service.deps.ambari_server.options.identities['app_timeline_server_yarn']['keytab']['file'] ?= options.yarn_site['yarn.timeline-service.keytab'] 
       service.deps.ambari_server.options.identities['app_timeline_server_yarn']['keytab']['configuration'] ?= 'yarn-site/yarn.timeline-service.keytab'
 
+## YARN ATS 1.5
+
+      options.yarn_site['yarn.timeline-service.version'] ?= '1.0'
+      if options.yarn_site['yarn.timeline-service.version'] is '1.5'
+        options.yarn_site['yarn.timeline-service.store-class'] = 'org.apache.hadoop.yarn.server.timeline.EntityGroupFSTimelineStore'
+        options.yarn_site['yarn.timeline-service.entity-group-fs-store.active-dir'] ?= '/ats/active/'
+        options.yarn_site['yarn.timeline-service.entity-group-fs-store.done-dir'] ?= '/ats/done'
+        options.yarn_site['yarn.timeline-service.entity-group-fs-store.group-id-plugin-classes'] ?= 'org.apache.tez.dag.history.logging.ats.TimelineCachePluginImpl'
+        options.yarn_site['yarn.timeline-service.entity-group-fs-store.summary-store'] ?= 'org.apache.hadoop.yarn.server.timeline.RollingLevelDBTimelineStore'
+
+
 ## SSL
 
       options.ssl = merge {}, service.deps.hadoop_core.options.ssl, options.ssl

@@ -28,23 +28,14 @@ HBase Client.
       options.admin = merge deps.hbase[0].options.admin, options.admin
       for srv in deps.hbase
         srv.options.configurations ?= {}
-        srv.options.configurations['hbase'] ?= {}
-        srv.options.configurations['hbase']['phoenix.schema.isNamespaceMappingEnabled'] = 'true'
-        srv.options.configurations['hbase']['phoenix.schema.mapSystemTablesToNamespace'] = 'true'
-        srv.options.configurations['hbase']['hbase.defaults.for.version.skip'] = 'true'
-        srv.options.configurations['hbase']['hbase.regionserver.wal.codec'] = 'org.apache.hadoop.hbase.regionserver.wal.IndexedWALEditCodec'
-        srv.options.configurations['hbase']['hbase.table.sanity.checks'] = 'true'
-        srv.options.configurations['hbase']['hbase.region.server.rpc.scheduler.factory.class'] = 'org.apache.hadoop.hbase.ipc.PhoenixRpcSchedulerFactory'
-        srv.options.configurations['hbase']['hbase.rpc.controllerfactory.class'] = 'org.apache.hadoop.hbase.ipc.controller.ServerRpcControllerFactory'
-        srv.options.configurations['hbase']['phoenix.schema.isNamespaceMappingEnabled'] = 'true'
-        srv.options.configurations['hbase']['phoenix.schema.mapSystemTablesToNamespace'] = 'true'
-        srv.options.configurations['hbase']['hbase.defaults.for.version.skip'] = 'true'
-        srv.options.configurations['hbase']['hbase.regionserver.wal.codec'] = 'org.apache.hadoop.hbase.regionserver.wal.IndexedWALEditCodec'
-        srv.options.configurations['hbase']['hbase.table.sanity.checks'] = 'true'
-        srv.options.configurations['hbase']['hbase.region.server.rpc.scheduler.factory.class'] = 'org.apache.hadoop.hbase.ipc.PhoenixRpcSchedulerFactory'
-        srv.options.configurations['hbase']['hbase.rpc.controllerfactory.class'] = 'org.apache.hadoop.hbase.ipc.controller.ServerRpcControllerFactory'
-        srv.options.configurations['hbase']['phoenix.schema.isNamespaceMappingEnabled'] = 'true'
-        srv.options.configurations['hbase']['phoenix.schema.mapSystemTablesToNamespace'] = 'true'
+        srv.options.configurations['hbase-site'] ?= {}
+        srv.options.configurations['hbase-site']['phoenix.schema.isNamespaceMappingEnabled'] = 'true'
+        srv.options.configurations['hbase-site']['phoenix.schema.mapSystemTablesToNamespace'] = 'true'
+        srv.options.configurations['hbase-site']['hbase.defaults.for.version.skip'] = 'true'
+        srv.options.configurations['hbase-site']['hbase.regionserver.wal.codec'] = 'org.apache.hadoop.hbase.regionserver.wal.IndexedWALEditCodec'
+        srv.options.configurations['hbase-site']['hbase.table.sanity.checks'] = 'true'
+        srv.options.configurations['hbase-site']['hbase.region.server.rpc.scheduler.factory.class'] = 'org.apache.hadoop.hbase.ipc.PhoenixRpcSchedulerFactory'
+        srv.options.configurations['hbase-site']['hbase.rpc.controllerfactory.class'] = 'org.apache.hadoop.hbase.ipc.controller.ServerRpcControllerFactory'
         
 ## Test
 

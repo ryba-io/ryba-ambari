@@ -96,7 +96,7 @@ as install time, like in any other components.
       options.configurations['yarn-env']['HADOOP_YARN_HOME'] ?= '{{hadoop_yarn_home}}'
       options.configurations['yarn-env']['YARN_LOG_DIR'] ?= '{{yarn_log_dir_prefix}}/{{yarn_user}}'
       options.configurations['yarn-env']['YARN_PID_DIR'] ?= "{{yarn_pid_dir_prefix}}/{{yarn_user}}"
-      options.configurations['yarn-env']['YARN_HEAPSIZE'] ?= '1024m'
+      options.configurations['yarn-env']['YARN_HEAPSIZE'] ?= '1024'
       # ambari required properties
       options.configurations['yarn-env']['hadoop_yarn_home'] ?= options.yarn.user.home
       options.configurations['yarn-env']['yarn_user'] ?= options.yarn.user.name
@@ -162,7 +162,6 @@ Disable group push as ambari by default remove all yarn user groups.
           srv.options.config_groups[name] ?= {}
           srv.options.config_groups[name]['hosts'] ?= []
           srv.options.config_groups[name]['hosts'].push service.node.fqdn unless srv.options.config_groups[name]['hosts'].indexOf(service.node.fqdn) > -1
-
 
 ## Dependencies
 

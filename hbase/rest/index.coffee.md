@@ -17,6 +17,7 @@ Of course we deploy the secured version of the configuration of this API.
         hbase_regionserver: module: 'ryba-ambari-takeover/hbase/regionserver', required: true
         hbase_client: module: 'ryba-ambari-takeover/hbase/client', local: true
         hbase_rest: module: 'ryba-ambari-takeover/hbase/thrift'
+        hbase: module: 'ryba-ambari-takeover/hbase/service', required: true
         ranger_admin: module: 'ryba/ranger/admin', single: true
         ranger_hbase: module: 'ryba/ranger/plugins/hbase'
       configure:

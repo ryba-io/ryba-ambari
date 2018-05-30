@@ -22,6 +22,9 @@
       configure:
         'ryba-ambari-takeover/hive/webhcat/configure'
       commands:
+        'check':
+          'ryba-ambari-takeover/hive/webhcat/check'
+
         'install': [
           'ryba-ambari-takeover/hive/webhcat/install'
           'ryba-ambari-takeover/hive/webhcat/start'

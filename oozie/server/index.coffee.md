@@ -48,5 +48,11 @@ Please check Oozie page
           'ryba-ambari-takeover/oozie/server/status'
         stop:
           'ryba-ambari-takeover/oozie/server/stop'
+        takeover: [
+          'ryba-ambari-takeover/oozie/server/takeover'
+          'ryba-ambari-takeover/oozie/server/install'
+          'ryba-ambari-takeover/oozie/server/start'
+        ]
+          
 
 [Oozie]: https://oozie.apache.org/docs/3.1.3-incubating/index.html

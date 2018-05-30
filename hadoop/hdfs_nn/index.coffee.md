@@ -37,10 +37,11 @@ does not store the data of these files itself. It’s important that this metada
         'check': 'ryba-ambari-takeover/hadoop/hdfs_nn/check'
         'status': 'ryba-ambari-takeover/hadoop/hdfs_nn/status'
         'takeover': [
-          'ryba-ambari-takeover/hadoop/hdfs_nn/wait'
+          # 'ryba-ambari-takeover/hadoop/hdfs_nn/wait'
           'ryba-ambari-takeover/hadoop/hdfs_nn/install'
           'ryba-ambari-takeover/hadoop/hdfs_nn/takeover'
           'ryba-ambari-takeover/hadoop/hdfs_nn/start'
+          'ryba-ambari-takeover/hadoop/hdfs_nn/layout'
           'ryba-ambari-takeover/hadoop/hdfs_nn/wait'
           'ryba-ambari-takeover/hadoop/hdfs_nn/check'
         ]

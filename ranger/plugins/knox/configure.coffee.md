@@ -201,7 +201,7 @@ SSL can be configured to use SSL if ranger admin has SSL enabled.
         options.configurations['ranger-knox-security']['ranger.plugin.knox.policy.cache.dir'] ?= "/etc/ranger/#{options.service_repo.name}/policycache"
         options.configurations['ranger-knox-security']['ranger.plugin.knox.policy.pollIntervalMs'] ?= "30000"
         options.configurations['ranger-knox-security']['ranger.plugin.knox.policy.rest.ssl.config.file'] ?= '/usr/hdp/current/knox-server/conf/ranger-policymgr-ssl.xml'
-        options.configurations['ranger-knox-security']['ranger.plugin.knox.policy.source.impl'] ?= 'org.apache.ranger.admin.client.RangerAdminRESTClient'
+        options.configurations['ranger-knox-security']['ranger.plugin.knox.policy.source.impl'] ?= 'org.apache.ranger.admin.client.RangerAdminJersey2RESTClient'
 
 ## Ambari Config REST Api
 

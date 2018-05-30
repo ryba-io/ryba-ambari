@@ -48,6 +48,7 @@ applications.
         'stop':
           'ryba-ambari-takeover/hadoop/yarn_nm/stop'
         'takeover': [
+          'masson/core/info'
           'ryba-ambari-takeover/hadoop/yarn_nm/wait'
           'ryba-ambari-takeover/hadoop/yarn_nm/install'
           'ryba-ambari-takeover/hadoop/yarn_nm/takeover'

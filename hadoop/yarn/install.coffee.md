@@ -2,7 +2,7 @@
 # Ambari Takeover
 
     module.exports = header: 'YARN Ambari Install', handler: (options) ->
-      
+
 ## Register
 
       @registry.register 'hconfigure', 'ryba/lib/hconfigure'
@@ -233,21 +233,8 @@ Render yarn-env.sh files, before uploading to Ambari Server.
                 password: options.ambari_admin_password
                 config_type: 'yarn-env'
                 cluster_name: options.cluster_name
-                properties: 
+                properties:  merge {}, options.configurations['yarn-env'],
                   content: content
-                  yarn_user: options.configurations['yarn-env']['yarn_user']
-                  yarn_tmp_dir: options.configurations['yarn-env']['yarn_tmp_dir']
-                  yarn_user_nofile_limit: options.configurations['yarn-env']['yarn_user_nofile_limit']
-                  yarn_user_nproc_limit: options.configurations['yarn-env']['yarn_user_nproc_limit']
-                  yarn_heapsize: options.configurations['yarn-env']['yarn_heapsize']
-                  min_user_id: options.configurations['yarn-env']['min_user_id']
-                  nodemanager_heapsize: options.configurations['yarn-env']['nodemanager_heapsize']
-                  resourcemanager_heapsize: options.configurations['yarn-env']['resourcemanager_heapsize']
-                  apptimelineserver_heapsize: options.configurations['yarn-env']['apptimelineserver_heapsize']
-                  hadoop_yarn_home: options.configurations['yarn-env']['hadoop_yarn_home']
-                  yarn_log_dir_prefix: options.configurations['yarn-env']['yarn_log_dir_prefix']
-                  hadoop_libexec_dir: options.configurations['yarn-env']['hadoop_libexec_dir']
-                  yarn_pid_dir_prefix: options.configurations['yarn-env']['yarn_pid_dir_prefix']
               .next callback
             catch err
               callback err
@@ -451,6 +438,20 @@ component to cluster but NOT in `INSTALLED` desired state.
         component_name: 'YARN_CLIENT'
         service_name: 'YARN'
 
+
+### YARN_CLIENT COMPONENT
+      
+      for host in options.client_hosts
+        @ambari.hosts.component_add
+          header: 'YARN_CLIENT ADD'
+          if: options.post_component and options.takeover
+          url: options.ambari_url
+          username: 'admin'
+          password: options.ambari_admin_password
+          cluster_name: options.cluster_name
+          component_name: 'YARN_CLIENT'
+          hostname: host
+
 ### RESOURCEMANAGER COMPONENT
       
       for host in options.rm_hosts
@@ -489,19 +490,6 @@ component to cluster but NOT in `INSTALLED` desired state.
           password: options.ambari_admin_password
           cluster_name: options.cluster_name
           component_name: 'APP_TIMELINE_SERVER'
-          hostname: host
-
-### YARN_CLIENT COMPONENT
-      
-      for host in options.client_hosts
-        @ambari.hosts.component_add
-          header: 'YARN_CLIENT ADD'
-          if: options.post_component and options.takeover
-          url: options.ambari_url
-          username: 'admin'
-          password: options.ambari_admin_password
-          cluster_name: options.cluster_name
-          component_name: 'YARN_CLIENT'
           hostname: host
 
 

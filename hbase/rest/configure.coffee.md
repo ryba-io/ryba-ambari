@@ -83,6 +83,11 @@ See [REST Gateway Impersonation Configuration][impersonation].
       for srv in [service.deps.hbase_master..., service.deps.hbase_regionserver...]
         srv.options.hbase_site["hadoop.proxyuser.#{krb5_username}.groups"] ?= '*'
         srv.options.hbase_site["hadoop.proxyuser.#{krb5_username}.hosts"] ?= '*'
+      for srv in service.deps.hbase
+        srv.options.configurations ?= {}
+        srv.options.configurations['hbase-site'] ?= {}
+        srv.options.configurations['hbase-site']["hadoop.proxyuser.#{krb5_username}.groups"] ?= '*'
+        srv.options.configurations['hbase-site']["hadoop.proxyuser.#{krb5_username}.hosts"] ?= '*'
 
 ## Distributed mode
 
@@ -93,7 +98,7 @@ See [REST Gateway Impersonation Configuration][impersonation].
         'hbase.zookeeper.quorum'
         'hbase.zookeeper.property.clientPort'
         'dfs.domain.socket.path'
-      ] then options.hbase_site[property] ?= service.deps.hbase_master[0].options.hbase_site[property]
+      ] then options.hbase_site[property] ?= service.deps.hbase[0].options.configurations['hbase-site'][property]
 
 ## Test
 

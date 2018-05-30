@@ -27,6 +27,5 @@ curl
         username: 'admin'
         password: options.ambari_admin_password
         cluster_name: options.cluster_name
-        component_name: 'KNOX_GATEWAY'
+        name: 'KNOX_GATEWAY'
         hostname: options.fqdn
-

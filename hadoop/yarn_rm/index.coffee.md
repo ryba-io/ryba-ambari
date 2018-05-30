@@ -45,7 +45,6 @@
         'stop':
           'ryba-ambari-takeover/hadoop/yarn_rm/stop'
         'takeover': [
-          'ryba-ambari-takeover/hadoop/yarn_rm/wait'
           'ryba-ambari-takeover/hadoop/yarn_rm/install'
           'ryba-ambari-takeover/hadoop/yarn_rm/takeover'
           'ryba-ambari-takeover/hadoop/yarn_rm/start'

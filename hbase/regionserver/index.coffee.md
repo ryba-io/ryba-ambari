@@ -42,3 +42,10 @@ In a distributed cluster, a RegionServer runs on a DataNode.
           'ryba-ambari-takeover/hbase/regionserver/status'
         'stop':
           'ryba-ambari-takeover/hbase/regionserver/stop'
+        'takeover': [
+          'ryba-ambari-takeover/hbase/regionserver/takeover'
+          'ryba-ambari-takeover/hbase/regionserver/install'
+          'ryba-ambari-takeover/hbase/regionserver/start'
+          'ryba-ambari-takeover/hbase/regionserver/check'
+        ]
+          

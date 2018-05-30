@@ -84,7 +84,7 @@ Knox reads its own env variable to retrieve configuration.
       options.gateway_site['gateway.port'] ?= '8443'
       options.gateway_site['gateway.path'] ?= 'gateway'
       options.gateway_site['java.security.krb5.conf'] ?= '/etc/krb5.conf'
-      options.gateway_site['java.security.auth.login.config'] ?= "#{options.conf_dir}/knox.jaas"
+      options.gateway_site['java.security.auth.login.config'] ?= "#{options.conf_dir}/krb5JAASLogin.conf"
       options.gateway_site['gateway.hadoop.kerberos.secured'] ?= 'true'
       options.gateway_site['sun.security.krb5.debug'] ?= 'true'
 
@@ -149,6 +149,7 @@ Knox reads its own env variable to retrieve configuration.
 ## Ambari Knox Topologies
 
       options.topologies ?= service.deps.knox[0].options.topologies
+      options.realm_passwords ?= merge {} , service.deps.knox[0].options.realm_passwords, options.realm_passwords
 
 ## Ambari Knox Service Configuration
 Enrich `ryba-ambari-takeover/knox/service` with gateway_site properties.
@@ -167,7 +168,7 @@ Enrich `ryba-ambari-takeover/knox/service` with gateway_site properties.
         #add hosts
         srv.options.server_hosts ?= []
         srv.options.server_hosts.push service.node.fqdn if srv.options.server_hosts.indexOf(service.node.fqdn) is -1  
-
+      
 ## Ambari REST API
 
       #ambari server configuration

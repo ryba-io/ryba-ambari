@@ -61,6 +61,30 @@ such as "%app-type% and %time:yyyyMMdd%".
         mode: 0o0750
 
 
+      @call header: 'SSL', ->
+        # Client: import certificate to all hosts
+        @java.keystore_add
+          keystore: options.configurations['ranger-knox-policymgr-ssl']['xasecure.policymgr.clientssl.truststore']
+          storepass: options.configurations['ranger-knox-policymgr-ssl']['xasecure.policymgr.clientssl.truststore.password']
+          caname: "hadoop_root_ca"
+          cacert: "#{options.ssl.cacert.source}"
+          local: "#{options.ssl.cacert.local}"
+        # Server: import certificates, private and public keys to hosts with a server
+        @java.keystore_add
+          keystore: options.configurations['ranger-knox-policymgr-ssl']['xasecure.policymgr.clientssl.keystore']
+          storepass: options.configurations['ranger-knox-policymgr-ssl']['xasecure.policymgr.clientssl.keystore.password']
+          key: "#{options.ssl.key.source}"
+          cert: "#{options.ssl.cert.source}"
+          keypass: options.configurations['ranger-knox-policymgr-ssl']['xasecure.policymgr.clientssl.keystore.password']
+          name: "#{options.ssl.key.name}"
+          local: "#{options.ssl.key.local}"
+        @java.keystore_add
+          keystore: options.configurations['ranger-knox-policymgr-ssl']['xasecure.policymgr.clientssl.keystore']
+          storepass: options.configurations['ranger-knox-policymgr-ssl']['xasecure.policymgr.clientssl.keystore.password']
+          caname: "hadoop_root_ca"
+          cacert: "#{options.ssl.cacert.source}"
+          local: "#{options.ssl.cacert.local}"
+
 ## Dependencies
 
     quote = require 'regexp-quote'

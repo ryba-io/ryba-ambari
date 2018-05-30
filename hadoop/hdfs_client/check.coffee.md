@@ -8,7 +8,7 @@ Check the access to the HDFS cluster.
 Wait for the DataNode and NameNode.
 
       @call 'ryba-ambari-takeover/hadoop/hdfs_dn/wait', once: true, options.wait_hdfs_dn
-      @call 'ryba-ambari-takeover/hadoop/hdfs_nn/wait', once: true, options.wait_hdfs_nn, conf_dir: options.conf_dir
+      @call 'ryba-ambari-takeover/hadoop/hdfs_nn/wait', once: true, options.wait_hdfs_nn, conf_dir: options.conf_dir, hdfs_krb5_user: options.krb5_user
 
 ## NameNode
 

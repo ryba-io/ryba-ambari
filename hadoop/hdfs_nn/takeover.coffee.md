@@ -15,6 +15,17 @@ Wait transactions to be synced
         header: 'Remove initd file'
         target: '/etc/init.d/hadoop-hdfs-namenode'
         code_skipped: 1
+      @service.stop
+        header: 'Stop'
+        name: 'hadoop-hdfs-zkfc'
+      @system.remove
+        header: 'Remove systemd file'
+        target: '/usr/lib/systemd/system/hadoop-hdfs-zkfc.service'
+        code_skipped: 1
+      @system.remove
+        header: 'Remove initd file'
+        target: '/etc/init.d/hadoop-hdfs-namezkfcnode'
+        code_skipped: 1
       @system.execute
         header: 'Daemon reload'
         cmd: 'systemctl daemon-reload;systemctl reset-failed'
