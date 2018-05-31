@@ -7,7 +7,7 @@
 
       @system.execute
         cmd: mkcmd.hbase options.admin, """
-        /usr/hdp/current/hbase-regionserver/bin/graceful_stop.sh --config /etc/hbase-regionserver/conf --maxthreads 16 #{options.fqdn}
+        /usr/hdp/current/hbase-regionserver/bin/graceful_stop.sh --config /etc/hbase-regionserver/conf --maxthreads 32 #{options.fqdn}
         """
       @service.stop
         name: 'hbase-regionserver'
