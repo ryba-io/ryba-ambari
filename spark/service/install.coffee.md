@@ -26,6 +26,25 @@ Resources:
 
 ## Upload Default Configuration
 
+      @file.render
+        header: 'Render spark-env'
+        target: "#{options.cache_dir}/spark-env.sh"
+        source: "#{__dirname}/../resources/spark-env.sh.j2"
+        local: true
+        context: options: options
+        backup: true
+        ssh:false
+      @call (opts, cb) ->
+        ssh2fs.readFile null, "#{options.cache_dir}/spark-env.sh", (err, content) =>
+          try
+            throw err if err
+            content = content.toString()
+            options.configurations['spark-env'] ?= {}
+            options.configurations['spark-env']['content'] = content
+            cb()
+          catch err
+            cb err
+  
       # @call -> console.log options.configurations
       @ambari.configs.default
         header: 'SPARK Configuration'
@@ -139,5 +158,6 @@ Resources:
     mkcmd = require 'ryba/lib/mkcmd'
     quote = require 'regexp-quote'
     string = require 'nikita/lib/misc/string'
+    ssh2fs = require 'ssh2-fs'
 
 [spark-conf]:https://spark.apache.org/docs/latest/configuration.html
