@@ -42,6 +42,10 @@
       options.user = merge service.deps.ambari_server_local.options.user, options.user
       options.test_user = merge service.deps.ambari_server_local.options.test_user, options.test_user
       options.test_group = merge service.deps.ambari_server_local.options.test_group, options.test_group
+      options.analyzer_user = merge service.deps.ambari_server_local.options.analyzer_user, options.analyzer_user
+      options.analyzer_group = merge service.deps.ambari_server_local.options.analyzer_group, options.analyzer_group
+      options.explorer_user = merge service.deps.ambari_server_local.options.explorer_user, options.explorer_user
+      options.explorer_group = merge service.deps.ambari_server_local.options.explorer_group, options.explorer_group
 
 ## Environment
 

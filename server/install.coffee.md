@@ -6,7 +6,6 @@ executing this module.
 
     module.exports = header: 'Ambari Server Install', handler: (options) ->
 
-
 ## Registry
 
       @registry.register ['ambari','cluster','add'], "ryba-ambari-actions/lib/cluster/add"
@@ -154,6 +153,23 @@ executing this module.
             tag: value.tag
             properties: value.properties
         @next cb
+
+      @krb5.addprinc options.krb5.admin,
+        header: 'Explorer keytab'
+        principal:  options.explorer_user.principal.replace '_HOST', options.fqdn
+        randkey: true
+        keytab:  options.explorer_user.keytab
+        uid: options.explorer_user.name
+        gid: options.explorer_group.name
+
+      @krb5.addprinc options.krb5.admin,
+        header: 'Activity keytab'
+        principal:  options.analyzer_user.principal.replace '_HOST', options.fqdn
+        randkey: true
+        keytab:  options.analyzer_user.keytab
+        uid: options.analyzer_user.name
+        gid: options.analyzer_group.name
+
 
 
 ## Dependencies

@@ -21,6 +21,12 @@ Create System Service Account & user/client accounts
 
       @system.group  header: 'Test Group', options.test_group
       @system.user  header: 'Test User', options.test_user
+
+      @system.group  header: 'Analyzer Group', options.analyzer_group
+      @system.user  header: 'Analyzer User', options.analyzer_user
+
+      @system.group  header: 'Explorer Group', options.explorer_group
+      @system.user  header: 'Explorer User', options.explorer_user
       @call ->
         for name, group of options.groups
           @system.group
