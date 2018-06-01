@@ -2,6 +2,7 @@
 
     module.exports =
       deps:
+        ssl: module: 'masson/core/ssl', local: true
         krb5_client: module: 'masson/core/krb5_client', local: true, required: true
         java: module: 'masson/commons/java', local: true
         hadoop_core: module: 'ryba-ambari-takeover/hadoop/core', local: true, auto: true, implicit: true
@@ -17,7 +18,7 @@
       plugin: (options) ->
         @before
           type: ['ambari', 'hosts', 'component_start']
-          name: 'HIVE_SERVER'
+          name: 'KAFKA_BROKER'
         , ->
           delete options.original.type
           delete options.original.handler

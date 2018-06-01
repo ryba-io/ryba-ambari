@@ -140,7 +140,32 @@ made available in the same directory after any modification.
           match: RegExp "#{k}=.*", 'm'
           replace: "#{k}=#{v}"
           append: true
-        
+
+## Mapred-site
+
+      @hconfigure
+        header: 'Render mapred-site'
+        if: options.post_component and options.takeover
+        source: "#{__dirname}/../resources/mapred-site.xml"
+        target: "#{options.cache_dir}/mapred-site.xml"
+        ssh: false
+        properties: options.configurations['mapred-site']
+
+      @call
+        header: 'Upload mapred-site'
+        if: options.post_component and options.takeover
+      , (_, callback) ->
+          properties.read null, "#{options.cache_dir}/mapred-site.xml", (err, props) =>
+            @ambari.configs.update
+              header: 'config update mapred-site'
+              url: options.ambari_url
+              username: 'admin'
+              password: options.ambari_admin_password
+              config_type: 'mapred-site'
+              cluster_name: options.cluster_name
+              properties: props
+            @next callback
+
 ## Site
 
       @hconfigure
@@ -262,17 +287,6 @@ Render yarn-env.sh files, before uploading to Ambari Server.
               .next callback
             catch err
               callback err
-
-      @ambari.configs.update
-        header: 'Upload mapred-site'
-        if: options.post_component and options.takeover
-        url: options.ambari_url
-        username: 'admin'
-        password: options.ambari_admin_password
-        config_type: 'mapred-site'
-        cluster_name: options.cluster_name
-        properties: options.configurations['mapred-site']
-
 
       @call
         header: 'SSl Server'

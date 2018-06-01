@@ -31,9 +31,9 @@ Example:
 ## Environment
 
       # Layout
-      options.conf_dir ?= '/etc/hive/conf'
-      options.log_dir ?= '/var/log/hive'
-      options.pid_dir ?= '/var/run/hive'
+      options.conf_dir ?= '/etc/kafka/conf'
+      options.log_dir ?= '/var/log/kafka'
+      options.pid_dir ?= '/var/run/kafka'
       options.fqdn ?= service.node.fqdn
       # Opts and Java
       options.java_home ?= service.deps.java.options.java_home

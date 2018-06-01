@@ -189,6 +189,7 @@ Render hadoop-env.sh and yarn-env.sh files, before uploading to Ambari Server.
                   hbase_regionserver_heapsize: options.configurations['hbase-env'].regionserver_heapsize
                   hbase_regionserver_xmn_ratio: options.configurations['hbase-env'].hbase_regionserver_xmn_ratio
                   hbase_regionserver_xmn_max: options.configurations['hbase-env'].hbase_regionserver_xmn_max
+                  hbase_max_direct_memory_size: options.configurations['hbase-env'].hbase_max_direct_memory_size
                   hbase_java_io_tmpdir: options.configurations['hbase-env'].hbase_java_io_tmpdir
                   java_home: options.configurations['hbase-env'].java_home
                   java_home64: options.configurations['hbase-env'].java_home64

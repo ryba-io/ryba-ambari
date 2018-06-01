@@ -85,8 +85,8 @@ The properties can be found [here][kafka-repository]
         'type': 'kafka'
         'isEnabled': true
         'configs':
-          'username': service.deps.ranger_admin.options.plugins.principal
-          'password': service.deps.ranger_admin.options.plugins.password
+          'username': service.deps.kafka_service[0].options.admin.principal
+          'password': service.deps.kafka_service[0].options.admin.password
           'hadoop.security.authentication': service.deps.hadoop_core.options.core_site['hadoop.security.authentication']
           'zookeeper.connect': service.deps.kafka_broker.options.config['zookeeper.connect'].join(',')
           'policy.download.auth.users': "#{service.deps.kafka_broker.options.user.name}" #from ranger 0.6
@@ -252,7 +252,7 @@ SSL can be configured to use SSL if ranger admin has SSL enabled.
         options.configurations['ranger-kafka-security']['ranger.plugin.kafka.policy.rest.url'] ?= options.install['POLICY_MGR_URL']
         options.configurations['ranger-kafka-security']['ranger.plugin.kafka.policy.cache.dir'] ?= "/etc/ranger/#{options.service_repo.name}/policycache"
         options.configurations['ranger-kafka-security']['ranger.plugin.kafka.policy.pollIntervalMs'] ?= "30000"
-        options.configurations['ranger-kafka-security']['ranger.plugin.kafka.policy.rest.ssl.config.file'] ?= "#{options.conf_dir}/conf/ranger-policymgr-ssl.xml"
+        options.configurations['ranger-kafka-security']['ranger.plugin.kafka.policy.rest.ssl.config.file'] ?= "#{options.conf_dir}/ranger-policymgr-ssl.xml"
         options.configurations['ranger-kafka-security']['ranger.plugin.kafka.policy.source.impl'] ?= 'org.apache.ranger.admin.client.RangerAdminRESTClient'
 
 ## Ambari Config REST Api

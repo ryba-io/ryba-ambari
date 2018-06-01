@@ -21,7 +21,7 @@
       @ambari.configs.default
         header: 'Ambari Knox Configuration'
         url: options.ambari_url
-        if: options.post_component and options.baremetal
+        if: options.post_component and options.takeover
         username: 'admin'
         password: options.ambari_admin_password
         cluster_name: options.cluster_name

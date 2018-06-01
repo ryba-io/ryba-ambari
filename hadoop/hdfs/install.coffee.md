@@ -148,6 +148,7 @@ Create HDFS Headless keytab.
         stack_name: options.stack_name
         stack_version: options.stack_version
         cluster_name: options.cluster_name
+        source: 'COMPOSITE'
         service: 'HDFS'
         component: 'NAMENODE'
         identities: options.identities['hdfs']

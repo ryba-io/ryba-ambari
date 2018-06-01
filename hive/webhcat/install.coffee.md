@@ -89,17 +89,17 @@ inside "/etc/init.d" and activate it on startup.
         """
         code_skipped: 2
 
-## SPNEGO
-
-Copy the spnego keytab with restricitive permissions
-
-      @system.copy
-        header: 'SPNEGO'
-        source: '/etc/security/keytabs/spnego.service.keytab'
-        target: options.webhcat_site['templeton.kerberos.keytab']
-        uid: options.user.name
-        gid: options.hadoop_group.name
-        mode: 0o0660
+# ## SPNEGO
+# 
+# Copy the spnego keytab with restricitive permissions
+# 
+#       @system.copy
+#         header: 'SPNEGO'
+#         source: '/etc/security/keytabs/spnego.service.keytab'
+#         target: options.webhcat_site['templeton.kerberos.keytab']
+#         uid: options.user.name
+#         gid: options.hadoop_group.name
+#         mode: 0o0660
 
 
 ## Install Component

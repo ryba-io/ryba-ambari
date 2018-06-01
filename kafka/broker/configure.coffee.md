@@ -295,12 +295,14 @@ Valid values are: PLAINTEXT, SSL, SASL_PLAINTEXT, SASL_SSL.
         # Register Java Options
         srv.options.configurations['kafka-broker'] ?= {}
         srv.options.configurations['kafka-env'] ?= {}
+        srv.options.env ?= {}
         srv.options['identities'] ?= {}
         srv.options.log4j ?= {}
         # enrich kafka service
         enrich_config options.config, srv.options.configurations['kafka-broker']
         enrich_config options.configurations['kafka-env'], srv.options.configurations['kafka-env']
         enrich_config options.log4j, srv.options.log4j
+        enrich_config options.env, srv.options.env
         srv.options.identities['kafka'] ?= options.identities['kafka']
 
         srv.options.broker_hosts ?= []

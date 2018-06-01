@@ -16,7 +16,31 @@
       @registry.register ['ambari', 'hosts', 'component_update'], "ryba-ambari-actions/lib/hosts/component_update"
       @registry.register ['ambari','configs','groups_add'], 'ryba-ambari-actions/lib/configs/groups/add'
       @registry.register ['ambari','kerberos','descriptor', 'update'], 'ryba-ambari-actions/lib/kerberos/descriptor/update'
-      
+
+## Upload Default Configuration
+
+      KAFKA_HEAP_OPTS = options.env['KAFKA_HEAP_OPTS']
+      @file.render
+        header: 'Render spark-env'
+        target: "#{options.cache_dir}/kafka-env.sh"
+        source: "#{__dirname}/../resources/kafka-env.sh.ambari.j2"
+        local: true
+        context:
+          KAFKA_HEAP_OPTS: KAFKA_HEAP_OPTS
+        backup: true
+        ssh:false
+      @call (opts, cb) ->
+        ssh2fs.readFile null, "#{options.cache_dir}/kafka-env.sh", (err, content) =>
+          try
+            throw err if err
+            content = content.toString()
+            options.configurations['kafka-env'] ?= {}
+            options.configurations['kafka-env']['content'] = content
+            cb()
+          catch err
+            cb err
+
+
 ## Kerberos Descriptor Artifact
 
       @ambari.kerberos.descriptor.update
@@ -28,6 +52,7 @@
         stack_name: options.stack_name
         stack_version: options.stack_version
         cluster_name: options.cluster_name
+        source: 'COMPOSITE'
         service: 'KAFKA'
         component: 'KAFKA_BROKER'
         identities: options.identities['kafka']

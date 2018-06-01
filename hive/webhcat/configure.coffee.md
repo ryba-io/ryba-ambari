@@ -65,7 +65,7 @@
         "hive.metastore.kerberos.principal=#{service.deps.hive_hcatalog[0].options.hive_site['hive.metastore.kerberos.principal']}"
       ].join ','
       options.webhcat_site['templeton.zookeeper.hosts'] ?= zookeeper_quorum.join ','
-      options.webhcat_site['templeton.kerberos.principal'] ?= "HTTP/#{service.node.fqdn}@#{options.krb5.realm}"
+      options.webhcat_site['templeton.kerberos.principal'] ?= "HTTP/_HOST@#{options.krb5.realm}"
       options.webhcat_site['templeton.kerberos.keytab'] ?= service.deps.hadoop_core.options.core_site['hadoop.http.authentication.kerberos.keytab']
       # The secret used to sign the HTTP cookie value. The default value is a random value. Unless multiple WebHCat instances need to share the secret the random value is adequate.
       options.webhcat_site['templeton.kerberos.secret'] ?= 'secret'

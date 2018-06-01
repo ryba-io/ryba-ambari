@@ -8,6 +8,25 @@ executing this module.
 
 ## Registry
 
+| Service    | Port  | Proto | Parameter       |
+|------------|-------|-------|-----------------|
+| HST SERVER | 9000  |  tcp  |  HTTP Port      |
+| HST COM    | 9440  |  tcp  |  HTTPS Port     |
+| Analyzer   | 9060  |  tcp  |  HTTPS Port     |
+
+IPTables rules are only inserted if the parameter "iptables.action" is set to
+"start" (default value).
+
+      @tools.iptables
+        header: 'Iptables'
+        rules: [
+          { chain: 'INPUT', jump: 'ACCEPT', dport: 9000, protocol: 'tcp', state: 'NEW', comment: "SMARTSENSE SERVER" }
+          { chain: 'INPUT', jump: 'ACCEPT', dport: 9440, protocol: 'tcp', state: 'NEW', comment: "SMARTSENSE AGENT" }
+          { chain: 'INPUT', jump: 'ACCEPT', dport: 9060, protocol: 'tcp', state: 'NEW', comment: "Acitivty Analyzer" }
+        ]
+        if: options.iptables
+
+
       @registry.register ['ambari','cluster','add'], "ryba-ambari-actions/lib/cluster/add"
       @registry.register ['ambari','cluster','provisioning_state'], "ryba-ambari-actions/lib/cluster/provisioning_state"
       @registry.register ['ambari','configs','update'], 'ryba-ambari-actions/lib/configs/update'
@@ -169,8 +188,6 @@ executing this module.
         keytab:  options.analyzer_user.keytab
         uid: options.analyzer_user.name
         gid: options.analyzer_group.name
-
-
 
 ## Dependencies
 
