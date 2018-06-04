@@ -204,7 +204,7 @@ IPTables rules are only inserted if the parameter "iptables.action" is set to
             header: "add cacert to #{name}"
             keystore: options.truststore.target
             storepass: options.truststore.password
-            caname: oname
+            caname: name
             cacert: "#{tmp_location}/cacert"
           @next callback
         @system.remove

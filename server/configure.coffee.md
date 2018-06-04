@@ -228,7 +228,8 @@ The key is the identity name, and the value should contain principal information
 
 ## Wait
 
-      options.ssl ?= merge {}, service.deps.ambari_server[0].options.ssl, service.deps.ssl.options, options.ssl
+      options.ssl ?= merge {}, service.deps.ambari_server[0].options.ssl
+      options.truststore ?= service.deps.ambari_server[0].options.truststore
       options.wait = {}
       options.wait.rest = for srv in service.deps.ambari_server
         clusters_url: url.format
