@@ -192,6 +192,7 @@ IPTables rules are only inserted if the parameter "iptables.action" is set to
       @call
         if: options.importCerts?
       , (_, cb) ->
+        tmp_location = "/tmp/ryba_cacert_#{Date.now()}"
         @each options.importCerts, (opts, callback) ->
           {source, local, name} = opts.value
           @file.download
@@ -206,6 +207,8 @@ IPTables rules are only inserted if the parameter "iptables.action" is set to
             caname: oname
             cacert: "#{tmp_location}/cacert"
           @next callback
+        @system.remove
+          target: tmp_location
         @next cb
 
 ## Dependencies
