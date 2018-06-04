@@ -201,7 +201,7 @@ IPTables rules are only inserted if the parameter "iptables.action" is set to
             target: "#{tmp_location}/cacert"
             local: true
           @java.keystore_add
-            header: "add cacert to #{keystore}"
+            header: "add cacert to #{name}"
             keystore: options.truststore.target
             storepass: options.truststore.password
             caname: oname
