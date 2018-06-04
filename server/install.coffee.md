@@ -193,7 +193,7 @@ IPTables rules are only inserted if the parameter "iptables.action" is set to
         if: options.importCerts?
       , (_, cb) ->
         @each options.importCerts, (opts, callback) ->
-          {source, local, name} = opts.key
+          {source, local, name} = opts.value
           @file.download
             header: 'download cacert'
             source: source
