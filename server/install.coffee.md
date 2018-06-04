@@ -190,7 +190,7 @@ IPTables rules are only inserted if the parameter "iptables.action" is set to
         gid: options.analyzer_group.name
 
       @call
-        if: options.importCerts
+        if: options.importCerts?
       , (_, cb) ->
         @each options.importCerts, (opts, callback) ->
           {source, local, name} = opts.key
