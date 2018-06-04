@@ -5,7 +5,7 @@ See the Ambari documentation relative to [Software Requirements][sr] before
 executing this module.
 
     module.exports = header: 'Ambari Server Install', handler: (options) ->
-
+      
 ## Registry
 
 | Service    | Port  | Proto | Parameter       |
@@ -188,6 +188,25 @@ IPTables rules are only inserted if the parameter "iptables.action" is set to
         keytab:  options.analyzer_user.keytab
         uid: options.analyzer_user.name
         gid: options.analyzer_group.name
+
+      @call
+        if: options.importCerts
+      , (_, cb) ->
+        @each options.importCerts, (opts, callback) ->
+          {source, local, name} = opts.key
+          @file.download
+            header: 'download cacert'
+            source: source
+            target: "#{tmp_location}/cacert"
+            local: true
+          @java.keystore_add
+            header: "add cacert to #{keystore}"
+            keystore: options.truststore.target
+            storepass: options.truststore.password
+            caname: oname
+            cacert: "#{tmp_location}/cacert"
+          @next callback
+        @next cb
 
 ## Dependencies
 
