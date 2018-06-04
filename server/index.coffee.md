@@ -7,6 +7,7 @@ manage and monitor a Hadoop cluster.
 
     module.exports =
       deps:
+        ssl: module: 'masson/core/ssl', local: true
         iptables: module: 'masson/core/iptables', local: true
         krb5_client: module: 'masson/core/krb5_client', local: true
         ambari_server_local: module: 'ryba/ambari/server', local: true, required: true

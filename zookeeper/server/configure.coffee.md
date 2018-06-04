@@ -161,15 +161,13 @@
 
 ## Ambari Takeover
 
-      #ambari server configuration
-      if service.deps.ambari_server
         #ambari services layout
-        options.post_component = options.inject # ?= service.instances[0].node.fqdn is service.node.fqdn
-        options.ambari_url ?= service.deps.ambari_server.options.ambari_url
-        options.ambari_admin_password ?= service.deps.ambari_server.options.ambari_admin_password
-        options.cluster_name ?= service.deps.ambari_server.options.cluster_name
-        options.takeover = service.deps.ambari_server.options.takeover
-        options.baremetal = service.deps.ambari_server.options.baremetal
+      options.post_component = options.inject ?= service.instances[0].node.fqdn is service.node.fqdn
+      options.ambari_url ?= service.deps.ambari_server.options.ambari_url
+      options.ambari_admin_password ?= service.deps.ambari_server.options.ambari_admin_password
+      options.cluster_name ?= service.deps.ambari_server.options.cluster_name
+      options.takeover = service.deps.ambari_server.options.takeover
+      options.baremetal = service.deps.ambari_server.options.baremetal
 
 ## Test
 
