@@ -14,7 +14,7 @@ It meant to be run as a Java Agent, exposing an HTTP server and scraping the loc
         hdfs_service: module: 'ryba-ambari-takeover/hadoop/hdfs', required: true
         hadoop_core: module: 'ryba-ambari-takeover/hadoop/core', local: true
         jmx_exporter: module: 'ryba-ambari-takeover/prometheus/jmx_exporters/hdfs_dn'
-        prometheus_monitor: module: 'ryba-ambari-takeover/prometheus/monitor', required: true
+        prometheus_monitor: module: 'ryba/prometheus/monitor', required: true
       configure: 'ryba-ambari-takeover/prometheus/jmx_exporters/hdfs_dn/configure'
       plugin: (options) ->
         @before
