@@ -11,7 +11,7 @@ It meant to be run as a Java Agent, exposing an HTTP server and scraping the loc
         java: module: 'masson/commons/java', local: true, required: true
         iptables: module: 'masson/core/iptables', local: true
         hbase_master: module: 'ryba-ambari-takeover/hbase/master', local: true, required: true
-        hbase_service: module: 'ryba-ambari-takeover/hbase/server', required: true
+        hbase_service: module: 'ryba-ambari-takeover/hbase/service', required: true
         jmx_exporter: module: 'ryba-ambari-takeover/prometheus/jmx_exporters/hbase_master'
         prometheus_monitor: module: 'ryba/prometheus/monitor', required: true
         hadoop_core: module: 'ryba-ambari-takeover/hadoop/core', local: true

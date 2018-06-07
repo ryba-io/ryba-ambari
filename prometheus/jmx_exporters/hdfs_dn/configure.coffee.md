@@ -40,6 +40,7 @@ There is a difference between  -Dcom.sun.management.config.file=<file>. and
 com.sun.management.jmxremote.ssl.config.file=<file>.
 
       for srv in service.deps.hdfs_service
+        srv.options ?= {}
         options.jmx_config_file ?= "#{service.deps.hdfs_dn.options.conf_dir}/hdfs_datanode_jmx.properties"
         srv.options.hdfs_dn_opts.java_properties['com.sun.management.config.file'] ?= options.jmx_config_file
         options.jmx_config ?= {}

@@ -37,30 +37,32 @@ JMX options will be configured using a properties file, more readable for admini
 There is a difference between  -Dcom.sun.management.config.file=<file>. and
 com.sun.management.jmxremote.ssl.config.file=<file>.
 
-      options.jmx_config_file ?= "#{service.deps.yarn_rm.options.conf_dir}/yarn_resourcemanager_jmx.properties"
-      service.deps.yarn_rm.options.opts.java_properties['com.sun.management.config.file'] ?= options.jmx_config_file
-      options.jmx_config ?= {}
-      options.jmx_config['com.sun.management.jmxremote'] ?= 'true'
-      options.jmx_config['com.sun.management.jmxremote.port'] ?= '9016'
-      options.jmx_config['com.sun.management.jmxremote.ssl.config.file'] ?= "#{service.deps.yarn_rm.options.conf_dir}/yarn_resourcemanager_jmx_ssl.properties"
+      for srv in service.deps.yarn_service
+        srv.options ?= {}
+        options.jmx_config_file ?= "#{service.deps.yarn_rm.options.conf_dir}/yarn_resourcemanager_jmx.properties"
+        srv.options.yarn_rm_opts.java_properties['com.sun.management.config.file'] ?= options.jmx_config_file
+        options.jmx_config ?= {}
+        options.jmx_config['com.sun.management.jmxremote'] ?= 'true'
+        options.jmx_config['com.sun.management.jmxremote.port'] ?= '9016'
+        options.jmx_config['com.sun.management.jmxremote.ssl.config.file'] ?= "#{service.deps.yarn_rm.options.conf_dir}/yarn_resourcemanager_jmx_ssl.properties"
 
 ## Enable JMX SSL
 
-      options.ssl = merge {}, service.deps.ssl, service.deps.yarn_rm.options.ssl
-      if !!options.ssl
-        options.jmx_ssl_file ?= options.jmx_config['com.sun.management.jmxremote.ssl.config.file']
-        options.jmx_ssl_config ?= {}
-        service.deps.yarn_rm.options.opts.java_properties['com.sun.management.jmxremote.ssl'] ?= 'true'
-        service.deps.yarn_rm.options.opts.java_properties['com.sun.management.jmxremote.ssl.need.client.auth'] ?= 'false'
-        options.jmx_ssl_config['javax.net.ssl.keyStore'] ?= "#{service.deps.yarn_rm.options.conf_dir}/keystore"
-        throw Error 'Missing Datanode Keystore Password' unless options.ssl?.keystore?.password
-        options.jmx_ssl_config['javax.net.ssl.keyStorePassword'] ?= options.ssl.keystore.password
-        #jmx_exporter client truststore
-        options.opts.java_properties['javax.net.ssl.trustStore'] ?= "#{service.deps.yarn_rm.options.conf_dir}/truststore"
-        throw Error 'Missing Datanode Truststore Password' unless options.ssl?.truststore?.password
-        options.opts.java_properties['javax.net.ssl.trustStorePassword'] ?=  options.ssl.truststore.password
-      else
-        options.jmx_config['com.sun.management.jmxremote.ssl'] ?= 'false'
+        options.ssl = merge {}, service.deps.ssl, service.deps.yarn_rm.options.ssl
+        if !!options.ssl
+          options.jmx_ssl_file ?= options.jmx_config['com.sun.management.jmxremote.ssl.config.file']
+          options.jmx_ssl_config ?= {}
+          srv.options.yarn_rm_opts.java_properties['com.sun.management.jmxremote.ssl'] ?= 'true'
+          srv.options.yarn_rm_opts.java_properties['com.sun.management.jmxremote.ssl.need.client.auth'] ?= 'false'
+          options.jmx_ssl_config['javax.net.ssl.keyStore'] ?= "#{service.deps.yarn_rm.options.conf_dir}/keystore"
+          throw Error 'Missing Datanode Keystore Password' unless options.ssl?.keystore?.password
+          options.jmx_ssl_config['javax.net.ssl.keyStorePassword'] ?= options.ssl.keystore.password
+          #jmx_exporter client truststore
+          options.opts.java_properties['javax.net.ssl.trustStore'] ?= "#{service.deps.yarn_rm.options.conf_dir}/truststore"
+          throw Error 'Missing Datanode Truststore Password' unless options.ssl?.truststore?.password
+          options.opts.java_properties['javax.net.ssl.trustStorePassword'] ?=  options.ssl.truststore.password
+        else
+          options.jmx_config['com.sun.management.jmxremote.ssl'] ?= 'false'
 
 ## Enable JMX Authentication
 

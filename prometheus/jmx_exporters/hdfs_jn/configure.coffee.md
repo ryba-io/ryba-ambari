@@ -39,30 +39,31 @@ There is a difference between  -Dcom.sun.management.config.file=<file>. and
 com.sun.management.jmxremote.ssl.config.file=<file>.
 
       for srv in service.deps.hdfs_service
-      options.jmx_config_file ?= "#{service.deps.hdfs_jn.options.conf_dir}/hdfs_journalnode_jmx.properties"
-      srv.options.hdfs_jn_opts.java_properties['com.sun.management.config.file'] ?= options.jmx_config_file
-      options.jmx_config ?= {}
-      options.jmx_config['com.sun.management.jmxremote'] ?= 'true'
-      options.jmx_config['com.sun.management.jmxremote.port'] ?= '9013'
-      options.jmx_config['com.sun.management.jmxremote.ssl.config.file'] ?= "#{service.deps.hdfs_jn.options.conf_dir}/hdfs_journalnode_jmx_ssl.properties"
+        srv.options ?= {}
+        options.jmx_config_file ?= "#{service.deps.hdfs_jn.options.conf_dir}/hdfs_journalnode_jmx.properties"
+        srv.options.hdfs_jn_opts.java_properties['com.sun.management.config.file'] ?= options.jmx_config_file
+        options.jmx_config ?= {}
+        options.jmx_config['com.sun.management.jmxremote'] ?= 'true'
+        options.jmx_config['com.sun.management.jmxremote.port'] ?= '9013'
+        options.jmx_config['com.sun.management.jmxremote.ssl.config.file'] ?= "#{service.deps.hdfs_jn.options.conf_dir}/hdfs_journalnode_jmx_ssl.properties"
 
 ## Enable JMX SSL
 
-      options.ssl = merge {}, service.deps.ssl, service.deps.hdfs_jn.options.ssl
-      if !!options.ssl
-        options.jmx_ssl_file ?= options.jmx_config['com.sun.management.jmxremote.ssl.config.file']
-        options.jmx_ssl_config ?= {}
-        srv.options.hdfs_jn_opts.java_properties['com.sun.management.jmxremote.ssl'] ?= 'true'
-        srv.options.hdfs_jn_opts.java_properties['com.sun.management.jmxremote.ssl.need.client.auth'] ?= 'false'
-        options.jmx_ssl_config['javax.net.ssl.keyStore'] ?= "#{service.deps.hdfs_jn.options.conf_dir}/keystore"
-        throw Error 'Missing Datanode Keystore Password' unless options.ssl?.keystore?.password
-        options.jmx_ssl_config['javax.net.ssl.keyStorePassword'] ?= options.ssl.keystore.password
-        #jmx_exporter client truststore
-        options.opts.java_properties['javax.net.ssl.trustStore'] ?= "#{service.deps.hdfs_jn.options.conf_dir}/truststore"
-        throw Error 'Missing Datanode Truststore Password' unless options.ssl?.truststore?.password
-        options.opts.java_properties['javax.net.ssl.trustStorePassword'] ?=  options.ssl.truststore.password
-      else
-        options.jmx_config['com.sun.management.jmxremote.ssl'] ?= 'false'
+        options.ssl = merge {}, service.deps.ssl, service.deps.hdfs_jn.options.ssl
+        if !!options.ssl
+          options.jmx_ssl_file ?= options.jmx_config['com.sun.management.jmxremote.ssl.config.file']
+          options.jmx_ssl_config ?= {}
+          srv.options.hdfs_jn_opts.java_properties['com.sun.management.jmxremote.ssl'] ?= 'true'
+          srv.options.hdfs_jn_opts.java_properties['com.sun.management.jmxremote.ssl.need.client.auth'] ?= 'false'
+          options.jmx_ssl_config['javax.net.ssl.keyStore'] ?= "#{service.deps.hdfs_jn.options.conf_dir}/keystore"
+          throw Error 'Missing Datanode Keystore Password' unless options.ssl?.keystore?.password
+          options.jmx_ssl_config['javax.net.ssl.keyStorePassword'] ?= options.ssl.keystore.password
+          #jmx_exporter client truststore
+          options.opts.java_properties['javax.net.ssl.trustStore'] ?= "#{service.deps.hdfs_jn.options.conf_dir}/truststore"
+          throw Error 'Missing Datanode Truststore Password' unless options.ssl?.truststore?.password
+          options.opts.java_properties['javax.net.ssl.trustStorePassword'] ?=  options.ssl.truststore.password
+        else
+          options.jmx_config['com.sun.management.jmxremote.ssl'] ?= 'false'
 
 ## Enable JMX Authentication
 

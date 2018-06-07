@@ -34,6 +34,7 @@ There is a difference between  -Dcom.sun.management.config.file=<file>. and
 com.sun.management.jmxremote.ssl.config.file=<file>.
 
       for srv in service.deps.hbase_service
+        srv.options ?= {}
         options.jmx_config_file ?= "#{service.deps.hbase_master.options.conf_dir}/hbase_master_jmx.properties"
         service.deps.hbase_service.options.master_opts.java_properties['com.sun.management.config.file'] ?= options.jmx_config_file
         options.jmx_config ?= {}
