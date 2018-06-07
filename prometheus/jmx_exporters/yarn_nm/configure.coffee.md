@@ -38,7 +38,7 @@ JMX options will be configured using a properties file, more readable for admini
 There is a difference between  -Dcom.sun.management.config.file=<file>. and
 com.sun.management.jmxremote.ssl.config.file=<file>.
 
-      for srv in service.deps.yarn_nm
+      for srv in service.deps.yarn_service
         srv.options ?= {}
         options.jmx_config_file ?= "#{service.deps.yarn_nm.options.conf_dir}/yarn_nodemanager_jmx.properties"
         srv.options.yarn_nm_opts.java_properties['com.sun.management.config.file'] ?= options.jmx_config_file
@@ -67,13 +67,13 @@ com.sun.management.jmxremote.ssl.config.file=<file>.
 
 ## Enable JMX Authentication
 
-      options.authenticate ?= 'false'
-      if options.authenticate
-        options.username ?= 'monitorRole'# be careful if changing , should configure access file
-        options.jmx_auth_file ?=  '/etc/security/jmxPasswords/hdfs-datanode.password'
-        options.jmx_config['com.sun.management.jmxremote.authenticate'] ?= 'true'
-        throw Error 'Missing options.password' unless options.password
-        options.jmx_config['com.sun.management.jmxremote.password.file'] ?= options.jmx_auth_file
+        options.authenticate ?= 'false'
+        if options.authenticate
+          options.username ?= 'monitorRole'# be careful if changing , should configure access file
+          options.jmx_auth_file ?=  '/etc/security/jmxPasswords/hdfs-datanode.password'
+          options.jmx_config['com.sun.management.jmxremote.authenticate'] ?= 'true'
+          throw Error 'Missing options.password' unless options.password
+          options.jmx_config['com.sun.management.jmxremote.password.file'] ?= options.jmx_auth_file
 
 ## Configuration
 configure JMX Exporter to scrape Zookeeper metrics. [this example][example] is taken from

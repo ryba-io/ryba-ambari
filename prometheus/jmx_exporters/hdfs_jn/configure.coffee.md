@@ -67,13 +67,13 @@ com.sun.management.jmxremote.ssl.config.file=<file>.
 
 ## Enable JMX Authentication
 
-      options.authenticate ?= 'false'
-      if options.authenticate
-        options.username ?= 'monitorRole'# be careful if changing , should configure access file
-        options.jmx_auth_file ?=  '/etc/security/jmxPasswords/hdfs-journalnode.password'
-        options.jmx_config['com.sun.management.jmxremote.authenticate'] ?= 'true'
-        throw Error 'Missing options.password' unless options.password
-        options.jmx_config['com.sun.management.jmxremote.password.file'] ?= options.jmx_auth_file
+        options.authenticate ?= 'false'
+        if options.authenticate
+          options.username ?= 'monitorRole'# be careful if changing , should configure access file
+          options.jmx_auth_file ?=  '/etc/security/jmxPasswords/hdfs-journalnode.password'
+          options.jmx_config['com.sun.management.jmxremote.authenticate'] ?= 'true'
+          throw Error 'Missing options.password' unless options.password
+          options.jmx_config['com.sun.management.jmxremote.password.file'] ?= options.jmx_auth_file
 
 ## Configuration
 configure JMX Exporter to scrape Zookeeper metrics. [this example][example] is taken from

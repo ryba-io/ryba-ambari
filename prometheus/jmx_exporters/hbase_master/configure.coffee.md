@@ -36,7 +36,7 @@ com.sun.management.jmxremote.ssl.config.file=<file>.
       for srv in service.deps.hbase_service
         srv.options ?= {}
         options.jmx_config_file ?= "#{service.deps.hbase_master.options.conf_dir}/hbase_master_jmx.properties"
-        service.deps.hbase_service.options.master_opts.java_properties['com.sun.management.config.file'] ?= options.jmx_config_file
+        srv.options.master_opts.java_properties['com.sun.management.config.file'] ?= options.jmx_config_file
         options.jmx_config ?= {}
         options.jmx_config['com.sun.management.jmxremote'] ?= 'true'
         options.jmx_config['com.sun.management.jmxremote.port'] ?= '9017'
@@ -48,8 +48,8 @@ com.sun.management.jmxremote.ssl.config.file=<file>.
         if !!options.ssl
           options.jmx_ssl_file ?= options.jmx_config['com.sun.management.jmxremote.ssl.config.file']
           options.jmx_ssl_config ?= {}
-          service.deps.hbase_service.options.master_opts.java_properties['com.sun.management.jmxremote.ssl'] ?= 'true'
-          service.deps.hbase_service.options.master_opts.java_properties['com.sun.management.jmxremote.ssl.need.client.auth'] ?= 'false'
+          srv.options.master_opts.java_properties['com.sun.management.jmxremote.ssl'] ?= 'true'
+          srv.options.master_opts.java_properties['com.sun.management.jmxremote.ssl.need.client.auth'] ?= 'false'
           options.jmx_ssl_config['javax.net.ssl.keyStore'] ?= options.ssl.keystore.target
           throw Error 'Missing RS Keystore Password' unless options.ssl?.keystore?.password
           options.jmx_ssl_config['javax.net.ssl.keyStorePassword'] ?= options.ssl.keystore.password
@@ -63,13 +63,13 @@ com.sun.management.jmxremote.ssl.config.file=<file>.
 
 ## Enable JMX Authentication
 
-      options.authenticate ?= 'false'
-      if options.authenticate
-        options.username ?= 'monitorRole'# be careful if changing , should configure access file
-        options.jmx_auth_file ?=  '/etc/security/jmxPasswords/hbase-master.password'
-        options.jmx_config['com.sun.management.jmxremote.authenticate'] ?= 'true'
-        throw Error 'Missing options.password' unless options.password
-        options.jmx_config['com.sun.management.jmxremote.password.file'] ?= options.jmx_auth_file
+        options.authenticate ?= 'false'
+        if options.authenticate
+          options.username ?= 'monitorRole'# be careful if changing , should configure access file
+          options.jmx_auth_file ?=  '/etc/security/jmxPasswords/hbase-master.password'
+          options.jmx_config['com.sun.management.jmxremote.authenticate'] ?= 'true'
+          throw Error 'Missing options.password' unless options.password
+          options.jmx_config['com.sun.management.jmxremote.password.file'] ?= options.jmx_auth_file
         # user password file for authentication
 
 ## Configuration
