@@ -317,6 +317,7 @@ Inherits log4j configuration from the `ryba/log4j`. The rendered file uses the v
       options.wait.ipc = for srv in service.deps.hdfs_nn
         nameservice =  if options.nameservice then ".#{options.nameservice}" or ''
         hostname = if options.nameservice then ".#{srv.node.hostname}" else ''
+        srv.options.hdfs_site ?= {}
         if srv.options.hdfs_site["dfs.namenode.rpc-address#{nameservice}#{hostname}"]
           [fqdn, port] = srv.options.hdfs_site["dfs.namenode.rpc-address#{nameservice}#{hostname}"].split(':')
         else 
@@ -327,6 +328,7 @@ Inherits log4j configuration from the `ryba/log4j`. The rendered file uses the v
         protocol = if options.hdfs_site['dfs.http.policy'] is 'HTTP_ONLY' then 'http' else 'https'
         nameservice =  if options.nameservice then ".#{options.nameservice}" or ''
         hostname = if options.nameservice then ".#{srv.node.hostname}" else ''
+        srv.options.hdfs_site ?= {}
         if srv.options.hdfs_site["dfs.namenode.rpc-address#{nameservice}#{hostname}"]
           [fqdn, port] = srv.options.hdfs_site["dfs.namenode.#{protocol}-address#{nameservice}#{hostname}"].split(':')
         else 

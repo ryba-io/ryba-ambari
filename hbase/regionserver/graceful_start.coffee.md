@@ -14,6 +14,7 @@
         cluster_name: options.cluster_name
         name: 'HBASE_REGIONSERVER'
         hostname: options.fqdn
+        
       @ambari.hosts.component_status
         url: options.ambari_url
         username: 'admin'

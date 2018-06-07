@@ -239,6 +239,7 @@ configure `policy-mgr-ssl` ambari configuration to make the plugin communicate o
         options.configurations['ranger-hbase-audit']['xasecure.audit.jaas.Client.option.keyTab '] ?= service.deps.hbase_master[0].options.hbase_site['hbase.master.kerberos.keytab']
         options.configurations['ranger-hbase-audit']['xasecure.audit.jaas.inmemory.Client.option.keyTab'] ?= service.deps.hbase_master[0].options.hbase_site['hbase.master.kerberos.keytab']
         options.configurations['ranger-hbase-audit']['xasecure.audit.jaas.inmemory.Client.option.principal'] ?= service.deps.hbase_master[0].options.hbase_site['hbase.master.kerberos.principal']
+        options.configurations['ranger-hbase-audit']['xasecure.audit.provider.summary.enabled'] ?= 'true'
 
 ## Ambari
 
