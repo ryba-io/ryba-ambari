@@ -63,10 +63,10 @@ Example:
       options.opts.base ?= ''
       options.opts.java_properties ?= {}
       options.opts.jvm ?= {}
-      options.opts.jvm['-Xms'] ?= options.heapsize
-      options.opts.jvm['-Xmx'] ?= options.heapsize
-      options.opts.jvm['-XX:NewSize='] ?= options.newsize #should be 1/8 of datanode heapsize
-      options.opts.jvm['-XX:MaxNewSize='] ?= options.newsize #should be 1/8 of datanode heapsize
+      # options.opts.jvm['-Xms'] ?= options.heapsize
+      # options.opts.jvm['-Xmx'] ?= options.heapsize
+      # options.opts.jvm['-XX:NewSize='] ?= options.newsize #should be 1/8 of datanode heapsize
+      # options.opts.jvm['-XX:MaxNewSize='] ?= options.newsize #should be 1/8 of datanode heapsize
 
 ## Configuration
 
@@ -372,10 +372,10 @@ Enrich `ryba-ambari-takeover/hadoop/hdfs` with hdfs_nn properties.
       
         # Env
         srv.options.configurations['hadoop-env'] ?= {}
-        srv.options.configurations['hadoop-env']['HADOOP_SECURE_DN_USER'] ?= options.user.name
-        srv.options.configurations['hadoop-env']['HADOOP_SECURE_DN_LOG_DIR'] ?= options.log_dir
+        # srv.options.configurations['hadoop-env']['HADOOP_SECURE_DN_USER'] ?= options.user.name
+        # srv.options.configurations['hadoop-env']['HADOOP_SECURE_DN_LOG_DIR'] ?= options.log_dir
         srv.options.configurations['hadoop-env']['java_home'] ?= options.java_home
-        srv.options.configurations['hadoop-env']['HADOOP_NAMENODE_INIT_HEAPSIZE'] ?= options.hadoop_namenode_init_heap
+        # srv.options.configurations['hadoop-env']['HADOOP_NAMENODE_INIT_HEAPSIZE'] ?= options.hadoop_namenode_init_heap
         srv.options.configurations['hadoop-env']['namenode_heapsize'] ?= options.heapsize
         srv.options.configurations['hadoop-env']['namenode_newsize'] ?= options.newsize
         # Ambari required
@@ -385,7 +385,7 @@ Enrich `ryba-ambari-takeover/hadoop/hdfs` with hdfs_nn properties.
         # opts
         srv.options.hdfs_nn_opts = options.opts
 
-## Metrics Properties
+## Metrics Properties/
 
         srv.options.configurations['hadoop-metrics-properties'] ?= {}
         enrich_config options.metrics.config, srv.options.configurations['hadoop-metrics-properties'] if service.deps.metrics?

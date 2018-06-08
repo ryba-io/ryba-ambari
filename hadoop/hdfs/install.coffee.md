@@ -238,9 +238,9 @@ the file must be specified.  If the value is empty, no hosts are excluded.
           HADOOP_JOURNALNODE_OPTS = options.hdfs_jn_opts.base
           HADOOP_JOURNALNODE_OPTS += " -D#{k}=#{v}" for k, v of options.hdfs_jn_opts.java_properties
           HADOOP_JOURNALNODE_OPTS += " #{k}#{v}" for k, v of options.hdfs_jn_opts.jvm
-          ZKFC_OPTS = options.zkfc_opts.base
-          ZKFC_OPTS += " -D#{k}=#{v}" for k, v of options.zkfc_opts.java_properties
-          ZKFC_OPTS += " #{k}#{v}" for k, v of options.zkfc_opts.jvm
+          HADOOP_ZKFC_OPTS = options.zkfc_opts.base
+          HADOOP_ZKFC_OPTS += " -D#{k}=#{v}" for k, v of options.zkfc_opts.java_properties
+          HADOOP_ZKFC_OPTS += " #{k}#{v}" for k, v of options.zkfc_opts.jvm
           @file.render
             header: 'Render'
             source: "#{__dirname}/../resources/hadoop-env.sh.j2"
@@ -250,7 +250,7 @@ the file must be specified.  If the value is empty, no hosts are excluded.
               HADOOP_NAMENODE_OPTS: HADOOP_NAMENODE_OPTS
               HADOOP_DATANODE_OPTS: HADOOP_DATANODE_OPTS
               HADOOP_JOURNALNODE_OPTS: HADOOP_JOURNALNODE_OPTS
-              ZKFC_OPTS: ZKFC_OPTS
+              HADOOP_ZKFC_OPTS: HADOOP_ZKFC_OPTS
 
 ## Log4j
 

@@ -370,9 +370,7 @@ source code, the list of supported prefixes is: "namenode", "resourcemanager",
         srv.options.configurations['hadoop-env']['HDFS_AUDIT_LOGGER'] ?= options.log4j.audit_logger
         srv.options.configurations['hadoop-env']['HADOOP_CLIENT_OPTS'] ?= options.hadoop_client_opts
         srv.options.configurations['hadoop-env']['HADOOP_OPTS'] ?= options.hadoop_opts
-        srv.options.configurations['hadoop-env']['HADOOP_HEAPSIZE'] ?= options.hadoop_heap
         srv.options.configurations['hadoop-env']['hadoop_root_logger'] ?= options.log4j.root_logger
-        srv.options.configurations['hadoop-env']['hadoop_heapsize'] ?= options.hadoop_heap
         srv.options.configurations['hadoop-env']['hadoop_root_logger'] ?= options.log4j.root_logger
         # enrich hdfs yarn-env service
         srv.options.configurations['yarn-env'] ?= {}

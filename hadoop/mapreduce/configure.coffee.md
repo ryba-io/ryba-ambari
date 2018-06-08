@@ -92,7 +92,6 @@ For this reason components system opts are regiester.
       options.configurations['mapred-env']['mapred_user_nproc_limit'] ?= options.mapred.user.limits.nproc
       options.configurations['mapred-env']['jobhistory_heapsize'] ?= '1024m'
       options.configurations['mapred-env']['mapred_log_dir_prefix'] ?= options.mapred.log_dir
-      options.configurations['mapred-env']
       options.configurations['mapred-env']['mapred_pid_dir_prefix'] ?= options.mapred.pid_dir_prefix
       options.configurations['mapred-env']['mapred_jobstatus_dir'] ?= '/var/mapred/jhs'
 

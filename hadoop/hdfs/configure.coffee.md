@@ -41,10 +41,11 @@ properties than needed.
 
       options.conf_dir ?= '/etc/hadoop/conf'
       # options.hadoop_lib_home ?= '/usr/hdp/current/hadoop-client/lib' # refered by oozie-env.sh, now hardcoded
-      options.hdfs.log_dir ?= '/var/log/hadoop/hdfs'
+      options.hdfs.log_dir ?= '/var/log/hadoop'
       options.hdfs.pid_dir ?= '/var/run/hadoop'
       options.hdfs.secure_dn_pid_dir ?= '/var/run/hadoop/hdfs' # /$HADOOP_SECURE_DN_USER
       options.hdfs.secure_dn_user ?= options.hdfs.user.name
+      options.hadoop_heap ?= '1024'
 
 
 ## Kerberos
@@ -132,9 +133,9 @@ For this reason components system opts are regiester.
       options.zkfc_opts ?= {}
       #opts
       options.configurations['hadoop-env'] ?= {}
-      options.configurations['hadoop-env']['HADOOP_LOG_DIR'] ?= options.hdfs.log_dir
-      options.configurations['hadoop-env']['HADOOP_PID_DIR'] ?= "#{options.hdfs.pid_dir}/#{options.hdfs.user.name}"
-      options.configurations['hadoop-env']['HADOOP_SECURE_DN_PID_DIR'] ?= "#{options.hdfs.pid_dir}/#{options.hdfs.user.name}"
+      # options.configurations['hadoop-env']['HADOOP_LOG_DIR'] ?= options.hdfs.log_dir
+      # options.configurations['hadoop-env']['HADOOP_PID_DIR'] ?= "#{options.hdfs.pid_dir}/#{options.hdfs.user.name}"
+      # options.configurations['hadoop-env']['HADOOP_SECURE_DN_PID_DIR'] ?= "#{options.hdfs.pid_dir}/#{options.hdfs.user.name}"
       options.configurations['hadoop-env']['proxyuser_group'] ?= 'users'
       options.configurations['hadoop-env']['hdfs_user'] ?= options.hdfs.user.name
       options.configurations['hadoop-env']['hdfs_principal_name'] ?= options.hdfs.krb5_user.principal
@@ -144,8 +145,12 @@ For this reason components system opts are regiester.
       # Ambari required
       options.configurations['hadoop-env']['hadoop_pid_dir_prefix'] ?= options.hdfs.pid_dir
       options.configurations['hadoop-env']['hdfs_log_dir_prefix'] ?= options.hdfs.log_dir
-      options.configurations['hadoop-env']['hdfs_tmp_dir'] ?= "#{options.hdfs.log_dir}/tmp"
+      options.configurations['hadoop-env']['hdfs_tmp_dir'] ?= "/tmp"
       options.configurations['hadoop-env']['hadoop_conf_dir'] ?= "#{options.conf_dir}"
+      options.configurations['hadoop-env']['hadoop_heapsize'] ?= options.hadoop_heap
+      options.configurations['hadoop-env']['secure_dn_user'] ?= options.secure_dn_user
+      options.configurations['hadoop-env']['nfsgateway_heapsize'] ?= '1024'
+
 
 ## Hosts
 

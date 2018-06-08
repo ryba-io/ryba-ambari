@@ -66,10 +66,10 @@ Set up Java heap size like in `ryba-ambari-takeover/hadoop/hdfs_nn`.
       options.opts.base ?= ''
       options.opts.java_properties ?= {}
       options.opts.jvm ?= {}
-      options.opts.jvm['-Xms'] ?= options.heapsize
-      options.opts.jvm['-Xmx'] ?= options.heapsize
-      options.opts.jvm['-XX:NewSize='] ?= options.newsize #should be 1/8 of datanode heapsize
-      options.opts.jvm['-XX:MaxNewSize='] ?= options.newsize #should be 1/8 of datanode heapsize
+      # options.opts.jvm['-Xms'] ?= options.heapsize
+      # options.opts.jvm['-Xmx'] ?= options.heapsize
+      # options.opts.jvm['-XX:NewSize='] ?= options.newsize #should be 1/8 of datanode heapsize
+      # options.opts.jvm['-XX:MaxNewSize='] ?= options.newsize #should be 1/8 of datanode heapsize
 
 ## Configuration
 
@@ -289,8 +289,8 @@ Enrich `ryba-ambari-takeover/hadoop/hdfs` with hdfs_dn properties.
       
         # Env
         srv.options.configurations['hadoop-env'] ?= {}
-        srv.options.configurations['hadoop-env']['HADOOP_SECURE_DN_USER'] ?= options.user.name
-        srv.options.configurations['hadoop-env']['HADOOP_SECURE_DN_LOG_DIR'] ?= options.log_dir
+        # srv.options.configurations['hadoop-env']['HADOOP_SECURE_DN_USER'] ?= options.user.name
+        # srv.options.configurations['hadoop-env']['HADOOP_SECURE_DN_LOG_DIR'] ?= options.log_dir
         srv.options.configurations['hadoop-env']['hadoop_conf_secure_dir'] ?= "#{options.conf_dir}/secure"
         srv.options.configurations['hadoop-env']['hadoop_conf_dir'] ?= "#{options.conf_dir}"
         srv.options.configurations['hadoop-env']['dtnode_heapsize'] ?= options.heapsize
