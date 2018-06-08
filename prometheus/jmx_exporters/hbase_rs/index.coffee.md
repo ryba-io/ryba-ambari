@@ -28,6 +28,7 @@ It meant to be run as a Java Agent, exposing an HTTP server and scraping the loc
           @call 'ryba-ambari-takeover/prometheus/jmx_exporters/hbase_rs/password.coffee.md', options.original
       commands:
         install: [
+          'ryba-ambari-takeover/prometheus/jmx_exporters/hbase_rs/password'
           'ryba-ambari-takeover/prometheus/jmx_exporters/hbase_rs/install'
           'ryba-ambari-takeover/prometheus/jmx_exporters/hbase_rs/start'
         ]

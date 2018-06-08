@@ -27,6 +27,7 @@ It meant to be run as a Java Agent, exposing an HTTP server and scraping the loc
           @call 'ryba-ambari-takeover/prometheus/jmx_exporters/yarn_nm/password.coffee.md', options.original
       commands:
         install: [
+          'ryba-ambari-takeover/prometheus/jmx_exporters/yarn_nm/password'
           'ryba-ambari-takeover/prometheus/jmx_exporters/yarn_nm/install'
           'ryba-ambari-takeover/prometheus/jmx_exporters/yarn_nm/start'
         ]
