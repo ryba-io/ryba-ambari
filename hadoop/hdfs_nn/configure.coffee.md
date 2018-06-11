@@ -137,7 +137,7 @@ Example:
       options.hdfs_site['dfs.namenode.kerberos.https.principal'] = "HTTP/_HOST@#{options.krb5.realm}"
       options.hdfs_site['dfs.web.authentication.kerberos.principal'] ?= "HTTP/_HOST@#{options.krb5.realm}"
       options.hdfs_site['dfs.web.authentication.kerberos.keytab'] ?= '/etc/security/keytabs/spnego.service.keytab'
-      options.opts.java_properties['java.security.auth.login.config'] ?= "#{options.conf_dir}/hdfs_nn_jaas.conf"
+      # options.opts.java_properties['java.security.auth.login.config'] ?= "#{options.conf_dir}/hdfs_nn_jaas.conf"
 
 ## Configuration for HDFS High Availability (HA)
 

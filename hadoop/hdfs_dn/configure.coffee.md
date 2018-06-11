@@ -121,7 +121,7 @@ memory that you can lock than what you have configured.
       # Configuration in "core-site.xml"
       options.hdfs_site['dfs.datanode.kerberos.principal'] ?= options.krb5.principal.replace service.node.fqdn, '_HOST'
       options.hdfs_site['dfs.datanode.keytab.file'] ?= options.krb5.keytab
-      options.opts.java_properties['java.security.auth.login.config'] ?= "#{options.conf_dir}/hdfs_dn_jaas.conf"
+      # options.opts.java_properties['java.security.auth.login.config'] ?= "#{options.conf_dir}/hdfs_dn_jaas.conf"
 
 ## SSL
 

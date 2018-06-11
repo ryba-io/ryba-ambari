@@ -40,12 +40,12 @@ com.sun.management.jmxremote.ssl.config.file=<file>.
 
       for srv in service.deps.hdfs_service
         srv.options ?= {}
-        options.jmx_config_file ?= "#{service.deps.hdfs_jn.options.conf_dir}/hdfs_journalnode_jmx.properties"
+        options.jmx_config_file ?= "#{srv.options.conf_dir}/hdfs_journalnode_jmx.properties"
         srv.options.hdfs_jn_opts.java_properties['com.sun.management.config.file'] ?= options.jmx_config_file
         options.jmx_config ?= {}
         options.jmx_config['com.sun.management.jmxremote'] ?= 'true'
         options.jmx_config['com.sun.management.jmxremote.port'] ?= '9013'
-        options.jmx_config['com.sun.management.jmxremote.ssl.config.file'] ?= "#{service.deps.hdfs_jn.options.conf_dir}/hdfs_journalnode_jmx_ssl.properties"
+        options.jmx_config['com.sun.management.jmxremote.ssl.config.file'] ?= "#{srv.options.conf_dir}/hdfs_journalnode_jmx_ssl.properties"
 
 ## Enable JMX SSL
 

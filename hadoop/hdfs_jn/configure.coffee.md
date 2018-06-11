@@ -90,7 +90,7 @@ Example:
       # options.hdfs_site['dfs.journalnode.keytab.file'] = '/etc/security/keytabs/jn.service.keytab'
       # end should be config
       
-      options.opts.java_properties['java.security.auth.login.config'] ?= "#{options.conf_dir}/hdfs_jn_jaas.conf"
+      # options.opts.java_properties['java.security.auth.login.config'] ?= "#{options.conf_dir}/hdfs_jn_jaas.conf"
       
 ## Ambari Kerberos Principal and Keytab
 
