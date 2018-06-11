@@ -31,7 +31,6 @@
           HADOOP_NAMENODE_OPTS += " -D#{k}=#{v}" for k, v of options.hdfs_nn_opts.java_properties
           HADOOP_NAMENODE_OPTS += " #{k}#{v}" for k, v of options.hdfs_nn_opts.jvm
           HADOOP_DATANODE_OPTS = options.hdfs_dn_opts.base
-          console.log HADOOP_NAMENODE_OPTS
           HADOOP_DATANODE_OPTS += " -D#{k}=#{v}" for k, v of options.hdfs_dn_opts.java_properties
           HADOOP_DATANODE_OPTS += " #{k}#{v}" for k, v of options.hdfs_dn_opts.jvm
           HADOOP_JOURNALNODE_OPTS = options.hdfs_jn_opts.base
