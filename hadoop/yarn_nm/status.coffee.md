@@ -4,7 +4,7 @@
 Check if the Yarn NodeManager server is running. The process ID is located by
 default inside "/var/run/hadoop-yarn/yarn-yarn-nodemanager.pid".
 
-    module.exports = header: 'YARN NM Ambari Status', handler: ->
+    module.exports = header: 'YARN NM Ambari Status', handler: (options) ->
 
 ## Registry
 

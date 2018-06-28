@@ -4,7 +4,7 @@
 Check if the Job History Server is running. The process ID is located by default
 inside "/var/run/hadoop-mapreduce/".
 
-    module.exports = header: 'Mapreduce Ambari JHS Status', handler: ->
+    module.exports = header: 'Mapreduce Ambari JHS Status', handler: (options) ->
 
 ## Registry
 
