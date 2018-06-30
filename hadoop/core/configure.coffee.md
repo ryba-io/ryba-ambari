@@ -81,7 +81,7 @@ java.lang.IllegalArgumentException: Does not contain a valid host:port authority
       options.core_site['net.topology.script.file.name'] ?= "#{options.conf_dir}/rack_topology.sh"
       options.topology = service.instances.filter (instance) ->
         instance.node.services.some (service) ->
-          service.module in ['ryba-ambari-takeover/hadoop/hdfs_dn', 'ryba-ambari-takeover/hadoop/yarn_nm']
+          service.module in ['ryba-ambari-takeover/hadoop/hdfs_dn', 'ryba-ambari-takeover/hadoop/yarn_nm', 'ryba-ambari-takeover/hadoop/core']
       .map (instance) ->
         throw Error "Required Node Option: ip for node #{JSON.stringify instance.node.id}" unless instance.node.ip
         id: instance.node.id, ip: instance.node.ip, rack: instance.node.rack
@@ -246,11 +246,11 @@ the keystore options exported from the SSL service and merged above:
 
         options.ssl_server['ssl.server.keystore.password'] ?= options.ssl.keystore.password
         throw Error "Required Option: ssl_server['ssl.server.keystore.password']" unless options.ssl_server['ssl.server.keystore.password']
-        options.ssl_server['ssl.server.keystore.location'] ?= "#{options.conf_dir}/keystore"
+        options.ssl_server['ssl.server.keystore.location'] ?= "#{options.ssl.conf_dir}/keystore.jks"
         options.ssl_server['ssl.server.keystore.type'] ?= 'jks'
         options.ssl_server['ssl.server.keystore.keypassword'] ?= options.ssl.keystore.keypass
         throw Error "Required Option: ssl_server['ssl.server.keystore.keypassword']" unless options.ssl_server['ssl.server.keystore.keypassword']
-        options.ssl_server['ssl.server.truststore.location'] ?= "#{options.conf_dir}/truststore"
+        options.ssl_server['ssl.server.truststore.location'] ?= "#{options.ssl.conf_dir}/truststore.jks"
         options.ssl_server['ssl.server.truststore.password'] ?= options.ssl_client['ssl.client.truststore.password']
         options.ssl_server['ssl.server.truststore.type'] ?= 'jks'
         options.ssl_server['ssl.server.truststore.reload.interval'] ?= '10000'

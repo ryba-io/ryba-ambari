@@ -105,6 +105,7 @@ Create the rangeradmin and rangerlogger databases.
               inst_by='#{options.fqdn}';
               """
               unless_exec: db.cmd options.db, "select * from #{options.install['db_name']}.x_db_version_h where version='DEFAULT_ADMIN_UPDATE'  | grep '1 rows'"
+              code_skipped: 1
 
       # @db.user options.db, database: null, username: options.install['db_user'], password: options.install['db_password'],
       #   header: 'User'

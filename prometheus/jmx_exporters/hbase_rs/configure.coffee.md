@@ -26,6 +26,7 @@
       options.opts.base ?= ''
       options.opts.java_properties ?= {}
       options.opts.jvm ?= {}
+      options.conf_dir ?= "/etc/prometheus-exporter-jmx/conf"
 
 ## Enable JMX Server
 JMX options will be configured using a properties file, more readable for administrators.
@@ -38,7 +39,7 @@ com.sun.management.jmxremote.ssl.config.file=<file>.
         srv.options.regionserver_opts.java_properties['com.sun.management.config.file'] ?= options.jmx_config_file
         options.jmx_config ?= {}
         options.jmx_config['com.sun.management.jmxremote'] ?= 'true'
-        options.jmx_config['com.sun.management.jmxremote.port'] ?= '9016'
+        options.jmx_config['com.sun.management.jmxremote.port'] ?= '9018'
         options.jmx_config['com.sun.management.jmxremote.ssl.config.file'] ?= "#{service.deps.hbase_rs.options.conf_dir}/hbase_regionserver_jmx_ssl.properties"
 
 ## Enable JMX SSL
@@ -49,14 +50,13 @@ com.sun.management.jmxremote.ssl.config.file=<file>.
           options.jmx_ssl_config ?= {}
           srv.options.regionserver_opts.java_properties['com.sun.management.jmxremote.ssl'] ?= 'true'
           srv.options.regionserver_opts.java_properties['com.sun.management.jmxremote.ssl.need.client.auth'] ?= 'false'
-          options.jmx_ssl_config['javax.net.ssl.keyStore'] ?= options.ssl.keystore.target
-          throw Error 'Missing RS Keystore Password' unless options.ssl?.keystore?.password
-          options.jmx_ssl_config['javax.net.ssl.keyStorePassword'] ?= options.ssl.keystore.password
+          options.jmx_ssl_config['javax.net.ssl.keyStore'] ?= "#{service.deps.hadoop_core.options.ssl_server['ssl.server.keystore.location']}"
+          throw Error 'Missing HBase Master Keystore Password' unless service.deps.hadoop_core.options.ssl_server['ssl.server.keystore.password']
+          options.jmx_ssl_config['javax.net.ssl.keyStorePassword'] ?= service.deps.hadoop_core.options.ssl_server['ssl.server.keystore.password']
           #jmx_exporter client truststore
-          options.conf_dir ?= "/etc/prometheus-exporter-jmx/conf"
-          options.opts.java_properties['javax.net.ssl.trustStore'] ?=  "#{options.conf_dir}/truststore"
-          throw Error 'Missing RS Truststore Password' unless options.ssl?.truststore?.password
-          options.opts.java_properties['javax.net.ssl.trustStorePassword'] ?=  options.ssl.truststore.password
+          options.opts.java_properties['javax.net.ssl.trustStore'] ?= "#{service.deps.hadoop_core.options.ssl_client['ssl.client.truststore.location']}"
+          throw Error 'Missing HBase Master Truststore Password' unless service.deps.hadoop_core.options.ssl_client['ssl.client.truststore.password']
+          options.opts.java_properties['javax.net.ssl.trustStorePassword'] ?=  service.deps.hadoop_core.options.ssl_client['ssl.client.truststore.password']
         else
           options.jmx_config['com.sun.management.jmxremote.ssl'] ?= 'false'
 

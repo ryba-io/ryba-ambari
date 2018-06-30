@@ -30,8 +30,8 @@
 
       # Layout
       options.home ?= '/usr/hdp/current/hadoop-yarn-nodemanager'
-      options.log_dir ?= '/var/log/hadoop'
-      options.pid_dir ?= '/var/run/hadoop'
+      options.log_dir ?= service.deps.yarn[0].options.yarn.log_dir
+      options.pid_dir ?= service.deps.yarn[0].options.yarn.pid_dir
       options.hadoop_conf_dir ?= '/etc/hadoop/conf'
       options.conf_dir ?= '/etc/hadoop/conf'
       # Java

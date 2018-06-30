@@ -16,6 +16,26 @@
       @registry.register 'hconfigure', 'ryba/lib/hconfigure'
       @registry.register 'hdp_select', 'ryba/lib/hdp_select'
 
+      @call
+        if: options.post_component and options.takeover
+      , ->
+        @each options.config_groups, (opts, cb) ->
+          {key, value} = opts
+          @ambari.configs.groups_add
+            header: "#{key}"
+            url: options.ambari_url
+            username: 'admin'
+            password: options.ambari_admin_password
+            cluster_name: options.cluster_name
+            group_name: key
+            tag: key
+            description: "#{key} config groups"
+            hosts: value.hosts
+            desired_configs: 
+              type: value.type
+              tag: value.tag
+              properties: value.properties
+          @next cb
 ## Identities
 
       @system.group options.group
@@ -175,25 +195,7 @@ Render hadoop-env.sh and yarn-env.sh files, before uploading to Ambari Server.
                 password: options.ambari_admin_password
                 config_type: 'hbase-env'
                 cluster_name: options.cluster_name
-                properties: merge {},
-                  hbase_pid_dir: options.configurations['hbase-env'].hbase_pid_dir
-                  hbase_log_dir: options.configurations['hbase-env'].hbase_log_dir
-                  hbase_tmp_dir: options.configurations['hbase-env'].hbase_tmp_dir
-                  hbase_user: options.configurations['hbase-env'].hbase_user
-                  hbase_user_keytab: options.configurations['hbase-env'].hbase_user_keytab
-                  hbase_principal_name: options.configurations['hbase-env'].hbase_principal_name
-                  hbase_user_nofile_limit:  options.configurations['hbase-env'].hbase_user_nofile_limit
-                  hbase_user_nproc_limit:  options.configurations['hbase-env'].hbase_user_nproc_limit
-                  hbase_master_heapsize:  options.configurations['hbase-env'].hbase_master_heapsize
-                  regionserver_heapsize:  options.configurations['hbase-env'].regionserver_heapsize
-                  hbase_regionserver_heapsize: options.configurations['hbase-env'].regionserver_heapsize
-                  hbase_regionserver_xmn_ratio: options.configurations['hbase-env'].hbase_regionserver_xmn_ratio
-                  hbase_regionserver_xmn_max: options.configurations['hbase-env'].hbase_regionserver_xmn_max
-                  hbase_java_io_tmpdir: options.configurations['hbase-env'].hbase_java_io_tmpdir
-                  java_home: options.configurations['hbase-env'].java_home
-                  java_home64: options.configurations['hbase-env'].java_home64
-                ,  
-                  content: content
+                properties: merge {}, options.configurations['hbase-env'], content: content
               .next callback
             catch err
               callback err

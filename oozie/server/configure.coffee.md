@@ -82,8 +82,8 @@ Example
       options.admin_port ?= 11001
       options.oozie_site ?= {}
       options.oozie_site['oozie.base.url'] = if options.ssl.enabled
-      then "https://#{service.node.fqdn}:#{options.http_port}/oozie"
-      else "http://#{service.node.fqdn}:#{options.http_port}/oozie"
+      then "https://${OOZIE_HTTP_HOSTNAME}:#{options.http_port}/oozie"
+      else "http://${OOZIE_HTTP_HOSTNAME}:#{options.http_port}/oozie"
 
 ## Database
 
@@ -153,10 +153,10 @@ Example
       options.sharelib.sqoop ?= []
       # https://docs.hortonworks.com/HDPDocuments/HDP2/HDP-2.5.0/bk_command-line-upgrade/content/start-oozie-23.html
       # AMBARI-18383
-      options.sharelib.spark.push '/usr/hdp/current/spark-client/lib/datanucleus-api-jdo-3.2.6.jar'
-      options.sharelib.spark.push '/usr/hdp/current/spark-client/lib/datanucleus-core-3.2.10.jar'
-      options.sharelib.spark.push '/usr/hdp/current/spark-client/lib/datanucleus-rdbms-3.2.9.jar'
-      options.sharelib.spark.push '/usr/hdp/current/spark-client/lib/spark-assembly-1.6.2.2.5.3.0-37-hadoop2.7.3.2.5.3.0-37.jar'
+      # options.sharelib.spark.push '/usr/hdp/current/spark-client/lib/datanucleus-api-jdo-3.2.6.jar'
+      # options.sharelib.spark.push '/usr/hdp/current/spark-client/lib/datanucleus-core-3.2.10.jar'
+      # options.sharelib.spark.push '/usr/hdp/current/spark-client/lib/datanucleus-rdbms-3.2.9.jar'
+      # options.sharelib.spark.push '/usr/hdp/current/spark-client/lib/spark-assembly-1.6.2.2.5.3.0-37-hadoop2.7.3.2.5.3.0-37.jar'
       options.sharelib.spark.push '/usr/hdp/current/spark-client/python/lib/pyspark.zip'
       options.sharelib.spark.push '/usr/hdp/current/spark-client/python/lib/py4j-0.9-src.zip'
       # Oozie Notifications

@@ -28,8 +28,8 @@
 
       # Layout
       options.home ?= '/usr/hdp/current/hadoop-yarn-timelineserver'
-      options.log_dir ?= '/var/log/hadoop-yarn'
-      options.pid_dir ?= '/var/run/hadoop-yarn'
+      options.log_dir ?= service.deps.yarn[0].options.yarn.log_dir
+      options.pid_dir ?= service.deps.yarn[0].options.yarn.pid_dir
       options.conf_dir ?= '/etc/hadoop/conf'
       # Java
       options.java_home ?= service.deps.java.options.java_home

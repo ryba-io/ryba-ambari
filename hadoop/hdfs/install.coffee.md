@@ -243,10 +243,10 @@ the file must be specified.  If the value is empty, no hosts are excluded.
           HADOOP_ZKFC_OPTS += " #{k}#{v}" for k, v of options.zkfc_opts.jvm
           @file.render
             header: 'Render'
-            source: "#{__dirname}/../resources/hadoop-env.sh.j2"
+            source: "#{__dirname}/../resources/hadoop-env.sh.ambari.j2"
             target: "#{options.cache_dir}/hadoop-env.sh"
             ssh: false
-            context: merge options.configurations['hadoop-env'],
+            context:
               HADOOP_NAMENODE_OPTS: HADOOP_NAMENODE_OPTS
               HADOOP_DATANODE_OPTS: HADOOP_DATANODE_OPTS
               HADOOP_JOURNALNODE_OPTS: HADOOP_JOURNALNODE_OPTS
@@ -410,28 +410,7 @@ Render hadoop-env.sh and yarn-env.sh files, before uploading to Ambari Server.
                 password: options.ambari_admin_password
                 config_type: 'hadoop-env'
                 cluster_name: options.cluster_name
-                properties: merge {},
-                  hadoop_pid_dir_prefix: options.configurations['hadoop-env'].hadoop_pid_dir_prefix
-                  hdfs_log_dir_prefix: options.configurations['hadoop-env'].hdfs_log_dir_prefix
-                  hadoop_root_logger: options.configurations['hadoop-env'].hadoop_root_logger
-                  hadoop_heapsize: options.configurations['hadoop-env'].hadoop_heapsize
-                  namenode_heapsize: options.configurations['hadoop-env'].namenode_heapsize
-                  namenode_opt_newsize: options.configurations['hadoop-env'].namenode_opt_newsize
-                  namenode_opt_maxnewsize: options.configurations['hadoop-env'].namenode_opt_maxnewsize
-                  namenode_opt_permsize: '128m'
-                  namenode_opt_maxpermsize: '256m'
-                  hdfs_user: options.configurations['hadoop-env'].hdfs_user
-                  hdfs_user_keytab: options.configurations['hadoop-env'].hdfs_user_keytab
-                  hdfs_principal_name: options.configurations['hadoop-env'].hdfs_principal_name
-                  hdfs_tmp_dir: options.configurations['hadoop-env'].hdfs_tmp_dir
-                  hadoop_root_logger: options.configurations['hadoop-env'].hadoop_root_logger
-                  hdfs_user_nofile_limit:  options.configurations['hadoop-env'].hdfs_user_nofile_limit
-                  hdfs_user_nproc_limit:  options.configurations['hadoop-env'].hdfs_user_nproc_limit
-                  hadoop_conf_secure_dir:  options.configurations['hadoop-env'].hadoop_conf_secure_dir
-                  hadoop_conf_dir:  options.configurations['hadoop-env'].hadoop_conf_dir
-                  proxyuser_group:  options.configurations['hadoop-env'].proxyuser_group
-                ,  
-                  content: content
+                properties: merge {}, options.configurations['hadoop-env'], content: content.toString()
               .next callback
             catch err
               callback err

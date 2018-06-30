@@ -49,7 +49,7 @@ See More http://hadoop.apache.org/docs/r2.0.2-alpha/hadoop-yarn/hadoop-yarn-site
       @system.execute
         header: 'HA Health'
         if: -> options.nameservice
-        cmd: mkcmd.hdfs options.hdfs_krb5_user, "hdfs haadmin -checkHealth #{options.hostname}"
+        cmd: mkcmd.hdfs options.hdfs_krb5_user, "hdfs haadmin  -ns #{options.nameservice} -checkHealth #{options.hostname}"
 
 ## Check FSCK
 

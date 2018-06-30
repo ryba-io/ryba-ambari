@@ -129,7 +129,7 @@ Repository creating is only executed from one NameNode.
         options.install['XAAUDIT.HDFS.ENABLE'] ?= 'true'
         options.install['XAAUDIT.HDFS.DESTINATION_DIRECTORY'] ?= "#{service.deps.hdfs_nn.options.core_site['fs.defaultFS']}/#{service.deps.ranger_admin.options.user.name}/audit/%app-type%/%time:yyyyMMdd%"
         options.install['XAAUDIT.HDFS.HDFS_DIR'] ?= "#{service.deps.hdfs_nn.options.core_site['fs.defaultFS']}/#{service.deps.ranger_admin.options.user.name}/audit"
-        options.install['XAAUDIT.HDFS.FILE_SPOOL_DIR'] ?= "#{service.deps.hdfs_nn.options.log_dir}/audit/hdfs/spool"
+        options.install['XAAUDIT.HDFS.FILE_SPOOL_DIR'] ?= "#{service.deps.hdfs_nn.options.log_dir}/hdfs/audit/hdfs/spool"
         options.install['XAAUDIT.HDFS.DESTINATION_FILE'] ?= '%hostname%-audit.log'
         options.install['XAAUDIT.HDFS.DESTINATION_FLUSH_INTERVAL_SECONDS'] ?= '900'
         options.install['XAAUDIT.HDFS.DESTINATION_ROLLOVER_INTERVAL_SECONDS'] ?= '86400'
@@ -176,7 +176,7 @@ Repository creating is only executed from one NameNode.
         options.install['XAAUDIT.SOLR.USER'] ?= service.deps.ranger_admin.options.install['audit_solr_user']
         options.install['XAAUDIT.SOLR.ZOOKEEPER'] ?= service.deps.ranger_admin.options.install['audit_solr_zookeepers']
         options.install['XAAUDIT.SOLR.PASSWORD'] ?= service.deps.ranger_admin.options.install['audit_solr_password']
-        options.install['XAAUDIT.SOLR.FILE_SPOOL_DIR'] ?= "#{service.deps.hdfs_nn.options.log_dir}/audit/solr/spool"
+        options.install['XAAUDIT.SOLR.FILE_SPOOL_DIR'] ?= "#{service.deps.hdfs_nn.options.log_dir}/hdfs/audit/solr/spool"
         
 ## Ambari Configuration
 

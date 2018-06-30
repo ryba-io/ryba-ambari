@@ -54,13 +54,13 @@ com.sun.management.jmxremote.ssl.config.file=<file>.
           options.jmx_ssl_config ?= {}
           srv.options.yarn_rm_opts.java_properties['com.sun.management.jmxremote.ssl'] ?= 'true'
           srv.options.yarn_rm_opts.java_properties['com.sun.management.jmxremote.ssl.need.client.auth'] ?= 'false'
-          options.jmx_ssl_config['javax.net.ssl.keyStore'] ?= "#{service.deps.yarn_rm.options.conf_dir}/keystore"
-          throw Error 'Missing Datanode Keystore Password' unless options.ssl?.keystore?.password
-          options.jmx_ssl_config['javax.net.ssl.keyStorePassword'] ?= options.ssl.keystore.password
+          options.jmx_ssl_config['javax.net.ssl.keyStore'] ?= "#{service.deps.yarn_rm.options.ssl_server['ssl.server.keystore.location']}"
+          throw Error 'Missing ResourceManager Keystore Password' unless service.deps.yarn_rm.options.ssl_server['ssl.server.keystore.password']
+          options.jmx_ssl_config['javax.net.ssl.keyStorePassword'] ?= service.deps.yarn_rm.options.ssl_server['ssl.server.keystore.password']
           #jmx_exporter client truststore
-          options.opts.java_properties['javax.net.ssl.trustStore'] ?= "#{service.deps.yarn_rm.options.conf_dir}/truststore"
-          throw Error 'Missing Datanode Truststore Password' unless options.ssl?.truststore?.password
-          options.opts.java_properties['javax.net.ssl.trustStorePassword'] ?=  options.ssl.truststore.password
+          options.opts.java_properties['javax.net.ssl.trustStore'] ?= "#{service.deps.yarn_rm.options.ssl_client['ssl.client.truststore.location']}"
+          throw Error 'Missing DataNode Truststore Password' unless service.deps.yarn_rm.options.ssl_client['ssl.client.truststore.password']
+          options.opts.java_properties['javax.net.ssl.trustStorePassword'] ?=  service.deps.yarn_rm.options.ssl_client['ssl.client.truststore.password']
         else
           options.jmx_config['com.sun.management.jmxremote.ssl'] ?= 'false'
 

@@ -55,7 +55,7 @@ IPTables rules are only inserted if the parameter "iptables.action" is set to
           gid: options.group.name
           mode: 0o0755
         @system.mkdir
-          target: options.configurations['hbase-env']['hbase_tmp_dir']
+          target: options.tmp_dir
           uid: options.user.name
           gid: options.group.name
           mode: 0o0750

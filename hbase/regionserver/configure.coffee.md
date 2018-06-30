@@ -39,6 +39,7 @@
       options.conf_dir ?= service.deps.hbase[0].options.conf_dir
       options.log_dir ?= service.deps.hbase[0].options.log_dir
       options.pid_dir ?= service.deps.hbase[0].options.pid_dir
+      options.tmp_dir ?= service.deps.hbase[0].options.configurations['hbase-site']['hbase.tmp.dir']
       # Env
       options.env ?= {}
       options.env['HBASE_LOG_DIR'] ?= "#{options.log_dir}"

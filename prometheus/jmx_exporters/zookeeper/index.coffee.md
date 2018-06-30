@@ -9,9 +9,9 @@ It meant to be run as a Java Agent, exposing an HTTP server and scraping the loc
       deps:
         java: module: 'masson/commons/java', local: true, required: true
         iptables: module: 'masson/core/iptables', local: true
-        zookeeper_server: module: 'ryba/zookeeper/server', local: true, required: true
+        zookeeper_server: module: 'ryba-ambari-takeover/zookeeper/server', local: true, required: true
         jmx_exporter: module: 'ryba-ambari-takeover/prometheus/jmx_exporters/zookeeper'
-        hadoop_core: module: 'ryba/hadoop/core', local: true
+        hadoop_core: module: 'ryba-ambari-takeover/hadoop/core', local: true
         prometheus_monitor: module: 'ryba/prometheus/monitor', required: true
       configure: 'ryba-ambari-takeover/prometheus/jmx_exporters/zookeeper/configure'
       commands:

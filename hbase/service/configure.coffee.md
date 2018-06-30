@@ -151,7 +151,7 @@ Example
       options.configurations['hbase-env']['hbase_user_nproc_limit'] ?= options.user.limits.nproc
       options.configurations['hbase-env']['hbase_log_dir'] ?= options.log_dir
       options.configurations['hbase-env']['hbase_pid_dir'] ?= options.pid_dir
-      options.configurations['hbase-env']['hbase_tmp_dir'] ?= "#{options.log_dir}/tmp"
+      options.configurations['hbase-env']['hbase_tmp_dir'] ?= options.configurations['hbase-site']['hbase.tmp.dir']
       options.configurations['hbase-env']['hbase_regionserver_xmn_ratio'] ?= '0.2'
       options.configurations['hbase-env']['hbase_regionserver_xmn_max'] ?= '512'
       options.configurations['hbase-env']['hbase_java_io_tmpdir'] ?= options.configurations['hbase-env']['hbase_tmp_dir']

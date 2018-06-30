@@ -105,6 +105,12 @@ Configure the topology script to enable rack awareness to Hadoop.
           caname: "hadoop_root_ca"
           cacert: options.ssl.cacert.source
           local: options.ssl.cacert.local
+        @java.keystore_add
+          keystore: options.ssl_server['ssl.server.truststore.location']
+          storepass: options.ssl_server['ssl.server.truststore.password']
+          caname: "hadoop_root_ca"
+          cacert: options.ssl.cacert.source
+          local: options.ssl.cacert.local
         # Server: import certificates, private and public keys to hosts with a server
         @java.keystore_add
           keystore: options.ssl_server['ssl.server.keystore.location']
