@@ -83,15 +83,15 @@ Note: 20160928, wdavidw, there was some issue where truststore and keystore
 usage was messed up, the code in install is fixed but ssl is still disable because
 I have no time to test it.
 
-      options.ssl = merge {}, service.deps.ssl.options, options.ssl
-      options.conf['spark.ssl.enabled'] ?= "false" # `!!service.deps.ssl`
-      options.conf['spark.ssl.enabledAlgorithms'] ?= "MD5"
-      options.conf['spark.ssl.keyPassword'] ?= service.deps.ssl.options.keystore.password
-      options.conf['spark.ssl.keyStore'] ?= "#{options.conf_dir}/keystore"
-      options.conf['spark.ssl.keyStorePassword'] ?= service.deps.ssl.options.keystore.password
-      options.conf['spark.ssl.protocol'] ?= "SSLv3"
-      options.conf['spark.ssl.trustStore'] ?= "#{options.conf_dir}/truststore"
-      options.conf['spark.ssl.trustStorePassword'] ?= service.deps.ssl.options.truststore.password
+      # options.ssl = merge {}, service.deps.ssl.options, options.ssl
+      # options.conf['spark.ssl.enabled'] ?= "false" # `!!service.deps.ssl`
+      # options.conf['spark.ssl.enabledAlgorithms'] ?= "MD5"
+      # options.conf['spark.ssl.keyPassword'] ?= service.deps.ssl.options.keystore.password
+      # options.conf['spark.ssl.keyStore'] ?= "#{options.conf_dir}/keystore"
+      # options.conf['spark.ssl.keyStorePassword'] ?= service.deps.ssl.options.keystore.password
+      # options.conf['spark.ssl.protocol'] ?= "SSLv3"
+      # options.conf['spark.ssl.trustStore'] ?= "#{options.conf_dir}/truststore"
+      # options.conf['spark.ssl.trustStorePassword'] ?= service.deps.ssl.options.truststore.password
 
 ## Ambari REST API
 

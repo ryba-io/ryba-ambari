@@ -1,5 +1,5 @@
 
-# Apache Spark JOB History Server Configure
+# Apache Spark JOB Thrift Server Configure
 
     module.exports = (service) ->
       options = service.options
@@ -45,7 +45,7 @@
 ## HDFS Log Dir
 HDFS Directory from which the spark history server will load jobs information once in state finished.
 
-      options.conf['spark.eventLog.dir'] ?= "#{service.deps.hdfs_nn[0].options.core_site['fs.defaultFS']}/user/#{options.user.name}/applicationHistory"
+      options.conf['spark.eventLog.dir'] ?= "#{service.deps.hdfs_nn[0].options.core_site['fs.defaultFS']}/user/#{options.user.name}/applicationThrift"
       options.conf['spark.history.fs.logDirectory'] ?= options.conf['spark.eventLog.dir']
 ## SSL
 
@@ -59,14 +59,14 @@ usage was messed up, the code in install is fixed but ssl is still disable becau
 I have no time to test it.
 
       options.ssl = merge {}, service.deps.ssl.options, options.ssl
-      # options.conf['spark.ssl.enabled'] ?= "false" # `!!service.deps.ssl`
-      # options.conf['spark.ssl.enabledAlgorithms'] ?= "MD5"
-      # options.conf['spark.ssl.keyPassword'] ?= service.deps.ssl.options.keystore.password
-      # options.conf['spark.ssl.keyStore'] ?= "#{options.conf_dir}/keystore"
-      # options.conf['spark.ssl.keyStorePassword'] ?= service.deps.ssl.options.keystore.password
-      # options.conf['spark.ssl.protocol'] ?= "SSLv3"
-      # options.conf['spark.ssl.trustStore'] ?= "#{options.conf_dir}/truststore"
-      # options.conf['spark.ssl.trustStorePassword'] ?= service.deps.ssl.options.truststore.password
+      options.conf['spark.ssl.enabled'] ?= "false" # `!!service.deps.ssl`
+      options.conf['spark.ssl.enabledAlgorithms'] ?= "MD5"
+      options.conf['spark.ssl.keyPassword'] ?= service.deps.ssl.options.keystore.password
+      options.conf['spark.ssl.keyStore'] ?= "#{options.conf_dir}/keystore"
+      options.conf['spark.ssl.keyStorePassword'] ?= service.deps.ssl.options.keystore.password
+      options.conf['spark.ssl.protocol'] ?= "SSLv3"
+      options.conf['spark.ssl.trustStore'] ?= "#{options.conf_dir}/truststore"
+      options.conf['spark.ssl.trustStorePassword'] ?= service.deps.ssl.options.truststore.password
 
 ## Port
 
@@ -100,8 +100,8 @@ is a headless type keytab.
         srv.options.configurations['spark-defaults'] ?= {}
         enrich_config options.conf, srv.options.configurations['spark-defaults']
         #register hosts
-        srv.options.history_hosts ?= []
-        srv.options.history_hosts.push service.node.fqdn if srv.options.history_hosts.indexOf(service.node.fqdn) is -1
+        srv.options.thrift_hosts ?= []
+        srv.options.thrift_hosts.push service.node.fqdn if srv.options.thrift_hosts.indexOf(service.node.fqdn) is -1
 
 ## Ambari Server REST API
 
