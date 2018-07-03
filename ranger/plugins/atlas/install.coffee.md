@@ -1,211 +1,93 @@
 
-# Ranger Atlas Metadata Server Ranger Plugin Install
+# Ranger HBase Plugin Install
 
-    module.exports = header: 'Ranger Atlas Plugin install', handler: (options) ->
-      version = null
-      #https://mail-archives.apache.org/mod_mbox/incubator-ranger-user/201605.mbox/%3C363AE5BD-D796-425B-89C9-D481F6E74BAF@apache.org%3E
+    module.exports = header: 'Ranger Atlas Plugin', handler: (options) ->
+
+      console.log options.configurations['ranger-atlas-policymgr-ssl']
+      
+## Wait
+
+      @call 'ryba-ambari-takeover/ranger/hdpadmin/wait', once: true, options.wait_ranger_admin
 
 ## Register
 
-      @registry.register 'hconfigure', 'ryba/lib/hconfigure'
-      @registry.register 'hdfs_mkdir', 'ryba/lib/hdfs_mkdir'
-      @registry.register 'ranger_user', 'ryba/ranger/actions/ranger_user'
-      @registry.register 'ranger_policy', 'ryba/ranger/actions/ranger_policy'
-      @registry.register 'ranger_service', 'ryba/ranger/actions/ranger_service'
+      @registry.register ['ambari','configs','update'], 'ryba-ambari-actions/lib/configs/update'
 
-## Wait
+## Packages
 
-      @call 'ryba/ranger/admin/wait', once: true, options.wait_ranger_admin
-
-# Packages
-
-      @call header: 'Packages', ->
-        @system.execute
-          header: 'Setup Execution Version'
-          shy:true
-          cmd: """
-          hdp-select versions | tail -1
-          """
-         , (err, executed,stdout, stderr) ->
-            return  err if err or not executed
-            version = stdout.trim() if executed
-        @service
-          name: "ranger-atlas-plugin"
-
-## Ranger User
-
-      @ranger_user
-        header: 'Ranger User'
-        username: options.ranger_admin.username
-        password: options.ranger_admin.password
-        url: options.install['POLICY_MGR_URL']
-        user: options.plugin_user
+      @service
+        name: "ranger-atlas-plugin"
 
 ## Audit Layout
 
-
-# Create Atlas Policy for On HDFS Repo
-
-      @call
-        header: 'Audit HDFS Policy'
-        if: options.install['XAAUDIT.HDFS.IS_ENABLED'] is 'true'
-      , ->
-        @system.mkdir
-          header: 'HDFS Spool Dir'
-          if: options.install['XAAUDIT.HDFS.IS_ENABLED'] is 'true'
-          target: options.install['XAAUDIT.HDFS.FILE_SPOOL_DIR']
-          uid: options.atlas_user.name
-          gid: options.atlas_group.name
-          mode: 0o0750
-        @system.mkdir
-          target: options.install['XAAUDIT.SOLR.FILE_SPOOL_DIR']
-          uid: options.atlas_user.name
-          gid: options.atlas_group.name
-          mode: 0o0750
-          if: options.install['XAAUDIT.SOLR.IS_ENABLED'] is 'true'
-        @call ->
-          for target in options.policy_hdfs_audit.resources.path.values
-            @hdfs_mkdir
-              target: target
-              mode: 0o0750
-              parent:
-                mode: 0o0711
-                user: options.user.name
-                group: options.group.name
-              uid: options.atlas_user.name
-              gid: options.atlas_group.name
-              krb5_user: options.hdfs_krb5_user
-        @ranger_policy
-          username: options.ranger_admin.username
-          password: options.ranger_admin.password
-          url: options.install['POLICY_MGR_URL']
-          policy: options.policy_hdfs_audit
-
-## Service Repository creation
-
-Matchs step 1 in [Atlas plugin configuration][plugin]. Instead of using the web ui
+Matchs step 1 in [hdfs plugin configuration][plugin]. Instead of using the web ui
 we execute this task using the rest api.
 
-      @ranger_service
-        header: 'Ranger Repository'
-        username: options.ranger_admin.username
-        password: options.ranger_admin.password
-        url: options.install['POLICY_MGR_URL']
-        service: options.service_repo
+
+      # @system.mkdir
+      #   header: 'HDFS Spool Dir'
+      #   if: options.install['XAAUDIT.HDFS.IS_ENABLED'] is 'true'
+      #   target: options.install['XAAUDIT.HDFS.FILE_SPOOL_DIR']
+      #   uid: options.atlas_user.name
+      #   gid: options.hadoop_group.name
+      #   mode: 0o0750
+      # @system.mkdir
+      #   header: 'Solr Spool Dir'
+      #   if: options.install['XAAUDIT.SOLR.IS_ENABLED'] is 'true'
+      #   target: options.install['XAAUDIT.SOLR.FILE_SPOOL_DIR']
+      #   uid: options.atlas_user.name
+      #   gid: options.atlas_group.name
+      #   mode: 0o0750
+
 
 Note, by default, we're are using the same Ranger principal for every
 plugin and the principal is created by the Ranger Admin service. Chances
 are that a customer user will need specific ACLs but this hasn't been
 tested.
 
-      @krb5.addprinc options.krb5.admin,
-        header: 'Plugin Principal'
-        principal: "#{options.service_repo.configs.username}"
-        password: options.service_repo.configs.password
+      # @krb5.addprinc options.krb5.admin,
+      #   header: 'Plugin Principal'
+      #   principal: "#{options.service_repo.configs.username}"
+      #   password: options.service_repo.configs.password
 
-# Plugin Scripts 
+## SSL
 
-      @call ->
-        @file
-          header: 'Scripts rendering'
-          if: -> version?
-          source: "#{__dirname}/../../resources/plugin-install.properties"
-          target: "/usr/hdp/#{version}/ranger-atlas-plugin/install.properties"
-          local: true
-          eof: true
-          backup: true
-          write: for k, v of options.install
-            match: RegExp "^#{quote k}=.*$", 'mg'
-            replace: "#{k}=#{v}"
-            append: true
-        @file
-          header: 'Script Fix'
-          target: "/usr/hdp/#{version}/ranger-atlas-plugin/enable-atlas-plugin.sh"
-          write: [
-              match: RegExp "^HCOMPONENT_CONF_DIR=.*$", 'mg'
-              replace: "HCOMPONENT_CONF_DIR=#{options.conf_dir}"
-            ,
-              match: RegExp "^HCOMPONENT_INSTALL_DIR_NAME=.*$", 'mg'
-              replace: "HCOMPONENT_INSTALL_DIR_NAME=/usr/hdp/current/atlas-server"
-            ,
-              match: RegExp "^HCOMPONENT_LIB_DIR=.*$", 'mg'
-              replace: "HCOMPONENT_LIB_DIR=/usr/hdp/current/atlas-server/lib"
-          ]
-          backup: true
-          mode: 0o750
-        @call header: 'Enable Atlas Plugin', (_, callback) ->
-          files = ['ranger-atlas-audit.xml','ranger-atlas-security.xml','ranger-policymgr-ssl.xml']
-          sources_props = {}
-          current_props = {}
-          files_exists = {}
-          @system.execute
-            cmd: """
-            echo '' | keytool -list \
-              -storetype jceks \
-              -keystore /etc/ranger/#{options.install['REPOSITORY_NAME']}/cred.jceks | egrep '.*ssltruststore|auditdbcred|sslkeystore'
-            """
-            code_skipped: 1
-          @call
-            if: -> @status -1 #do not need this if the cred.jceks file is not provisioned
-          , ->
-            @each files, (opts, cb) ->
-              file = opts.key
-              target = "#{options.conf_dir}/#{file}"
-              ssh = @ssh options.ssh
-              fs.exists ssh, target, (err, exists) ->
-                return cb err if err
-                return cb() unless exists
-                files_exists["#{file}"] = exists
-                properties.read ssh, target , (err, props) ->
-                  return cb err if err
-                  sources_props["#{file}"] = props
-                  cb()
-          @system.execute
-            header: 'Script Execution'
-            cmd: """
-            if /usr/hdp/#{version}/ranger-atlas-plugin/enable-atlas-plugin.sh ;
-              then exit 0 ;
-              else exit 1 ;
-              fi;
-            """
-          @hconfigure
-            header: 'Fix ranger-atlas-security conf'
-            target: "#{options.conf_dir}/ranger-atlas-security.xml"
-            merge: true
-            properties:
-              'ranger.plugin.atlas.policy.rest.ssl.config.file': "#{options.conf_dir}/ranger-policymgr-ssl.xml"
-          @system.chown
-            header: 'Fix Permissions'
-            target: "/etc/ranger/#{options.install['REPOSITORY_NAME']}/.cred.jceks.crc"
-            uid: options.atlas_user.name
-            gid: options.atlas_group.name
-          @hconfigure
-            header: 'JAAS Properties for solr'
-            target: "#{options.conf_dir}/ranger-atlas-audit.xml"
-            merge: true
-            properties: options.audit
-          @each files, (opts, cb) ->
-            file = opts.key
-            target = "#{options.conf_dir}/#{file}"
-            ssh = @ssh options.ssh
-            fs.exists ssh, target, (err, exists) ->
-              return callback err if err
-              properties.read ssh, target , (err, props) ->
-                return cb err if err
-                current_props["#{file}"] = props
-                cb()
-          @call
-            header: 'Compare Current Config Files'
-            shy: true
-          , ->
-            for file in files
-              #do not need to go further if the file did not exist
-              return callback null, true unless sources_props["#{file}"]?
-              for prop, value of current_props["#{file}"]
-                return callback null, true unless value is sources_props["#{file}"][prop]
-              for prop, value of sources_props["#{file}"]
-                return callback null, true unless value is current_props["#{file}"][prop]
-              return callback null, false
+The Ranger Plugin does not use its truststore configuration when using solrJClient.
+Must add certificate to JAVA Cacerts file manually.
+
+TODO: remove CA from JAVA_HOME cacerts in a future version.
+
+      @java.keystore_add
+        keystore: "#{options.jre_home}/lib/security/cacerts"
+        storepass: 'changeit'
+        caname: "hadoop_root_ca"
+        cacert: "#{options.ssl.cacert.source}"
+        local: "#{options.ssl.cacert.local}"
+## SSL
+
+      @call header: 'SSL', ->
+        # Client: import certificate to all hosts
+        @java.keystore_add
+          keystore: options.configurations['ranger-atlas-policymgr-ssl']['xasecure.policymgr.clientssl.truststore']
+          storepass: options.configurations['ranger-atlas-policymgr-ssl']['xasecure.policymgr.clientssl.truststore.password']
+          caname: "hadoop_root_ca"
+          cacert: "#{options.ssl.cacert.source}"
+          local: "#{options.ssl.cacert.local}"
+        # Server: import certificates, private and public keys to hosts with a server
+        @java.keystore_add
+          keystore: options.configurations['ranger-atlas-policymgr-ssl']['xasecure.policymgr.clientssl.keystore']
+          storepass: options.configurations['ranger-atlas-policymgr-ssl']['xasecure.policymgr.clientssl.keystore.password']
+          key: "#{options.ssl.key.source}"
+          cert: "#{options.ssl.cert.source}"
+          keypass: options.configurations['ranger-atlas-policymgr-ssl']['xasecure.policymgr.clientssl.keystore.password']
+          name: "#{options.ssl.key.name}"
+          local: "#{options.ssl.key.local}"
+        @java.keystore_add
+          keystore: options.configurations['ranger-atlas-policymgr-ssl']['xasecure.policymgr.clientssl.keystore']
+          storepass: options.configurations['ranger-atlas-policymgr-ssl']['xasecure.policymgr.clientssl.keystore.password']
+          caname: "hadoop_root_ca"
+          cacert: "#{options.ssl.cacert.source}"
+          local: "#{options.ssl.cacert.local}"
 
 ## Dependencies
 
@@ -215,4 +97,5 @@ tested.
     properties = require 'ryba/lib/properties'
     fs = require 'ssh2-fs'
 
-[atlas-plugin]:(https://docs.hortonworks.com/HDPDocuments/HDP2/HDP-2.4.0/bk_installing_manually_book/content/installing_ranger_plugins.html#installing_ranger_atlas_plugin)
+[plugin]:(https://docs.hortonworks.com/HDPDocuments/HDP2/HDP-2.4.0/bk_installing_manually_book/content/installing_ranger_plugins.html#installing_ranger_atlas_plugin)
+[perms-fix]: https://community.hortonworks.com/questions/23717/ranger-solr-on-hdp-234-unable-to-refresh-policies.html

@@ -4,20 +4,24 @@
       deps:
         krb5_client: module: 'masson/core/krb5_client', local: true, required: true
         java: module: 'masson/commons/java', local: true
-        hadoop_core: module: 'ryba/hadoop/core', local: true, auto: true, implicit: true
-        atlas: module: 'ryba/atlas', local: true, required: true
-        ranger_admin: module: 'ryba/ranger/admin', single: true, required: true
-        ranger_hdfs: module: 'ryba/ranger/plugins/hdfs'
-        hdfs_client: module: 'ryba/hadoop/hdfs_client'
+        hadoop_core: module: 'ryba-ambari-takeover/hadoop/core', local: true, auto: true, implicit: true
+        atlas: module: 'ryba-ambari-takeover/atlas/service', required: true
+        atlas_server: module: 'ryba-ambari-takeover/atlas/server', local: true, required: true
+        ranger_admin: module: 'ryba-ambari-takeover/ranger/hdpadmin', single: true, required: true
+        ranger_hdfs: module: 'ryba-ambari-takeover/ranger/plugins/hdfs'
+        hdfs_client: module: 'ryba-ambari-takeover/hadoop/hdfs_client'
+        ambari_server: module: 'ryba-ambari-takeover/server', single: true
       plugin: (options) ->
         @before
-          type: ['service', 'start']
-          name: 'atlas-metadata-server'
+          type: ['ambari', 'hosts', 'component_start']
+          name: 'ATLAS_METADATA_SERVER'
         , ->
           delete options.original.type
           delete options.original.handler
           delete options.original.argument
           delete options.original.store
-          @call 'ryba/ranger/plugins/atlas/install', options.original
+          @call 'ryba-ambari-takeover/ranger/plugins/atlas/install', options.original
       configure:
-        'ryba/ranger/plugins/atlas/configure'
+        'ryba-ambari-takeover/ranger/plugins/atlas/configure'
+      commands:
+        install: 'ryba-ambari-takeover/ranger/plugins/atlas/install'
