@@ -89,6 +89,7 @@ TODO: remove CA from JAVA_HOME cacerts in a future version.
           cacert: "#{options.ssl.cacert.source}"
           local: "#{options.ssl.cacert.local}"
         @system.execute
+          code_skipped: 1
           header: "Fix Plugin repository permission"
           cmd: "chown -R #{options.user.name}:#{options.hadoop_group.name} /etc/ranger/#{options.install['REPOSITORY_NAME']}"
 

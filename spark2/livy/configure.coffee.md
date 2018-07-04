@@ -21,6 +21,7 @@
       options.user.groups ?= 'hadoop'
       options.user.gid ?= options.group.name
       options.fqdn ?= service.node.fqdn
+      options.iptables ?= service.deps.iptables and service.deps.iptables.options.action is 'start'
 
 ## Kerberos
 
@@ -37,7 +38,7 @@
 ## Configuration
 
       options.configurations ?= {}
-      options.configurations['livy-conf'] ?= {}
+      options.configurations['livy2-conf'] ?= {}
 
       options.port ?= '8999'
       
@@ -45,27 +46,28 @@
 
       options.ssl = merge {}, service.deps.ssl.options, options.ssl
       options.ssl.enabled ?= !!service.deps.ssl
+      if options.ssl.enabled
       # options.truststore ?= {}
-      throw Error "Required Option: ssl.cert" if  not options.ssl.cert
-      throw Error "Required Option: ssl.key" if not options.ssl.key
-      throw Error "Required Option: ssl.cacert" if not options.ssl.cacert
-      throw Error "Required Property: keystore.password" if not options.ssl.keystore.password
-      throw Error "Required Property: truststore.password" if not options.ssl.truststore.password
-      options.configurations['livy-conf']['livy.keystore'] ?= '/etc/security/serverKeys/spark-livy-keystore.jks'
-      options.configurations['livy-conf']['livy.keystore.password'] ?= options.ssl.keystore.password
-      options.configurations['livy-conf']['livy.key-password'] ?=  options.ssl.keystore.password
-      
+        throw Error "Required Option: ssl.cert" if  not options.ssl.cert
+        throw Error "Required Option: ssl.key" if not options.ssl.key
+        throw Error "Required Option: ssl.cacert" if not options.ssl.cacert
+        throw Error "Required Property: keystore.password" if not options.ssl.keystore.password
+        throw Error "Required Property: truststore.password" if not options.ssl.truststore.password
+        options.configurations['livy2-conf']['livy.keystore'] ?= '/etc/security/serverKeys/spark-livy-keystore.jks'
+        options.configurations['livy2-conf']['livy.keystore.password'] ?= options.ssl.keystore.password
+        options.configurations['livy2-conf']['livy.key-password'] ?=  options.ssl.keystore.password
+        
 ## Kerberos
 
       options.krb5 ?= {}
       options.krb5.realm ?= service.deps.krb5_client.options.etc_krb5_conf?.libdefaults?.default_realm
       # Admin Information
       options.krb5.admin ?= service.deps.krb5_client.options.admin[options.krb5.realm]
-      options.configurations['livy-conf']['livy.server.auth.type'] ?= 'kerberos'
-      options.configurations['livy-conf']['livy.server.auth.kerberos.keytab'] ?= '/etc/security/keytabs/spnego.service.keytab'
-      options.configurations['livy-conf']['livy.server.auth.kerberos.principal'] ?= "HTTP/_HOST@#{options.krb5.realm}"
-      options.configurations['livy-conf']['livy.server.launch.kerberos.keytab'] ?= '/etc/security/keytabs/livy.service.keytab'
-      options.configurations['livy-conf']['livy.server.launch.kerberos.principal'] ?= "#{options.user.name}/_HOST@#{options.krb5.realm}"
+      options.configurations['livy2-conf']['livy.server.auth.type'] ?= 'kerberos'
+      options.configurations['livy2-conf']['livy.server.auth.kerberos.keytab'] ?= '/etc/security/keytabs/spnego.service.keytab'
+      options.configurations['livy2-conf']['livy.server.auth.kerberos.principal'] ?= "HTTP/_HOST@#{options.krb5.realm}"
+      options.configurations['livy2-conf']['livy.server.launch.kerberos.keytab'] ?= '/etc/security/keytabs/livy.service.keytab'
+      options.configurations['livy2-conf']['livy.server.launch.kerberos.principal'] ?= "#{options.user.name}/_HOST@#{options.krb5.realm}"
 
       enrich_config = (source, target) ->
         for k, v of source
@@ -73,8 +75,8 @@
 
       for srv in service.deps.spark_service
 
-        srv.options.configurations['livy-conf'] ?= {}
-        enrich_config options.configurations['livy-conf'], srv.options.configurations['livy-conf']
+        srv.options.configurations['livy2-conf'] ?= {}
+        enrich_config options.configurations['livy2-conf'], srv.options.configurations['livy2-conf']
 
 ## Ambari Agent
 Register users to ambari agent's user list.

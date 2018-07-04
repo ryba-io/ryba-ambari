@@ -88,7 +88,7 @@ Enable SSL as it is fully supprted starting from spark2
       options.conf['spark.ssl.trustStore'] ?= "#{options.conf_dir}/truststore"
       options.conf['spark.ssl.trustStorePassword'] ?= service.deps.ssl.options.truststore.password
 
-## Ambari REST API
+## Ambari rest api
 
       #ambari server configuration
       options.post_component = service.instances[0].node.fqdn is service.node.fqdn

@@ -26,14 +26,14 @@
         ]
 
       @ambari.configs.update
-        header: 'Upload livy-conf'
+        header: 'Upload livy2-conf'
         if: options.post_component and options.takeover
         url: options.ambari_url
         username: 'admin'
         password: options.ambari_admin_password
-        config_type: 'livy-conf'
+        config_type: 'livy2-conf'
         cluster_name: options.cluster_name
-        properties: options.configurations['livy-conf']
+        properties: options.configurations['livy2-conf']
 
 ### Kerberos Principal
 
