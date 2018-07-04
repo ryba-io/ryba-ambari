@@ -96,7 +96,7 @@ Broker Server principal, keytab and JAAS
 
       @call
         header: 'Kerberos'
-        if: options.config['zookeeper.set.acl'] is 'true'
+        if: (options.config['zookeeper.set.acl'] is 'true') and options.manage_identities
         handler: ->
           @krb5.addprinc options.krb5.admin,
             header: 'Broker Server Kerberos'

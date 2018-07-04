@@ -45,7 +45,7 @@
 
       @ambari.kerberos.descriptor.update
         header: 'Kerberos Artifact Update'
-        if: options.post_component and options.takeover
+        if: options.post_component and (options.takeover or options.baremetal)
         url: options.ambari_url
         username: 'admin'
         password: options.ambari_admin_password
@@ -56,6 +56,20 @@
         service: 'KAFKA'
         component: 'KAFKA_BROKER'
         identities: options.identities['kafka']
+
+      @ambari.configs.default
+        header: 'KAFKA Configuration'
+        url: options.ambari_url
+        if: options.post_component and options.baremetal
+        username: 'admin'
+        password: options.ambari_admin_password
+        cluster_name: options.cluster_name
+        stack_name: options.stack_name
+        stack_version: options.stack_version
+        discover: true
+        configurations: options.configurations
+        target_services: 'KAFKA'
+
 
 ## kafka related properties
 

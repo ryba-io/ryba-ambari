@@ -28,6 +28,7 @@ Example:
       options.krb5.realm ?= service.deps.krb5_client.options.etc_krb5_conf?.libdefaults?.default_realm
       throw Error 'Required Options: "realm"' unless options.krb5.realm
       options.krb5.admin ?= service.deps.krb5_client.options.admin[options.krb5.realm]
+      options.manage_identities ?= service.deps.ambari_server.options.configurations['kerberos-env']['manage_identities']
 
 ## Identities
 
@@ -79,8 +80,6 @@ Merge group and user from the Kafka broker configuration.
       options.config['super.users'] ?= options.superusers.map( (user) -> "User:#{user}").join(',')
       options.config['num.partitions'] ?= service.instances.length # Default number of log partitions per topic, default is "2"
       options.config['auto.create.topics.enable'] ?= 'false'
-      for instance, i in service.instances
-        options.config['broker.id'] ?= "#{i}" if instance.node.fqdn is service.node.fqdn
 
 ## Metrics
 
@@ -243,7 +242,7 @@ Valid values are: PLAINTEXT, SSL, SASL_PLAINTEXT, SASL_SSL.
       # HDP 2.5.0
       throw Error 'security.inter.broker.protocol must be a protocol in the configured set of advertised.listeners' unless options.config['replication.security.protocol'] in options.protocols
       options.config['listeners'] ?= options.protocols
-      .map (protocol) -> "#{protocol}://#{service.node.fqdn}:#{options.ports[protocol]}"
+      .map (protocol) -> "#{protocol}://localhost:#{options.ports[protocol]}"
       .join ','
 
 ## Ambari REST API
