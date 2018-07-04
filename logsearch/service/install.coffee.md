@@ -145,6 +145,7 @@ Render hadoop-env.sh and yarn-env.sh files, before uploading to Ambari Server.
                 config_type: 'zookeeper-logsearch-conf'
                 cluster_name: options.cluster_name
                 properties: 
+                  'name': 'Zookeeper'
                   'component_mappings': 'ZOOKEEPER_SERVER:zookeeper'
                   content: content
               @next cb
@@ -163,7 +164,8 @@ Render hadoop-env.sh and yarn-env.sh files, before uploading to Ambari Server.
                 password: options.ambari_admin_password
                 config_type: 'hdfs-logsearch-conf'
                 cluster_name: options.cluster_name
-                properties: 
+                properties:
+                  service_name: 'HDFS'
                   'component_mappings': 'NAMENODE:hdfs_namenode;DATANODE:hdfs_datanode;SECONDARY_NAMENODE:hdfs_secondarynamenode;JOURNALNODE:hdfs_journalnode;ZKFC:hdfs_zkfc;NFS_GATEWAY:hdfs_nfs3'
                   content: content
               @next cb
@@ -183,6 +185,7 @@ Render hadoop-env.sh and yarn-env.sh files, before uploading to Ambari Server.
                 config_type: 'mapred-logsearch-conf'
                 cluster_name: options.cluster_name
                 properties: 
+                  service_name: 'MAPREDUCE2'
                   'component_mappings': 'HISTORYSERVER:mapred_historyserver'
                   content: content
               @next cb
@@ -202,7 +205,8 @@ Render hadoop-env.sh and yarn-env.sh files, before uploading to Ambari Server.
                 password: options.ambari_admin_password
                 config_type: 'yarn-logsearch-conf'
                 cluster_name: options.cluster_name
-                properties: 
+                properties:
+                  'service_name': 'YARN'
                   'component_mappings': 'RESOURCEMANAGER:yarn_resourcemanager,yarn_historyserver,yarn_jobsummary;NODEMANAGER:yarn_nodemanager;APP_TIMELINE_SERVER:yarn_timelineserver'
                   content: content
               @next cb
@@ -222,7 +226,8 @@ Render hadoop-env.sh and yarn-env.sh files, before uploading to Ambari Server.
                 password: options.ambari_admin_password
                 config_type: 'atlas-logsearch-conf'
                 cluster_name: options.cluster_name
-                properties: 
+                properties:
+                  'service_name': 'ATLAS'
                   'component_mappings': 'ATLAS_SERVER:atlas_app'
                   content: content
               @next cb
@@ -244,6 +249,7 @@ Render hadoop-env.sh and yarn-env.sh files, before uploading to Ambari Server.
                 config_type: 'hbase-logsearch-conf'
                 cluster_name: options.cluster_name
                 properties: 
+                  'service_name': 'HBASE'
                   'component_mappings': 'HBASE_MASTER:hbase_master;HBASE_REGIONSERVER:hbase_regionserver;PHOENIX_QUERY_SERVER:hbase_phoenix_server'
                   content: content
               @next cb
@@ -265,6 +271,7 @@ Render hadoop-env.sh and yarn-env.sh files, before uploading to Ambari Server.
                 config_type: 'kafka-logsearch-conf'
                 cluster_name: options.cluster_name
                 properties: 
+                  'service_name': 'KAFKA'
                   'component_mappings': 'KAFKA_BROKER:kafka_server,kafka_request,kafka_logcleaner,kafka_controller,kafka_statechange'
                   content: content
               @next cb
@@ -286,6 +293,7 @@ Render hadoop-env.sh and yarn-env.sh files, before uploading to Ambari Server.
                 config_type: 'ranger-logsearch-conf'
                 cluster_name: options.cluster_name
                 properties: 
+                  'service_name': 'RANGER'
                   'component_mappings': 'RANGER_SERVER:ranger_admin,ranger_dbpatch;RANGER_USERSYNC:ranger_usersync;'
                   content: content
               @next cb
@@ -306,6 +314,7 @@ Render hadoop-env.sh and yarn-env.sh files, before uploading to Ambari Server.
                 config_type: 'spark-logsearch-conf'
                 cluster_name: options.cluster_name
                 properties: 
+                  'service_name': 'SPARK'
                   'component_mappings': 'SPARK_JOBHISTORYSERVER:spark_jobhistory_server;SPARK_THRIFTSERVER:spark_thriftserver;LIVY_SERVER:livy_server'
                   content: content
               @next cb
@@ -326,16 +335,33 @@ Render hadoop-env.sh and yarn-env.sh files, before uploading to Ambari Server.
                 config_type: 'spark2-logsearch-conf'
                 cluster_name: options.cluster_name
                 properties: 
+                  'service_name': 'SPARK2'
                   'component_mappings': 'SPARK2_JOBHISTORYSERVER:spark2_jobhistory_server;SPARK2_THRIFTSERVER:spark2_thriftserver;LIVY2_SERVER:livy2_server'
                   content: content
               @next cb
             catch err
               cb err
 
-            
-
-      
-## Install Component
+        @call (opts,cb) ->
+          ssh2fs.readFile null, "#{__dirname}/../resources/zeppelin-logsearch-conf.json.j2", (err, content) =>
+            try
+              throw err if err
+              content = content.toString()
+              @ambari.configs.update
+                header: 'Upload spark2-logsearch-conf'
+                if : options.post_component and options.takeover
+                url: options.ambari_url
+                username: 'admin'
+                password: options.ambari_admin_password
+                config_type: 'zeppelin-logsearch-conf'
+                cluster_name: options.cluster_name
+                properties: 
+                  'service_name': 'ZEPPELIN'
+                  'component_mappings': 'ZEPPELIN_MASTER:zeppelin'
+                  content: content
+              @next cb
+            catch err
+              cb err
 
       for host in options.feeder_hosts
         @ambari.hosts.component_add
