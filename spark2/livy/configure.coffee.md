@@ -69,6 +69,12 @@
       options.configurations['livy2-conf']['livy.server.launch.kerberos.keytab'] ?= '/etc/security/keytabs/livy.service.keytab'
       options.configurations['livy2-conf']['livy.server.launch.kerberos.principal'] ?= "#{options.user.name}/_HOST@#{options.krb5.realm}"
 
+## Impersonation
+
+      options.configurations['livy2-conf']['livy.impersonation.enabled'] ?= 'true'
+      options.configurations['livy2-conf']['livy.server.access_control.enabled'] ?= 'true'
+      options.configurations['livy2-conf']['livy.server.access_control.users'] ?= 'livy,zeppelin'
+
       enrich_config = (source, target) ->
         for k, v of source
           target[k] ?= v

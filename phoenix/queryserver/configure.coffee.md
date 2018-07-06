@@ -19,6 +19,7 @@
       options.group.name ?= 'phoenix'
       options.group.system ?= true
       options.user.gid = options.group.name
+      options.fqdn = service.node.fqdn
 
 ## Environment
 
@@ -56,10 +57,30 @@
       options.phoenix_site['avatica.statementcache.expiryunit'] ?= 'MINUTES'
       options.phoenix_site[k] ?= v for k, v of service.deps.hbase_client[0].options.hbase_site
       
+## Ambari
+
+      #ambari server configuration
+      options.post_component = service.instances[0].node.fqdn is service.node.fqdn
+      options.ambari_host = service.node.fqdn is service.deps.ambari_server.node.fqdn
+      options.ambari_url ?= service.deps.ambari_server.options.ambari_url
+      options.ambari_admin_password ?= service.deps.ambari_server.options.ambari_admin_password
+      options.cluster_name ?= service.deps.ambari_server.options.cluster_name
+      options.takeover = service.deps.ambari_server.options.takeover
+      options.baremetal = service.deps.ambari_server.options.baremetal
+
 ## Other Configurations
 
       options.host = service.node.fqdn
       options.java_home = service.deps.java.options.java_home
+
+## Ambari Agent - Register Hosts
+Register users to ambari agent's user list.
+
+      for srv in service.deps.ambari_agent
+        srv.options.users ?= {}
+        srv.options.users['phoenix'] ?= options.user
+        srv.options.groups ?= {}
+        srv.options.groups['phoenix'] ?= options.group
 
 ## Dependencies
 

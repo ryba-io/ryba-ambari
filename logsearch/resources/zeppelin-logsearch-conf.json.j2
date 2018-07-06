@@ -1,0 +1,32 @@
+
+{
+  "input":[
+    {
+      "type":"zeppelin",
+      "rowtype":"service",
+      "path":"{{default('/configurations/zeppelin-env/zeppelin_log_dir', '/var/log/zeppelin')}}/zeppelin-zeppelin-*.log"
+    }
+   ],
+  "filter":[
+    {
+      "filter":"grok",
+      "conditions":{
+        "fields":{
+          "type":[
+            "zeppelin"
+          ]
+         }
+       },
+      "log4j_format":"",
+      "multiline_pattern":"^(%{SPACE}%{LOGLEVEL:level}%{SPACE}\\[%{TIMESTAMP_ISO8601:logtime}\\])",
+      "message_pattern":"(?m)^%{SPACE}%{LOGLEVEL:level}%{SPACE}\\[%{TIMESTAMP_ISO8601:logtime}\\]%{SPACE}\\(\\{{"{"}}%{DATA:thread_name}\\{{"}"}}%{SPACE}%{JAVAFILE:file}\\[%{JAVAMETHOD:method}\\]:%{INT:line_number}\\)%{SPACE}-%{SPACE}%{GREEDYDATA:log_message}",
+      "post_map_values":{
+        "logtime":{
+          "map_date":{
+            "target_date_pattern":"yyyy-MM-dd HH:mm:ss,SSS"
+          }
+         }
+       }
+     }
+   ]
+ }

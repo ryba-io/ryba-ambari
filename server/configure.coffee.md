@@ -102,8 +102,8 @@
 ## Kerberos Service provisioning
 
       if options.krb5?
-        # options.test_user.principal ?= "#{options.test_user.name}@#{options.krb5.realm}"
-        options.test_user.principal ?= "#{options.test_user.name}-#{options.cluster_name}@#{options.krb5.realm}"
+        options.test_user.principal ?= "#{options.test_user.name}@#{options.krb5.realm}"
+        # options.test_user.principal ?= "#{options.test_user.name}-#{options.cluster_name}@#{options.krb5.realm}"
         options.test_user.password ?= 'ambari-qa123'
         options.test_user.keytab ?= '/etc/security/keytabs/smokeuser.headless.keytab'
         options.cluster_env_global_properties['smokeuser_principal_name'] ?= options.test_user.principal
@@ -212,6 +212,7 @@ The key is the identity name, and the value should contain principal information
         options.identities['smokeuser']['principal']['type'] ?= 'user'
         options.identities['smokeuser']['principal']['local_username'] ?= '${cluster-env/smokeuser}'
         options.identities['smokeuser']['principal']['value'] ?= '${cluster-env/smokeuser}@${realm}'
+        options.identities['smokeuser']['name'] ?= 'smokeuser'
 
 ## Config Groups
 

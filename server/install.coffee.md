@@ -133,17 +133,15 @@ IPTables rules are only inserted if the parameter "iptables.action" is set to
       
       @ambari.kerberos.descriptor.update
         header: 'Kerberos Artifact'
-        if: options.post_component and options.takeover
         url: options.ambari_url
         username: 'admin'
         password: options.ambari_admin_password
         stack_name: options.stack_name
         stack_version: options.stack_version
         cluster_name: options.cluster_name
-        identities: []
-        service: 'KERBEROS'
-        source: 'STACK'
-      
+        identities: options.identities['smokeuser']
+        source: 'COMPOSITE'
+              
       @ambari.services.add
         header: 'KERBEROS Service'
         if: options.takeover
