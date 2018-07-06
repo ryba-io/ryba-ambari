@@ -86,8 +86,6 @@
         cluster_name: options.cluster_name
         component_name: 'RANGER_USERSYNC'
         hostname: options.fqdn
-
-
     
 ## SSL
 

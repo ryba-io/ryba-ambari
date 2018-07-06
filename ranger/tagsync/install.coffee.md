@@ -39,7 +39,6 @@
               # 
               @ambari.configs.update
                 header: 'tagsync-log4j'
-                debug: true
                 url: options.ambari_url
                 username: 'admin'
                 password: options.ambari_admin_password
@@ -50,6 +49,18 @@
               @next callback
             catch err
               callback err
+
+## Kerberos
+              
+      @krb5.addprinc options.krb5.admin,
+        header: 'Principal'
+        principal: options.krb5.principal.replace '_HOST', options.fqdn
+        randkey: true
+        keytab:  options.krb5.keytab
+        uid: options.user.name
+        gid: options.user.name
+        mode: 0o600
+
 ## SSL
 
       @call header: 'SSL', retry: 0, ->

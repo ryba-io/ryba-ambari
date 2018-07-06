@@ -35,6 +35,16 @@ By default, merge group and user from the Ranger admin configuration.
         options.configurations['atlas-tagsync-ssl']['xasecure.policymgr.clientssl.truststore.password'] ?= options.ssl.truststore.password
         options.configurations['atlas-tagsync-ssl']['xasecure.policymgr.clientssl.keystore.credential.file'] ?= 'jceks://file{{atlas_tagsync_credential_file}}'
 
+## Kerberos
+
+      options.krb5 ?= {}
+      options.krb5.enabled ?= service.deps.hadoop_core.options.core_site['hadoop.security.authentication'] is 'kerberos'
+      options.krb5.realm ?= service.deps.krb5_client.options.etc_krb5_conf?.libdefaults?.default_realm
+      # Admin Information
+      options.krb5.admin = service.deps.krb5_client.options.admin[options.krb5.realm]
+      options.krb5.principal ?= "rangertagsync/_HOST@#{options.krb5.realm}"
+      options.krb5.keytab ?= '/etc/security/keytabs/rangertagsync.service.keytab'
+
 ## Ambari
 
       #ambari server configuration
