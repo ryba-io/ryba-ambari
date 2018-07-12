@@ -37,3 +37,6 @@ differences.
           'ryba-ambari-takeover/zookeeper/server/wait'
           'ryba-ambari-takeover/zookeeper/server/check'
         ]
+        'deploy': [
+          'ryba-ambari-takeover/zookeeper/server/install'
+        ]

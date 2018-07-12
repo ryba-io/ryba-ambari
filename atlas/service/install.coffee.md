@@ -65,7 +65,7 @@
 
       # @ambari.configs.update
       #   header: 'Upload ranger-atlas-plugin-properties'
-      #   if : options.post_component and (options.takeover or options.baremetal)
+      #   if : options.post_component and options.takeover
       #   url: options.ambari_url
       #   username: 'admin'
       #   password: options.ambari_admin_password
@@ -76,7 +76,7 @@
       # 
       # @ambari.configs.update
       #   header: 'Upload ranger-atlas-security'
-      #   if : options.post_component and (options.takeover or options.baremetal)
+      #   if : options.post_component and options.takeover
       #   url: options.ambari_url
       #   username: 'admin'
       #   password: options.ambari_admin_password
@@ -86,7 +86,7 @@
       # 
       # @ambari.configs.update
       #   header: 'Upload ranger-atlas-policymgr-ssl'
-      #   if : options.post_component and (options.takeover or options.baremetal)
+      #   if : options.post_component and options.takeover
       #   url: options.ambari_url
       #   username: 'admin'
       #   password: options.ambari_admin_password
@@ -96,7 +96,7 @@
       # 
       # @ambari.configs.update
       #   header: 'Upload ranger-atlas-audit'
-      #   if : options.post_component and (options.takeover or options.baremetal)
+      #   if : options.post_component and options.takeover
       #   url: options.ambari_url
       #   username: 'admin'
       #   password: options.ambari_admin_password

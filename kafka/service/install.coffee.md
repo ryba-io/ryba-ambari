@@ -45,7 +45,7 @@
 
       @ambari.kerberos.descriptor.update
         header: 'Kerberos Artifact Update'
-        if: options.post_component and (options.takeover or options.baremetal)
+        if: options.post_component and options.takeover
         url: options.ambari_url
         username: 'admin'
         password: options.ambari_admin_password
@@ -60,7 +60,7 @@
       @ambari.configs.default
         header: 'KAFKA Configuration'
         url: options.ambari_url
-        if: options.post_component and options.baremetal
+        if: options.post_component
         username: 'admin'
         password: options.ambari_admin_password
         cluster_name: options.cluster_name
@@ -97,7 +97,7 @@
 
       @file.properties
         header: 'Broker Log4j'
-        if: options.post_component and (options.takeover or options.baremetal)
+        if: options.post_component and options.takeover
         target: "#{options.cache_dir}/kafka-log4j.properties"
         content: options.log4j.properties
         ssh: false
@@ -123,7 +123,7 @@
       @ambari.configs.default
         header: 'KAFKA Configuration'
         url: options.ambari_url
-        if: options.post_component and (options.takeover or options.baremetal)
+        if: options.post_component and options.takeover
         username: 'admin'
         password: options.ambari_admin_password
         cluster_name: options.cluster_name
@@ -137,7 +137,7 @@
 
       @ambari.configs.update
         header: 'Upload ranger-kafka-plugin-properties'
-        if : options.post_component and (options.takeover or options.baremetal)
+        if : options.post_component and options.takeover
         url: options.ambari_url
         username: 'admin'
         password: options.ambari_admin_password
@@ -147,7 +147,7 @@
 
       @ambari.configs.update
         header: 'Upload ranger-kafka-security'
-        if : options.post_component and (options.takeover or options.baremetal)
+        if : options.post_component and options.takeover
         url: options.ambari_url
         username: 'admin'
         password: options.ambari_admin_password
@@ -157,7 +157,7 @@
 
       @ambari.configs.update
         header: 'Upload ranger-kafka-policymgr-ssl'
-        if : options.post_component and (options.takeover or options.baremetal)
+        if : options.post_component and options.takeover
         url: options.ambari_url
         username: 'admin'
         password: options.ambari_admin_password
@@ -167,7 +167,7 @@
 
       @ambari.configs.update
         header: 'Upload ranger-kafka-audit'
-        if : options.post_component and (options.takeover or options.baremetal)
+        if : options.post_component and options.takeover
         url: options.ambari_url
         username: 'admin'
         password: options.ambari_admin_password
@@ -179,7 +179,7 @@
 
       @ambari.services.add
         header: 'KAFKA Service'
-        if: options.post_component and (options.takeover or options.baremetal)
+        if: options.post_component and options.takeover
         url: options.ambari_url
         username: 'admin'
         password: options.ambari_admin_password
@@ -210,7 +210,7 @@ add `KAFKA_BROKER` components to cluster in `INIT` state.
       for host in options.broker_hosts
         @ambari.hosts.component_add
           header: "KAFKA_BROKER #{host}"
-          if: options.post_component and (options.takeover or options.baremetal)
+          if: options.post_component and options.takeover
           url: options.ambari_url
           username: 'admin'
           password: options.ambari_admin_password
@@ -221,7 +221,7 @@ add `KAFKA_BROKER` components to cluster in `INIT` state.
 ## Ambari Config Groups
           
       @call
-        if: options.post_component and (options.takeover or options.baremetal)
+        if: options.post_component and options.takeover
       , ->
         @each options.config_groups, (opts, cb) ->
           {key, value} = opts

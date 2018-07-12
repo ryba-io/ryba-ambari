@@ -8,6 +8,7 @@ The ambari server must be set in the configuration file.
 
       @registry.register ['ambari','cluster','node_add'], 'ryba-ambari-actions/lib/cluster/node_add'
       @registry.register ['ambari','hosts','add'], 'ryba-ambari-actions/lib/hosts/add'
+      @registry.register ['ambari','hosts','rack'], 'ryba-ambari-actions/lib/hosts/rack'
 
 ## Wait
 
@@ -73,6 +74,18 @@ Create ambari-qa principal with its keytab
         password: options.ambari_admin_password
         hostname: options.fqdn
         cluster_name: options.cluster_name
+
+## Rack info
+
+      @ambari.hosts.rack
+        header: "Set rack"
+        if: options.rack_info
+        url: options.ambari_url
+        username: 'admin'
+        password: options.ambari_admin_password
+        cluster_name: options.cluster_name
+        hostname: options.fqdn
+        rack_info: options.rack_info
 
 ## Dependencies
 

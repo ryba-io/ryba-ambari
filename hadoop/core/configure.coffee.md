@@ -90,6 +90,7 @@ java.lang.IllegalArgumentException: Does not contain a valid host:port authority
         for node in options.topology
           throw Error "Required Option: rack required in node #{node.id} because at least one rack is defined" unless node.rack
       options.rack_info = (options.topology.filter( (host) -> host.id is service.node.fqdn)[0])?.rack
+      service.deps.ambari_agent.options.rack_info = options.rack_info
       
 Configuration for HTTP
 

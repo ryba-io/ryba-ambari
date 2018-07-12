@@ -24,6 +24,7 @@ Wait for Kerberos to be started.
       @ambari.hosts.component_start
         url: options.ambari_url
         username: 'admin'
+        if: options.takeover
         password: options.ambari_admin_password
         cluster_name: options.cluster_name
         component_name: 'ZOOKEEPER_SERVER'

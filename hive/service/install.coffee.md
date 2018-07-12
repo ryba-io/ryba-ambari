@@ -406,7 +406,7 @@ and webhcat-log4j
           ]
       @call
         header: 'Upload webhcat-env'
-        if: options.post_component and options.baremetal
+        if: options.post_component and options.takeover
       , (_, callback) ->
           ssh2fs.readFile null, "#{options.cache_dir}/webhcat-env.sh", (err, content) =>
             try
@@ -421,7 +421,7 @@ and webhcat-log4j
 
       @file
         header: 'Render webhcat-log4j'
-        if: options.post_component and options.webhcat_log4j? and options.baremetal
+        if: options.post_component and options.webhcat_log4j? and options.takeover
         target: "#{options.cache_dir}/webhcat-log4j.properties"
         source: "#{__dirname}/../resources/webhcat-log4j.properties"
         local: true
@@ -432,7 +432,7 @@ and webhcat-log4j
           append: true
       @call
         header: 'Upload webhcat-log4j'
-        if: options.post_component and options.baremetal
+        if: options.post_component and options.takeover
       , (_, callback) ->
           ssh2fs.readFile null, "#{options.cache_dir}/webhcat-log4j.properties", (err, content) =>
             try
@@ -447,7 +447,7 @@ and webhcat-log4j
 
       @call
         header: 'Upload hcat-env'
-        if: options.post_component and options.baremetal
+        if: options.post_component and options.takeover
       , (_, callback) ->
           ssh2fs.readFile null, "#{__dirname}/../resources/hcat-env.sh.j2", (err, content) =>
             try
@@ -462,7 +462,7 @@ and webhcat-log4j
 
       @call
         header: 'Upload hive-env'
-        if: options.post_component and options.baremetal
+        if: options.post_component and options.takeover
       , (_, callback) ->
           ssh2fs.readFile null, "#{__dirname}/../resources/hive-env.sh.j2", (err, content) =>
             try
@@ -493,7 +493,7 @@ and webhcat-log4j
 
       @ambari.configs.update
         header: 'Upload ranger-hive-plugin-properties'
-        if : options.post_component and options.baremetal
+        if : options.post_component and options.takeover
         url: options.ambari_url
         username: 'admin'
         password: options.ambari_admin_password
@@ -503,7 +503,7 @@ and webhcat-log4j
 
       @ambari.configs.update
         header: 'Upload ranger-hive-security'
-        if : options.post_component and options.baremetal
+        if : options.post_component and options.takeover
         url: options.ambari_url
         username: 'admin'
         password: options.ambari_admin_password
@@ -513,7 +513,7 @@ and webhcat-log4j
 
       @ambari.configs.update
         header: 'Upload ranger-hive-policymgr-ssl'
-        if : options.post_component and options.baremetal
+        if : options.post_component and options.takeover
         url: options.ambari_url
         username: 'admin'
         password: options.ambari_admin_password
@@ -523,7 +523,7 @@ and webhcat-log4j
 
       @ambari.configs.update
         header: 'Upload ranger-hive-audit'
-        if : options.post_component and options.baremetal
+        if : options.post_component and options.takeover
         url: options.ambari_url
         username: 'admin'
         password: options.ambari_admin_password
@@ -535,7 +535,7 @@ and webhcat-log4j
 
       @ambari.services.add
         header: 'HIVE Service'
-        if: options.post_component and (options.takeover or options.baremetal)
+        if: options.post_component and options.takeover
         url: options.ambari_url
         username: 'admin'
         password: options.ambari_admin_password
@@ -555,7 +555,7 @@ add `HIVE_SERVER`, `HCAT`, `HIVE_CLIENT`, `HIVE_METASTORE` (LLAP)
         name: 'HIVE'
 
       @ambari.services.component_add
-        if: options.post_component and (options.takeover or options.baremetal)
+        if: options.post_component and options.takeover
         header: 'HIVE_SERVER'
         url: options.ambari_url
         username: 'admin'
@@ -565,7 +565,7 @@ add `HIVE_SERVER`, `HCAT`, `HIVE_CLIENT`, `HIVE_METASTORE` (LLAP)
         service_name: 'HIVE'
 
       @ambari.services.component_add
-        if: options.post_component and (options.takeover or options.baremetal)
+        if: options.post_component and options.takeover
         header: 'HCAT'
         url: options.ambari_url
         username: 'admin'
@@ -575,7 +575,7 @@ add `HIVE_SERVER`, `HCAT`, `HIVE_CLIENT`, `HIVE_METASTORE` (LLAP)
         service_name: 'HIVE'
         
       @ambari.services.component_add
-        if: options.post_component and (options.takeover or options.baremetal)
+        if: options.post_component and options.takeover
         header: 'HIVE_CLIENT'
         url: options.ambari_url
         username: 'admin'
@@ -595,7 +595,7 @@ add `HIVE_SERVER`, `HCAT`, `HIVE_CLIENT`, `HIVE_METASTORE` (LLAP)
       #   service_name: 'HIVE'
         
       @ambari.services.component_add
-        if: options.post_component and (options.takeover or options.baremetal)
+        if: options.post_component and options.takeover
         header: 'HIVE_METASTORE'
         url: options.ambari_url
         username: 'admin'
@@ -605,7 +605,7 @@ add `HIVE_SERVER`, `HCAT`, `HIVE_CLIENT`, `HIVE_METASTORE` (LLAP)
         service_name: 'HIVE'
 
       @ambari.services.component_add
-        if: options.post_component and (options.takeover or options.baremetal)
+        if: options.post_component and options.takeover
         header: 'WEBHCAT_SERVER'
         url: options.ambari_url
         username: 'admin'
@@ -617,7 +617,7 @@ add `HIVE_SERVER`, `HCAT`, `HIVE_CLIENT`, `HIVE_METASTORE` (LLAP)
       for host in options.server2_hosts
         @ambari.hosts.component_add
           header: 'HIVE_SERVER'
-          if: options.post_component and (options.takeover or options.baremetal)
+          if: options.post_component and options.takeover
           url: options.ambari_url
           username: 'admin'
           password: options.ambari_admin_password
@@ -639,7 +639,7 @@ add `HIVE_SERVER`, `HCAT`, `HIVE_CLIENT`, `HIVE_METASTORE` (LLAP)
       for host in options.hcatalog_hosts
         @ambari.hosts.component_add
           header: 'HIVE_METASTORE'
-          if: options.post_component and (options.takeover or options.baremetal)
+          if: options.post_component and options.takeover
           url: options.ambari_url
           username: 'admin'
           password: options.ambari_admin_password
@@ -648,7 +648,7 @@ add `HIVE_SERVER`, `HCAT`, `HIVE_CLIENT`, `HIVE_METASTORE` (LLAP)
           hostname: host
         @ambari.hosts.component_add
           header: 'HIVE_METASTORE FIX'
-          if: options.post_component and (options.takeover or options.baremetal)
+          if: options.post_component and options.takeover
           url: options.ambari_url
           username: 'admin'
           password: options.ambari_admin_password
@@ -659,7 +659,7 @@ add `HIVE_SERVER`, `HCAT`, `HIVE_CLIENT`, `HIVE_METASTORE` (LLAP)
       for host in options.hcatalog_hosts
         @ambari.hosts.component_add
           header: 'HIVE_CLIENT'
-          if: options.post_component and (options.takeover or options.baremetal)
+          if: options.post_component and options.takeover
           url: options.ambari_url
           username: 'admin'
           password: options.ambari_admin_password
@@ -670,7 +670,7 @@ add `HIVE_SERVER`, `HCAT`, `HIVE_CLIENT`, `HIVE_METASTORE` (LLAP)
       for host in options.webhcat_hosts
         @ambari.hosts.component_add
           header: 'WEBHCAT_SERVER'
-          if: options.post_component and (options.takeover or options.baremetal)
+          if: options.post_component and options.takeover
           url: options.ambari_url
           username: 'admin'
           password: options.ambari_admin_password

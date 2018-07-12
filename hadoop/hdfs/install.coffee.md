@@ -5,8 +5,6 @@
       
 ## Register
 
-        
-
       @registry.register ['ambari','configs','update'], 'ryba-ambari-actions/lib/configs/update'
       @registry.register ['ambari','configs','get'], 'ryba-ambari-actions/lib/configs/get'
       @registry.register ['ambari','hosts','add'], 'ryba-ambari-actions/lib/hosts/add'
@@ -20,29 +18,6 @@
       @registry.register 'hconfigure', 'ryba/lib/hconfigure'
       @registry.register 'hdp_select', 'ryba/lib/hdp_select'
 
-
-      # @call (opts, cb) ->
-      #   ssh = @ssh options.ssh
-      #   properties.read null, "/home/bakalian/ranger-hbase-audit.ryba.xml", (err, props_et4) =>
-      #     properties.read null, "/home/bakalian/ranger-hbase-audit.ambari.xml", (err, props_et5) =>
-      # 
-      #         missing_et4 =  []
-      #         missing_et5 =  []
-      #         for k,v of props_et4
-      #           if !props_et5[k]?
-      #             missing_et5.push k  unless missing_et5.indexOf(k1) > -1
-      #           for k1, v1 of props_et5
-      #             if !props_et4[k1]?
-      #               missing_et4.push k1 unless missing_et4.indexOf(k1) > -1
-      #             if "#{k}" is "#{k1}"
-      #               if "#{v}"!="#{v1}"
-      #                 console.log "#{k}:  RYBA #{v} -> AMBARI #{v1}"
-      #         for k in missing_et4
-      #           console.log "missing on RYBA #{k}"
-      #         for k in missing_et5
-      #           console.log "missing on AMBARI #{k}"
-      #         process.exit 1
-              
 ## Identities
 
 By default, the "hadoop-client" package rely on the "hadoop", "hadoop-hdfs",
@@ -141,7 +116,7 @@ Create HDFS Headless keytab.
 
       @ambari.kerberos.descriptor.update
         header: 'Kerberos Artifact Update NN'
-        if: options.post_component and (options.takeover or options.baremetal)
+        if: options.post_component and options.takeover
         url: options.ambari_url
         username: 'admin'
         password: options.ambari_admin_password
@@ -155,7 +130,7 @@ Create HDFS Headless keytab.
 
       @ambari.kerberos.descriptor.update
         header: 'Kerberos Artifact Update JN'
-        if: options.post_component and (options.takeover or options.baremetal)
+        if: options.post_component and options.takeover
         url: options.ambari_url
         username: 'admin'
         password: options.ambari_admin_password

@@ -165,29 +165,6 @@ Note, a user must re-login for those changes to be taken into account.
         user: options.user.name
       , options.user.limits
 
-## Include/Exclude
-
-The "dfs.hosts" property specifies the file that contains a list of hosts that
-are permitted to connect to the namenode. The full pathname of the file must be
-specified. If the value is empty, all hosts are permitted.
-
-The "dfs.hosts.exclude" property specifies the file that contains a list of
-hosts that are not permitted to connect to the namenode.  The full pathname of
-the file must be specified.  If the value is empty, no hosts are excluded.
-
-      @file
-        header: 'Include'
-        content: "#{options.include.join '\n'}"
-        target: "#{options.hdfs_site['dfs.hosts']}"
-        eof: true
-        backup: true
-      @file
-        header: 'Exclude'
-        content: "#{options.exclude.join '\n'}"
-        target: "#{options.hdfs_site['dfs.hosts.exclude']}"
-        eof: true
-        backup: true
-
 ## Slaves
 
 The slaves file should contain the hostname of every machine in the cluster

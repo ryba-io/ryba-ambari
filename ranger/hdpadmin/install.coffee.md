@@ -233,7 +233,7 @@ Create the rangeradmin and rangerlogger databases.
 
       @ambari.configs.update
         header: 'ranger-env'
-        if: options.takeover or options.baremetal
+        if: options.takeover
         url: options.ambari_url
         username: 'admin'
         password: options.ambari_admin_password
