@@ -26,3 +26,6 @@ J Mohamed Zahoor goes into some more detail on the Master Architecture in this b
         'install': [
           'ryba-ambari-takeover/hbase/service/install'
         ]
+        'deploy': [
+          'ryba-ambari-takeover/hbase/service/install'
+        ]

@@ -39,3 +39,5 @@ Managers, Web HDFS interactions, and others.
       commands:
         'install':
           'ryba-ambari-takeover/hadoop/core/install'
+        'deploy':
+          'ryba-ambari-takeover/hadoop/core/install'

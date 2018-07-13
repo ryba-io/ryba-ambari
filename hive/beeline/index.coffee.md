@@ -23,3 +23,5 @@
         ]
         'check':
           'ryba-ambari-takeover/hive/beeline/check'
+        'deploy':
+          'ryba-ambari-takeover/hive/beeline/install'

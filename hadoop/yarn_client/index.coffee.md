@@ -29,3 +29,4 @@ The URI resources are grouped into APIs based on the type of information returne
           'masson/bootstrap/report'
           'ryba-ambari-takeover/hadoop/yarn_client/report'
         ]
+        'deploy': 'ryba-ambari-takeover/hadoop/yarn_client/install'

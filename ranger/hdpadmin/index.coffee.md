@@ -20,6 +20,7 @@ access control over Hadoop data access components like Apache Hive and Apache HB
         hdfs_nn: module: 'ryba-ambari-takeover/hadoop/hdfs_nn'
         solr_client: module: 'ryba/solr/client', local: true
         ambari_server: module: 'ryba-ambari-takeover/server', single: true, required: true
+        ambari_agent: module: 'ryba-ambari-takeover/agent', required: true
         hdp: module: 'ryba/hdp'
       configure:
         'ryba-ambari-takeover/ranger/hdpadmin/configure'

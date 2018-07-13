@@ -26,3 +26,6 @@ open API clients like JDBC and ODBC.
           'ryba-ambari-takeover/hive/service/install'
         ]
 
+        'deploy': [
+          'ryba-ambari-takeover/hive/service/install'
+        ]

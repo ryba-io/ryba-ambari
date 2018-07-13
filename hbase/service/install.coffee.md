@@ -17,7 +17,7 @@
       @registry.register 'hdp_select', 'ryba/lib/hdp_select'
 
       @call
-        if: options.post_component and options.takeover
+        if: options.post_component
       , ->
         @each options.config_groups, (opts, cb) ->
           {key, value} = opts
@@ -36,20 +36,6 @@
               tag: value.tag
               properties: value.properties
           @next cb
-## Identities
-
-      @system.group options.group
-      @system.user options.user
-
-## Keytab Directory
-
-      @system.mkdir
-        header: 'Keytabs'
-        target: '/etc/security/keytabs'
-        uid: 'root'
-        gid: 'root' # was hadoop_group.name
-        mode: 0o0755
-
 
 ## Kerberos
 Create HDFS Headless keytab.

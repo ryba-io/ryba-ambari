@@ -46,3 +46,6 @@ information and heartbeats to both.
           # 'ryba-ambari-takeover/hadoop/hdfs_dn/wait'
           # 'ryba-ambari-takeover/hadoop/hdfs_dn/check'
         ]
+        'deploy': [
+          'ryba-ambari-takeover/hadoop/hdfs_dn/install'
+        ]

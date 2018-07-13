@@ -40,6 +40,7 @@ Install the HBase client package and configure it with secured access.
       @ambari.hosts.component_wait
         header: 'HBASE_CLIENT WAITED'
         url: options.ambari_url
+        if: options.takeover
         username: 'admin'
         password: options.ambari_admin_password
         cluster_name: options.cluster_name

@@ -20,63 +20,61 @@
 
 ## Identities
 
-By default, the "hadoop-client" package rely on the "hadoop", "hadoop-hdfs",
-"hadoop-mapreduce" and "hadoop-yarn" dependencies and create the following
-entries:
+      @call
+        if: options.post_component
+      , ->
+        @each options.config_groups, (opts, cb) ->
+          {key, value} = opts
+          @ambari.configs.groups_add
+            header: "#{key}"
+            url: options.ambari_url
+            username: 'admin'
+            password: options.ambari_admin_password
+            cluster_name: options.cluster_name
+            group_name: key
+            tag: key
+            description: "#{key} config groups"
+            hosts: value.hosts
+            desired_configs: 
+              type: value.type
+              tag: value.tag
+              properties: value.properties
+          @next cb
 
-```bash
-cat /etc/passwd | grep hadoop
-hdfs:x:496:497:Hadoop HDFS:/var/lib/hadoop-hdfs:/bin/bash
-yarn:x:495:495:Hadoop Yarn:/var/lib/hadoop-yarn:/bin/bash
-mapred:x:494:494:Hadoop MapReduce:/var/lib/hadoop-mapreduce:/bin/bash
-cat /etc/group | egrep "hdfs|yarn|mapred"
-hadoop:x:498:hdfs,yarn,mapred
-hdfs:x:497:
-yarn:x:495:
-mapred:x:494:
-```
 
-Note, the package "hadoop" will also install the "dbus" user and group which are
-not handled here.
+# ## Topology
+# 
+# Configure the topology script to enable rack awareness to Hadoop.
+# 
+#       @call header: 'Topology', ->
+#         @file
+#           target: "#{options.conf_dir}/rack_topology.sh"
+#           source: "#{__dirname}/../resources/rack_topology.sh"
+#           local: true
+#           uid: options.hdfs.user.name
+#           gid: options.hadoop_group.name
+#           mode: 0o755
+#           backup: true
+#         @file
+#           target: "#{options.conf_dir}/rack_topology.data"
+#           content: options.topology
+#             .map (node) ->
+#               "#{node.ip}  #{node.rack or ''}"
+#             .join '\n'
+#           uid: options.hdfs.user.name
+#           gid: options.hadoop_group.name
+#           mode: 0o755
+#           backup: true
+#           eof: true
 
-      # for group in [options.hadoop_group, options.hdfs.group]
-      #   @system.group header: "Group #{group.name}", group
-      # for user in [options.hdfs.user]
-      #   @system.user header: "user #{user.name}", user
-
-## Topology
-
-Configure the topology script to enable rack awareness to Hadoop.
-
-      @call header: 'Topology', ->
-        @file
-          target: "#{options.conf_dir}/rack_topology.sh"
-          source: "#{__dirname}/../resources/rack_topology.sh"
-          local: true
-          uid: options.hdfs.user.name
-          gid: options.hadoop_group.name
-          mode: 0o755
-          backup: true
-        @file
-          target: "#{options.conf_dir}/rack_topology.data"
-          content: options.topology
-            .map (node) ->
-              "#{node.ip}  #{node.rack or ''}"
-            .join '\n'
-          uid: options.hdfs.user.name
-          gid: options.hadoop_group.name
-          mode: 0o755
-          backup: true
-          eof: true
-
-## Keytab Directory
-
-      @system.mkdir
-        header: 'Keytabs'
-        target: '/etc/security/keytabs'
-        uid: 'root'
-        gid: 'root' # was hadoop_group.name
-        mode: 0o0755
+# ## Keytab Directory
+# 
+#       @system.mkdir
+#         header: 'Keytabs'
+#         target: '/etc/security/keytabs'
+#         uid: 'root'
+#         gid: 'root' # was hadoop_group.name
+#         mode: 0o0755
 
 
 ## Kerberos

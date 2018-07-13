@@ -43,9 +43,12 @@ with Hadoop clusters.
         ]
         check:
           'ryba-ambari-takeover/knox/server/check'
+        deploy:
+          'ryba-ambari-takeover/knox/server/install'
         start:
           'ryba-ambari-takeover/knox/server/start'
         stop:
           'ryba-ambari-takeover/knox/server/stop'
         status:
           'ryba-ambari-takeover/knox/server/status'
+          

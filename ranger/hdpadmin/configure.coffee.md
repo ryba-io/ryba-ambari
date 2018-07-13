@@ -647,6 +647,15 @@ Ryba injects function to the different contexts.
       options.takeover = service.deps.ambari_server.options.takeover
       options.baremetal = service.deps.ambari_server.options.baremetal
 
+## Ambari Agent
+Register users to ambari agent's user list.
+
+      for srv in service.deps.ambari_agent
+        srv.options.users ?= {}
+        srv.options.users['ranger'] ?= options.user
+        srv.options.groups ?= {}
+        srv.options.groups['ranger'] ?= options.group
+
 ## Dependencies
 
     quote = require 'regexp-quote'

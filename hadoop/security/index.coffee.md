@@ -28,3 +28,5 @@ Managers, Web HDFS interactions, and others.
       commands:
         'install':
           'ryba-ambari-takeover/hadoop/security/install'
+        'deploy':
+          'ryba-ambari-takeover/hadoop/security/install'

@@ -26,3 +26,5 @@ Client code accessing a cluster finds the cluster by querying ZooKeeper.
         ]
         'check':
           'ryba-ambari-takeover/hbase/client/check'
+        'deploy':
+          'ryba-ambari-takeover/hbase/client/install'

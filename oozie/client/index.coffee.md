@@ -36,3 +36,5 @@ be installed in remote machines only.
         ]
         'check':
           'ryba-ambari-takeover/oozie/client/check'
+        'deploy':
+          'ryba-ambari-takeover/oozie/client/install'

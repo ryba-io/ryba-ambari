@@ -61,5 +61,8 @@ of your cluster.
         'install': [
           'ryba-ambari-takeover/spark2/service/install'
         ]
+        'deploy': [
+          'ryba-ambari-takeover/spark2/service/install'
+        ]
 
 [tips]: https://www.altiscale.com/hadoop-blog/spark-on-hadoop/

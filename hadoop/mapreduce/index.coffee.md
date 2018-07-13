@@ -14,3 +14,4 @@ This modules aims at installing MAPREDUCE service in Ambari.
       configure: 'ryba-ambari-takeover/hadoop/mapreduce/configure'
       commands:
         install: 'ryba-ambari-takeover/hadoop/mapreduce/install'
+        deploy: 'ryba-ambari-takeover/hadoop/mapreduce/install'

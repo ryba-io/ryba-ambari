@@ -56,3 +56,7 @@ applications.
           'ryba-ambari-takeover/hadoop/yarn_nm/wait'
           'ryba-ambari-takeover/hadoop/yarn_nm/check'
         ]
+        'deploy': [
+          'masson/core/info'
+          'ryba-ambari-takeover/hadoop/yarn_nm/install'
+        ]

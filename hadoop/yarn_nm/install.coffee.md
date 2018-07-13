@@ -13,7 +13,7 @@
 ## Wait
 
       @call 'masson/core/krb5_client/wait', once: true, options.wait_krb5_client
-      @call 'ryba-ambari-takeover/hadoop/hdfs_nn/wait', once: true, options.wait_hdfs_nn, conf_dir: options.hadoop_conf_dir, hdfs_krb5_user: options.hdfs_krb5_user
+      @call 'ryba-ambari-takeover/hadoop/hdfs_nn/wait', if: options.takeover, once: true, options.wait_hdfs_nn, conf_dir: options.hadoop_conf_dir, hdfs_krb5_user: options.hdfs_krb5_user
 
 ## IPTables
 
@@ -250,10 +250,11 @@ drwxrwxrwt   - yarn   hadoop            0 2014-05-26 11:01 /app-logs
 Layout is inspired by [Hadoop recommandation](http://hadoop.apache.org/docs/r2.1.0-beta/hadoop-project-dist/hadoop-common/ClusterSetup.html)
 
       # Note, YARN NM must have deployed HDFS Client conf files in order to wait for HDFS NN
-      @call 'ryba-ambari-takeover/hadoop/hdfs_nn/wait', once: true, options.wait_hdfs_nn, conf_dir: options.hadoop_conf_dir
+      @call 'ryba-ambari-takeover/hadoop/hdfs_nn/wait', if: options.takeover, once: true, options.wait_hdfs_nn, conf_dir: options.hadoop_conf_dir
       remote_app_log_dir = options.yarn_site['yarn.nodemanager.remote-app-log-dir']
       @system.execute
         header: 'HDFS layout'
+        if: options.takeover        
         cmd: mkcmd.hdfs options.hdfs_krb5_user, """
         hdfs --config #{options.hadoop_conf_dir} dfs -mkdir -p #{remote_app_log_dir}
         hdfs --config #{options.hadoop_conf_dir} dfs -chown #{options.user.name}:#{options.hadoop_group.name} #{remote_app_log_dir}
@@ -267,6 +268,7 @@ Wait for the NODEMANAGER component to be declared on the host
 
       @ambari.hosts.component_wait
         header: 'NODEMANAGER WAITED'
+        if: options.takeover
         url: options.ambari_url
         username: 'admin'
         password: options.ambari_admin_password

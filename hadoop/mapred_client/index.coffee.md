@@ -36,3 +36,4 @@ The output list can then be saved to the distributed filesystem, and the reducer
           'ryba-ambari-takeover/hadoop/mapred_client/install'
           'ryba-ambari-takeover/hadoop/mapred_client/check'
         ]
+        'deploy': 'ryba-ambari-takeover/hadoop/mapred_client/install'

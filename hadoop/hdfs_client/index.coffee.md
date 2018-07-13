@@ -22,5 +22,6 @@ and perform actual file I/O directly with the DataNodes.
           'ryba-ambari-takeover/hadoop/hdfs_client/install'
           'ryba-ambari-takeover/hadoop/hdfs_client/check'
         ]
+        'deploy': 'ryba-ambari-takeover/hadoop/hdfs_client/install'
 
 [hdfs_client]: http://hadoop.apache.org/docs/current/hadoop-project-dist/hadoop-hdfs/HdfsUserGuide.html

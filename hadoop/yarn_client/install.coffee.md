@@ -39,6 +39,7 @@ Wait for the YARN_CLIENT component to be declared on the host
       @ambari.hosts.component_wait
         header: 'YARN_CLIENT WAITED'
         url: options.ambari_url
+        if: options.takeover
         username: 'admin'
         password: options.ambari_admin_password
         cluster_name: options.cluster_name

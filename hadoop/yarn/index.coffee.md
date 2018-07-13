@@ -16,3 +16,5 @@ This modules aims at installing YARN service with ambari.
       commands:
         install: 'ryba-ambari-takeover/hadoop/yarn/install'
         prepare: 'ryba-ambari-takeover/hadoop/yarn/prepare'
+        deploy: 'ryba-ambari-takeover/hadoop/yarn/install'
+

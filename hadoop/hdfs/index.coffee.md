@@ -14,3 +14,4 @@ This modules aims at installing HDFS service with ambari.
       commands:
         install: 'ryba-ambari-takeover/hadoop/hdfs/install'
         prepare: 'ryba-ambari-takeover/hadoop/hdfs/prepare'
+        deploy: 'ryba-ambari-takeover/hadoop/hdfs/install'

@@ -51,6 +51,7 @@ HDFS directory. Note, the parent directories are created by the
       @hdfs_upload
         header: 'HDFS Tarballs'
         wait: 60*1000
+        if: options.takeover
         source: '/usr/hdp/current/hadoop-client/mapreduce.tar.gz'
         target: '/hdp/apps/$version/mapreduce/mapreduce.tar.gz'
         id: options.hostname
@@ -81,6 +82,7 @@ Wait for the MAPREDUCE2_CLIENT component to be declared on the host
 
       @ambari.hosts.component_wait
         header: 'MAPREDUCE2_CLIENT WAITED'
+        if: options.takeover
         url: options.ambari_url
         username: 'admin'
         password: options.ambari_admin_password

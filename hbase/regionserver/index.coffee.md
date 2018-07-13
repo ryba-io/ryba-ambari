@@ -53,4 +53,6 @@ In a distributed cluster, a RegionServer runs on a DataNode.
           'ryba-ambari-takeover/hbase/regionserver/graceful_start'
           
         ]
-          
+        'deploy': [
+          'ryba-ambari-takeover/hbase/regionserver/install'
+        ]          
