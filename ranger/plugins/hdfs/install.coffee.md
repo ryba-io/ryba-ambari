@@ -1,7 +1,7 @@
 
 # Ranger HDFS Plugin Install
 
-    module.exports = header: 'Ambari Ranger HDFS Plugin', handler: (options) ->
+    module.exports = header: 'Ambari Ranger HDFS Plugin', handler: ({options}) ->
 
 ## Wait
 

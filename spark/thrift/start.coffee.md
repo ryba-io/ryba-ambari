@@ -3,7 +3,7 @@
 
 Start the Spark Job HISTORYSERVER via AMBARI's REST API.
 
-    module.exports = header: 'Ambari Spark Thrift Server Start', handler: (options) ->
+    module.exports = header: 'Ambari Spark Thrift Server Start', handler: ({options}) ->
     
 ## Registry
 

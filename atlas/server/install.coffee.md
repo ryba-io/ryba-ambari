@@ -1,7 +1,7 @@
 
 # Apache Atlas Install
 
-    module.exports = header: 'Ambari Atlas Install', handler: (options) ->
+    module.exports = header: 'Ambari Atlas Install', handler: ({options}) ->
       protocol = if options.application.properties['atlas.enableTLS'] is 'true' then 'https' else 'http'
       credential_file = options.application.properties['cert.stores.credential.provider.path'].split('jceks://file')[1]
       credential_name = path.basename credential_file
@@ -258,14 +258,14 @@ credential based on file.
             name = line.split(':')[0]
             new_lines.push unless name in Object.keys(options.user_creds)#keep track of old user if not present in current config
         @call header: 'Generate credential file', ->
-          @each options.user_creds, (opt, callback) ->
-            name = opt.key
-            user = opt.value
+          @each options.user_creds, ({options}, callback) ->
+            name = options.key
+            user = options.value
             line = "#{user.name}=#{user.group}"
             @system.execute
               header: 'Generate new credential'
               cmd: "echo -n '#{user.password}' | sha256sum"
-            ,(err, status, stdout) ->
+            ,(err, {status, stdout}) ->
               throw err if err
               [match] = /[a-zA-Z0-9]*/.exec stdout.trim()
               new_lines.push "#{line}::#{match}"

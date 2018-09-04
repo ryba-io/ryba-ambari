@@ -1,7 +1,7 @@
 
 # Graceful Stop For HBase regionserver
 
-    module.exports = header: 'Graceful Stop HBase Regionserver', handler: (options) ->
+    module.exports = header: 'Graceful Stop HBase Regionserver', handler: ({options}) ->
 
       @registry.register ['ambari','hosts','component_status'], 'ryba-ambari-actions/lib/hosts/component_status'
       @registry.register ['ambari','hosts','component_stop'], 'ryba-ambari-actions/lib/hosts/component_stop'

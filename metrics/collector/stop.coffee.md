@@ -3,7 +3,7 @@
 
 Stop the METRICS_COLLECTOR service through ambari.
 
-    module.exports = header: 'Ambari Metrics Collector Stop', handler: (options) ->
+    module.exports = header: 'Ambari Metrics Collector Stop', handler: ({options}) ->
 
 ## Registry
 

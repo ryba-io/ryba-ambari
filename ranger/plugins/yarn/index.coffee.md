@@ -14,16 +14,12 @@
         ambari_server: module: 'ryba-ambari-takeover/server', single: true
       configure:
         'ryba-ambari-takeover/ranger/plugins/yarn/configure'
-      plugin: (options) ->
+      plugin: ({options}) ->
         @before
           type: ['ambari', 'hosts', 'component_start']
           name: 'RESOURCEMANAGER'
         , ->
-          delete options.original.type
-          delete options.original.handler
-          delete options.original.argument
-          delete options.original.store
-          @call 'ryba-ambari-takeover/ranger/plugins/yarn/install', options.original
+          @call 'ryba-ambari-takeover/ranger/plugins/yarn/install', options
       commands:
         'install':
           'ryba-ambari-takeover/ranger/plugins/yarn/install'

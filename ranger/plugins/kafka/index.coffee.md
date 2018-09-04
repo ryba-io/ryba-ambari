@@ -15,15 +15,11 @@
         ambari_server: module: 'ryba/ambari/server', required: true, single: true
       configure:
         'ryba-ambari-takeover/ranger/plugins/kafka/configure'
-      plugin: (options) ->
+      plugin: ({options}) ->
         @before
           type: ['ambari', 'hosts', 'component_start']
           name: 'KAFKA_BROKER'
         , ->
-          delete options.original.type
-          delete options.original.handler
-          delete options.original.argument
-          delete options.original.store
-          @call 'ryba-ambari-takeover/ranger/plugins/kafka/install', options.original
+          @call 'ryba-ambari-takeover/ranger/plugins/kafka/install', options
         # @after 'ryba/kafka/broker/install', ->
         #   @call 'ryba/ranger/plugins/kafka/install', options

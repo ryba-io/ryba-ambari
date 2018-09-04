@@ -4,7 +4,7 @@
 The only declared dependency is MySQL Client which install the MySQL JDBC
 driver used by Sqoop.
 
-    module.exports = header: 'Ambari Sqoop Install', handler: (options) ->
+    module.exports = header: 'Ambari Sqoop Install', handler: ({options}) ->
 
 ## Registry
 

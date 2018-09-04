@@ -3,7 +3,7 @@
 
 Check if the JournalNode is running as expected.
 
-    module.exports = header: 'HDFS JN Ambari Check', handler: (options) ->
+    module.exports = header: 'HDFS JN Ambari Check', handler: ({options}) ->
 
 ## Wait
 
@@ -40,9 +40,9 @@ Test the HTTP server with a JMX request.
         sleep: 3000
         header: 'SPNEGO'
         cmd: mkcmd.hdfs options.hdfs_krb5_user, "curl --negotiate -k -u : #{protocol}://#{options.fqdn}:#{port}/jmx?qry=Hadoop:service=JournalNode,name=JournalNodeInfo"
-      , (err, executed, stdout) ->
+      , (err, data) ->
         throw err if err
-        data = JSON.parse stdout
+        data = JSON.parse data.stdout
         throw Error "Invalid Response" unless data.beans[0].name is 'Hadoop:service=JournalNode,name=JournalNodeInfo'
 
 ## Dependencies

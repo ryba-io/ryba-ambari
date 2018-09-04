@@ -1,7 +1,7 @@
 
 # Ambari Takeover
 
-    module.exports = header: 'HDFS Ambari Install', handler: (options) ->
+    module.exports = header: 'HDFS Ambari Install', handler: ({options}) ->
       
 ## Register
 

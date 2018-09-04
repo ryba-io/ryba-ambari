@@ -2,7 +2,7 @@
 
 # Ambari Logsearch Server Install
 
-    module.exports =  header: 'Ambari Ranger Tagsync Install', handler: (options) ->
+    module.exports =  header: 'Ambari Ranger Tagsync Install', handler: ({options}) ->
       
 ## Register
 

@@ -3,7 +3,7 @@
 
 Start the LOGSEARCH_SERVER service through ambari.
 
-    module.exports = header: 'Ambari Logsearch Server Start', handler: (options) ->
+    module.exports = header: 'Ambari Logsearch Server Start', handler: ({options}) ->
 
 ## Registry
 

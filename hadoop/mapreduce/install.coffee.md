@@ -1,7 +1,7 @@
 
 # Ambari Takeover
 
-    module.exports = header: 'Mapreduce Ambari Install', handler: (options) ->
+    module.exports = header: 'Mapreduce Ambari Install', handler: ({options}) ->
       
 ## Register
 

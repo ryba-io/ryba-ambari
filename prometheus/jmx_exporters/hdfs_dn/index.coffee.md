@@ -16,16 +16,12 @@ It meant to be run as a Java Agent, exposing an HTTP server and scraping the loc
         jmx_exporter: module: 'ryba-ambari-takeover/prometheus/jmx_exporters/hdfs_dn'
         prometheus_monitor: module: 'ryba/prometheus/monitor', required: true
       configure: 'ryba-ambari-takeover/prometheus/jmx_exporters/hdfs_dn/configure'
-      plugin: (options) ->
+      plugin: ({options}) ->
         @before
           type: ['ambari', 'hosts', 'component_start']
           name: 'DATANODE'
         , ->
-          delete options.original.type
-          delete options.original.handler
-          delete options.original.argument
-          delete options.original.store
-          @call 'ryba-ambari-takeover/prometheus/jmx_exporters/hdfs_dn/password.coffee.md', options.original
+          @call 'ryba-ambari-takeover/prometheus/jmx_exporters/hdfs_dn/password.coffee.md', options
       commands:
         install: [
           'ryba-ambari-takeover/prometheus/jmx_exporters/hdfs_dn/password'

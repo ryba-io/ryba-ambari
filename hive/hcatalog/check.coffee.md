@@ -1,7 +1,7 @@
 
 # Hive HCatalog Check
 
-    module.exports =  header: 'Ambari Hive HCatalog Check', handler: (options) ->
+    module.exports =  header: 'Ambari Hive HCatalog Check', handler: ({options}) ->
 
 ## Asset Connection
 

@@ -6,7 +6,7 @@ Run twice "[Spark Pi][Spark-Pi]" example for validating installation . The confi
 Spark programs are divided into a driver part and executors part.
 The driver program manages the executors task.
 
-    module.exports = header: 'Spark Client Check', handler: (options) ->
+    module.exports = header: 'Spark Client Check', handler: ({options}) ->
 
 ## Register
 
@@ -83,7 +83,7 @@ In this mode the driver is the spark master running outside yarn.
             | grep -m 1 "Pi is roughly";
           """
           unless_exec : unless options.force_check then mkcmd.test options.test_krb5_user, "hdfs dfs -test -f #{file_check}"
-        , (err, executed, stdout, stderr) ->
+        , (err, {executed, stdout, stderr}) ->
           return err if err
           return unless executed
           log_result = stdout.split(" ")
@@ -110,7 +110,7 @@ yarn-client mode, not yarn-cluster.
           echo 'println(\"spark_shell_scala\")' | spark-shell --master yarn-client --driver-memory 512m  --executor-memory 512m 2>/dev/null | grep ^spark_shell_scala$
           """
           unless_exec : unless options.force_check then mkcmd.test options.test_krb5_user, "hdfs dfs -test -f #{file_check}"
-        , (err, executed, stdout) ->
+        , (err, {executed, stdout}) ->
           return err if err
           return unless executed
           return Error 'Invalid Output' unless stdout.indexOf 'spark_shell_scala' > -1
@@ -240,7 +240,7 @@ Creating database from SparkSql is not supported for now.
           echo 'print \"spark_shell_python\"' | pyspark  --master yarn-client 2>/dev/null | grep ^spark_shell_python$
           """
           unless_exec : unless options.force_check then mkcmd.test options.test_krb5_user, "hdfs dfs -test -f #{file_check}"
-        , (err, executed, stdout) ->
+        , (err, {executed, stdout}) ->
           return err if err
           return unless executed
           return Error 'Invalid Output' unless stdout.indexOf 'spark_shell_python' > -1

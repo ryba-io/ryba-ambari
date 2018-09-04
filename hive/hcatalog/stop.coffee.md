@@ -5,7 +5,7 @@ Stop the Hive HCatalog server.
 
 The file storing the PID is "/var/run/hive-server2/hive-server2.pid".
 
-    module.exports = header: 'Ambari Hive HCatalog Stop', handler: (options) ->
+    module.exports = header: 'Ambari Hive HCatalog Stop', handler: ({options}) ->
 
 ## Registry
 

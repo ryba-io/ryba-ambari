@@ -1,7 +1,7 @@
 
 # Ambari Takeover
 
-    module.exports = header: 'YARN Ambari Install', handler: (options) ->
+    module.exports = header: 'YARN Ambari Install', handler: ({options}) ->
 
 ## Register
 
@@ -335,14 +335,15 @@ Render yarn-env.sh files, before uploading to Ambari Server.
       @call
         if: options.post_component and options.takeover
       , ->
-        @each options.config_groups, (opts, cb) ->
-          {key, value} = opts
+        {ambari_url, ambari_admin_password, cluster_name} = options
+        @each options.config_groups, ({options}, cb) ->
+          {key, value} = options
           @ambari.configs.groups_add
             header: "#{key}"
-            url: options.ambari_url
+            url: ambari_url
             username: 'admin'
-            password: options.ambari_admin_password
-            cluster_name: options.cluster_name
+            password: ambari_admin_password
+            cluster_name: cluster_name
             group_name: key
             tag: key
             description: "#{key} config groups"

@@ -16,15 +16,11 @@
         ambari_server: module: 'ryba/ambari/server', required: true, single: true
       configure:
         'ryba-ambari-takeover/ranger/plugins/hiveserver2/configure'
-      plugin: (options) ->
+      plugin: ({options}) ->
         @before
           type: ['ambari', 'hosts', 'component_start']
           name: 'HIVE_SERVER'
         , ->
-          delete options.original.type
-          delete options.original.handler
-          delete options.original.argument
-          delete options.original.store
-          @call 'ryba-ambari-takeover/ranger/plugins/hiveserver2/install', options.original
+          @call 'ryba-ambari-takeover/ranger/plugins/hiveserver2/install', options
         # @after 'ryba-ambari-takeover/hive/server2/install', ->
         #   @call 'ryba-ambari-takeover/ranger/plugins/hiveserver2/install', options

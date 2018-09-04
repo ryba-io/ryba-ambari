@@ -6,7 +6,7 @@
 Check if the ResourceManager is running. The process ID is located by default
 inside "/var/run/hadoop-yarn/yarn-yarn-resourcemanager.pid".
 
-    module.exports = header: 'YARN RM Ambari Status', handler: (options) ->
+    module.exports = header: 'YARN RM Ambari Status', handler: ({options}) ->
 
 ## Registry
 

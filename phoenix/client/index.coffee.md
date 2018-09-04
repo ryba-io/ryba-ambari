@@ -19,25 +19,17 @@ running of those scans to produce regular JDBC result sets.
         hbase_client_local: module: 'ryba-ambari-takeover/hbase/client', local: true
       configure:
         'ryba-ambari-takeover/phoenix/client/configure'
-      plugin: (options) ->
+      plugin: ({options}) ->
         @before
           type: ['ambari', 'hosts', 'component_start']
           name: 'HBASE_MASTER'
         , ->
-          delete options.original.type
-          delete options.original.handler
-          delete options.original.argument
-          delete options.original.store
-          @call 'ryba-ambari-takeover/phoenix/client/install', options.original
+          @call 'ryba-ambari-takeover/phoenix/client/install', options
         @before
           type: ['ambari', 'hosts', 'component_start']
           name: 'HBASE_REGIONSERVER'
         , ->
-          delete options.original.type
-          delete options.original.handler
-          delete options.original.argument
-          delete options.original.store
-          @call 'ryba-ambari-takeover/phoenix/client/install', options.original
+          @call 'ryba-ambari-takeover/phoenix/client/install', options
       commands:
         'install': [
           'ryba/phoenix/client/install'

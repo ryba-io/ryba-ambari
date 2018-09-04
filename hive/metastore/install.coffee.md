@@ -1,7 +1,7 @@
 
 # Hive Metastore Install
 
-    module.exports =  header: 'Ambari Hive Metastore Install', handler: (options) ->
+    module.exports =  header: 'Ambari Hive Metastore Install', handler: ({options}) ->
 
 ## Register
 

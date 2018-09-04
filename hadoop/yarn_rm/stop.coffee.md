@@ -1,7 +1,7 @@
 
 # Hadoop YARN ResourceManager Stop
 
-    module.exports = header: 'YARN RM Ambari Stop', handler: (options) ->
+    module.exports = header: 'YARN RM Ambari Stop', handler: ({options}) ->
 
 ## Registry
 

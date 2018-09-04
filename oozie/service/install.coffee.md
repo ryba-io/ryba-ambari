@@ -1,7 +1,7 @@
 
 # Oozie Service Install
 
-    module.exports =  header: 'Ambari Oozie Service Install', handler: (options) ->
+    module.exports =  header: 'Ambari Oozie Service Install', handler: ({options}) ->
 
 ## Register
 

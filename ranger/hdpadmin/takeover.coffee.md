@@ -3,7 +3,7 @@
 
 Wait transactions to be synced
 
-    module.exports = header: 'Ranger Admin TakeOver', handler: (options) ->
+    module.exports = header: 'Ranger Admin TakeOver', handler: ({options}) ->
       @service.stop
         header: 'Stop'
         name: 'ranger-admin'

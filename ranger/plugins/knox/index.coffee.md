@@ -12,16 +12,12 @@
         ambari_server: module: 'ryba/ambari/server', required: true, single: true
       configure:
         'ryba-ambari-takeover/ranger/plugins/knox/configure'
-      plugin: (options) ->
+      plugin: ({options}) ->
         @before
           type: ['ambari', 'hosts', 'component_start']
           name: 'KNOX_GATEWAY'
         , ->
-          delete options.original.type
-          delete options.original.handler
-          delete options.original.argument
-          delete options.original.store
-          @call 'ryba-ambari-takeover/ranger/plugins/knox/install', options.original
+          @call 'ryba-ambari-takeover/ranger/plugins/knox/install', options
       commands:
         install:
           'ryba-ambari-takeover/ranger/plugins/knox/install'

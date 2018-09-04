@@ -3,7 +3,7 @@
 Prepare scripts and files before taking over the cluster.
 For example the hadoop env file is rendered with all variable.
 
-    module.exports = header: 'Hadoop Takeover', handler: (options) ->
+    module.exports = header: 'Hadoop Takeover', handler: ({options}) ->
       return unless options.post_component
       
 ## Registry

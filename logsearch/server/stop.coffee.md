@@ -3,7 +3,7 @@
 
 Stop the LOGSEARCH_SERVER service through ambari.
 
-    module.exports = header: 'Ambari Logsearch Server Stop', handler: (options) ->
+    module.exports = header: 'Ambari Logsearch Server Stop', handler: ({options}) ->
 
 ## Registry
 

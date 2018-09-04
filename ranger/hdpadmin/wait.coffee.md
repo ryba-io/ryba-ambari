@@ -2,7 +2,7 @@
 
 Wait for Ranger Admin Policy Manager to start.
 
-    module.exports = header: 'Ambari Ranger Admin Wait', handler: (options) ->
+    module.exports = header: 'Ambari Ranger Admin Wait', handler: ({options}) ->
 
 ## HTTP
 

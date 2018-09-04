@@ -1,7 +1,7 @@
 
 # Ambari Metrics Monitor Install
 
-    module.exports =  header: 'Ambari Metrics Monitor Install', handler: (options) ->
+    module.exports =  header: 'Ambari Metrics Monitor Install', handler: ({options}) ->
     
 ## Register
 
@@ -25,7 +25,7 @@ Wait for the NODEMANAGER component to be declared on the host
       @ambari.hosts.component_wait
         header: 'METRICS_MONITOR WAITED'
         url: options.ambari_url
-        if: options.takeover
+        # if: options.takeover
         username: 'admin'
         password: options.ambari_admin_password
         cluster_name: options.cluster_name
@@ -38,7 +38,7 @@ Put the METRICS_MONITOR component declared on the host as `INSTALLED` desired st
       @ambari.hosts.component_install
         header: 'METRICS_MONITOR set installed'
         url: options.ambari_url
-        if: options.takeover
+        # if: options.takeover
         username: 'admin'
         password: options.ambari_admin_password
         cluster_name: options.cluster_name

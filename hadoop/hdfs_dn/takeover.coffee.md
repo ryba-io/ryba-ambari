@@ -3,7 +3,7 @@
 
 Wait transactions to be synced
 
-    module.exports = header: 'HDFS DN Ambari TakeOver', handler: (options) ->
+    module.exports = header: 'HDFS DN Ambari TakeOver', handler: ({options}) ->
       @service.stop
         header: 'Stop'
         name: 'hadoop-hdfs-datanode'

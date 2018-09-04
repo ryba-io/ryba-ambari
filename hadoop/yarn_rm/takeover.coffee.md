@@ -3,7 +3,7 @@
 
 Wait transactions to be synced
 
-    module.exports = header: 'YARN RM Ambari TakeOver', handler: (options) ->
+    module.exports = header: 'YARN RM Ambari TakeOver', handler: ({options}) ->
       @service.stop
         header: 'Stop'
         name: 'hadoop-yarn-resourcemanager'

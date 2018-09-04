@@ -4,7 +4,7 @@
 See the Ambari documentation relative to [Software Requirements][sr] before
 executing this module.
 
-    module.exports = header: 'Ambari Server Install', handler: (options) ->
+    module.exports = header: 'Ambari Server Install', handler: ({options}) ->
       
 ## Registry
 
@@ -151,16 +151,15 @@ IPTables rules are only inserted if the parameter "iptables.action" is set to
         cluster_name: options.cluster_name
         name: 'KERBEROS'
 
-        
-      @each options.config_groups, (opts, cb) ->
-        {key, value} = opts
+      {ambari_url, ambari_admin_password, cluster_name} = options
+      @each options.config_groups, ({options}, cb) ->
+        {key, value} = options
         @ambari.configs.groups_add
           header: "#{key}"
-          if: options.takeover
-          url: options.ambari_url
+          url: ambari_url
           username: 'admin'
-          password: options.ambari_admin_password
-          cluster_name: options.cluster_name
+          password: ambari_admin_password
+          cluster_name: cluster_name
           group_name: key
           tag: key
           description: "#{key} config groups"
@@ -170,6 +169,7 @@ IPTables rules are only inserted if the parameter "iptables.action" is set to
             tag: value.tag
             properties: value.properties
         @next cb
+
 
       @krb5.addprinc options.krb5.admin,
         header: 'Explorer keytab'
@@ -190,9 +190,10 @@ IPTables rules are only inserted if the parameter "iptables.action" is set to
       @call
         if: options.importCerts?
       , (_, cb) ->
+        {truststore} = options
         tmp_location = "/tmp/ryba_cacert_#{Date.now()}"
-        @each options.importCerts, (opts, callback) ->
-          {source, local, name} = opts.value
+        @each options.importCerts, ({options}, callback) ->
+          {source, local, name} = options.value
           @file.download
             header: 'download cacert'
             source: source
@@ -200,8 +201,8 @@ IPTables rules are only inserted if the parameter "iptables.action" is set to
             local: true
           @java.keystore_add
             header: "add cacert to #{name}"
-            keystore: options.truststore.target
-            storepass: options.truststore.password
+            keystore: truststore.target
+            storepass: truststore.password
             caname: name
             cacert: "#{tmp_location}/cacert"
           @next callback

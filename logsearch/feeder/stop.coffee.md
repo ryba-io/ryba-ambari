@@ -3,7 +3,7 @@
 
 Stop the METRICS_MONITOR service through ambari.
 
-    module.exports = header: 'Ambari Logsearch Feeder Stop', handler: (options) ->
+    module.exports = header: 'Ambari Logsearch Feeder Stop', handler: ({options}) ->
 
 ## Registry
 

@@ -7,7 +7,7 @@ manually with the following command:
 service ranger-admin stop
 ```
 
-    module.exports = header: 'Ambari Ranger Admin Stop', handler: (options) ->
+    module.exports = header: 'Ambari Ranger Admin Stop', handler: ({options}) ->
     
 ## Registry
 

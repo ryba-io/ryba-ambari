@@ -3,7 +3,7 @@
 
 Start the METRICS_GRAFANA service through ambari.
 
-    module.exports = header: 'Ambari Metrics Grafana Start', handler: (options) ->
+    module.exports = header: 'Ambari Metrics Grafana Start', handler: ({options}) ->
 
 ## Registry
 

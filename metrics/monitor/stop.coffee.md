@@ -3,7 +3,7 @@
 
 Stop the METRICS_MONITOR service through ambari.
 
-    module.exports = header: 'Ambari Metrics Monitor Stop', handler: (options) ->
+    module.exports = header: 'Ambari Metrics Monitor Stop', handler: ({options}) ->
 
 ## Registry
 

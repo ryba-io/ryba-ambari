@@ -3,7 +3,7 @@
 
 Wait transactions to be synced
 
-    module.exports = header: 'HDFS JN Ambari TakeOver', handler: (options) ->
+    module.exports = header: 'HDFS JN Ambari TakeOver', handler: ({options}) ->
     
       @call header: 'HDFS JN Wait Txns', handler: ->
         for host in options.hosts

@@ -3,7 +3,7 @@
 
 Stop the METRICS_GRAFANA service through ambari.
 
-    module.exports = header: 'Ambari Metrics Grafana Stop', handler: (options) ->
+    module.exports = header: 'Ambari Metrics Grafana Stop', handler: ({options}) ->
 
 ## Registry
 

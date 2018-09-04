@@ -3,7 +3,7 @@
 
 Start the HBase Master server.
 
-    module.exports = header: 'Ambari HBase Master Start', handler: (options) ->
+    module.exports = header: 'Ambari HBase Master Start', handler: ({options}) ->
 
 ## Registry
 

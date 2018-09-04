@@ -33,8 +33,9 @@ Gardian Sesame CACERT for Sesame auth in NiFi + Certs for Ranger policy refresh
         if: options.certs?
       , (_, cb) ->
         tmp_location = "/tmp/ryba_cacert_#{Date.now()}"
-        @each options.certs, (opts, callback) ->
-          {source, local, name} = opts.value
+        {truststore} = options
+        @each options.certs, ({options}, callback) ->
+          {source, local, name} = options.value
           @file.download
             header: 'download cacert'
             source: source
@@ -42,8 +43,8 @@ Gardian Sesame CACERT for Sesame auth in NiFi + Certs for Ranger policy refresh
             local: true
           @java.keystore_add
             header: "add cacert to #{name}"
-            keystore: options.truststore.target
-            storepass: options.truststore.password
+            keystore: truststore.target
+            storepass: truststore.password
             caname: name
             cacert: "#{tmp_location}/cacert"
           @next callback

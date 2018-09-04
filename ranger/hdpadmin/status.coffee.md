@@ -3,7 +3,7 @@
 
 Check if Ranger Admin is started
 
-    module.exports = header: 'Ambari Ranger Admin Status', handler: (options) ->
+    module.exports = header: 'Ambari Ranger Admin Status', handler: ({options}) ->
 
 ## Registry
 

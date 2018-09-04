@@ -9,7 +9,7 @@ service ranger-admin start
 systemctl start ranger-admin
 ```
 
-    module.exports = header: 'Ambari Ranger Admin Start', handler: (options) ->
+    module.exports = header: 'Ambari Ranger Admin Start', handler: ({options}) ->
     
 ## Registry
 

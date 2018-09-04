@@ -8,7 +8,7 @@ Run the command `./bin/ryba check -m ryba-ambari-takeover/hadoop/hdfs_dn` to che
 DataNodes.
 
 
-    module.exports = header: 'HDFS DN Ambari Check', handler: (options) ->
+    module.exports = header: 'HDFS DN Ambari Check', handler: ({options}) ->
 
 ## Wait
 
@@ -60,14 +60,14 @@ value is 50475.
       @system.execute
         header: 'SPNEGO'
         cmd: mkcmd.hdfs options.hdfs_krb5_user, "curl --negotiate -k -u : #{protocol}://#{options.fqdn}:#{port}/jmx?qry=Hadoop:service=DataNode,name=DataNodeInfo"
-      , (err, executed, stdout) ->
+      , (err, data) ->
         throw err if err
-        throw Error "Invalid Response" unless JSON.parse(stdout)?.beans[0]?.name is 'Hadoop:service=DataNode,name=DataNodeInfo'
+        throw Error "Invalid Response" unless JSON.parse(data.stdout)?.beans[0]?.name is 'Hadoop:service=DataNode,name=DataNodeInfo'
       # @system.execute
       #   cmd: mkcmd.hdfs options.hdfs_krb5_user, "curl --negotiate -k -u : #{protocol}://#{options.fqdn}:#{port}/jmx?qry=Hadoop:service=DataNode,name=FSDatasetState-*"
-      # , (err, executed, stdout) ->
+      # , (err, data) ->
       #   throw err if err
-      #   data = JSON.parse stdout
+      #   data = JSON.parse data.stdout
       #   throw Error "Invalid Response" unless /^Hadoop:service=DataNode,name=FSDatasetState-.*/.test data?.beans[0]?.name
       #   remaining = data.beans[0].Remaining
       #   total = data.beans[0].Capacity

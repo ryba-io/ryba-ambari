@@ -3,7 +3,7 @@
 
 Wait for the NodeManagers HTTP ports. It supports HTTPS and HA.
 
-    module.exports = header: 'YARN NM Ambari Wait', handler: (options) ->
+    module.exports = header: 'YARN NM Ambari Wait', handler: ({options}) ->
 
 ## TCP Addresss
 

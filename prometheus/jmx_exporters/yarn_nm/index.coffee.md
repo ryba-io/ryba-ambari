@@ -15,16 +15,12 @@ It meant to be run as a Java Agent, exposing an HTTP server and scraping the loc
         hadoop_core: module: 'ryba-ambari-takeover/hadoop/core', local: true
         prometheus_monitor: module: 'ryba/prometheus/monitor', required: true
       configure: 'ryba-ambari-takeover/prometheus/jmx_exporters/yarn_nm/configure'
-      plugin: (options) ->
+      plugin: ({options}) ->
         @before
           type: ['ambari', 'hosts', 'component_start']
           name: 'NODEMANAGER'
         , ->
-          delete options.original.type
-          delete options.original.handler
-          delete options.original.argument
-          delete options.original.store
-          @call 'ryba-ambari-takeover/prometheus/jmx_exporters/yarn_nm/password.coffee.md', options.original
+          @call 'ryba-ambari-takeover/prometheus/jmx_exporters/yarn_nm/password.coffee.md', options
       commands:
         install: [
           'ryba-ambari-takeover/prometheus/jmx_exporters/yarn_nm/password'

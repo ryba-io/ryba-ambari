@@ -2,7 +2,7 @@
 
 # Ambari Logsearch Server Install
 
-    module.exports =  header: 'Ambari Spark Livy Server Install', handler: (options) ->
+    module.exports =  header: 'Ambari Spark Livy Server Install', handler: ({options}) ->
       
 ## Register
 

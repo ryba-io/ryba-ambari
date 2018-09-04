@@ -1,6 +1,6 @@
 # HDFS Datanode Layout
 
-    module.exports = header: 'HDFS NN layout', handler: (options) ->
+    module.exports = header: 'HDFS NN layout', handler: ({options}) ->
 
 ## Register
 
@@ -42,7 +42,7 @@ drwxr-xr-x   - hdfs   hadoop      /user/hdfs
           hdfs --config '#{options.hadoop_conf_dir}' dfs -chmod 1777 /tmp
           """
           code_skipped: 2
-        , (err, executed, stdout) ->
+        , (err, data) ->
           options.log? 'Directory "/tmp" prepared' if executed
         @system.execute
           cmd: mkcmd.hdfs options.hdfs_krb5_user, """
@@ -55,7 +55,7 @@ drwxr-xr-x   - hdfs   hadoop      /user/hdfs
           hdfs --config '#{options.hadoop_conf_dir}' dfs -chmod 755 /user/#{options.user.name}
           """
           code_skipped: 2
-        , (err, executed, stdout) ->
+        , (err, data) ->
           options.log? 'Directory "/user/{test_user}" prepared' if executed
         @system.execute
           cmd: mkcmd.hdfs options.hdfs_krb5_user, """
@@ -65,7 +65,7 @@ drwxr-xr-x   - hdfs   hadoop      /user/hdfs
           hdfs --config '#{options.hadoop_conf_dir}' dfs -chmod 755 /apps
           """
           code_skipped: 2
-        , (err, executed, stdout) ->
+        , (err, data) ->
           options.log? 'Directory "/apps" prepared' if executed
 
 ## HDP Layout

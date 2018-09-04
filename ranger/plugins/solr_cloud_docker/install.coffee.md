@@ -1,7 +1,7 @@
 
 # Ranger Solr Cloud on Docker Ranger Plugin Install
 
-    module.exports = header: 'Ranger Solr Plugin install', handler: (options) ->
+    module.exports = header: 'Ranger Solr Plugin install', handler: ({options}) ->
       version = null
 
 ## Registry
@@ -33,36 +33,37 @@
 
 ## Service Repositories
 
-      @each options.service_repos, (opts, callback) ->
-        {key, value} = opts
+      {ranger_admin, solr_plugins, solr_user, user, group, hdfs_krb5_user} = options
+      @each options.service_repos, ({options}, callback) ->
+        {key, value} = options
         #Ranger Repository
         @ranger_service
-          username: options.ranger_admin.options.admin.username
-          password: options.ranger_admin.options.admin.password
-          url: options.solr_plugins[key].install['POLICY_MGR_URL']
+          username: ranger_admin.options.admin.username
+          password: ranger_admin.options.admin.password
+          url: solr_plugins[key].install['POLICY_MGR_URL']
           service: value
         @next callback
       
 ## Service Layout
         
-      @each options.solr_plugins, (opts, callback) ->
-        {key, value} = opts
+      @each options.solr_plugins, ({options}, callback) ->
+        {key, value} = options
         @call
           if: value.install['XAAUDIT.HDFS.IS_ENABLED'] is 'true'
           header: 'Audit HDFS Policy'
         , ->
           @ranger_policy
             header: 'HDFS Audit'
-            username: options.ranger_admin.options.admin.username
-            password: options.ranger_admin.options.admin.password
+            username: ranger_admin.options.admin.username
+            password: ranger_admin.options.admin.password
             url: value.install['POLICY_MGR_URL']
             policy: value.policy_hdfs_audit
           @system.mkdir
             header: 'HDFS Spool Dir'
             if: value.install['XAAUDIT.HDFS.IS_ENABLED'] is 'true'
             target: value.install['XAAUDIT.HDFS.FILE_SPOOL_DIR']
-            uid: options.solr_user.name
-            gid: options.solr_user.name
+            uid: solr_user.name
+            gid: solr_user.name
             mode: 0o0750
           @call ->
             for target in value.policy_hdfs_audit
@@ -71,20 +72,18 @@
                 mode: 0o0750
                 parent:
                   mode: 0o0711
-                  user: options.user.name
-                  group: options.group.name
-                uid: options.solr_user.name
-                gid: options.solr_user.name
-                krb5_user: options.hdfs_krb5_user
+                  user: user.name
+                  group: group.name
+                uid: solr_user.name
+                gid: solr_user.name
+                krb5_user: hdfs_krb5_user
           @system.mkdir
             header: 'Solr Spool Dir'
             if: value.install['XAAUDIT.SOLR.IS_ENABLED'] is 'true'
             target: value.install['XAAUDIT.SOLR.FILE_SPOOL_DIR']
-            uid: options.solr_user.name
-            gid: options.solr_user.name
+            uid: solr_user.name
+            gid: solr_user.name
             mode: 0o0750
-
-                      
                       
       # solr_plugin.hdp_current_version = null
       # context.system.execute
@@ -157,9 +156,10 @@ loads the lib directory found in the `SOLR_HOME`.
           @call
             if: -> @status -1 #do not need this if the cred.jceks file is not provisioned
           , ->
-            @each files, (opts, cb) ->
-              file = opts.key
-              target = "#{options.conf_dir}/clusters/#{key}/server/solr-webapp/webapp/WEB-INF/classes/#{file}"
+            {conf_dir} = options
+            @each files, ({options}, cb) ->
+              file = options.key
+              target = "#{conf_dir}/clusters/#{key}/server/solr-webapp/webapp/WEB-INF/classes/#{file}"
               ssh = @ssh options.ssh
               fs.exists ssh, target, (err, exists) ->
                 return cb err if err

@@ -1,7 +1,7 @@
 
 # Hive Service Install
 
-    module.exports =  header: 'Ambari Hive Service Install', handler: (options) ->
+    module.exports =  header: 'Ambari Hive Service Install', handler: ({options}) ->
 
 ## Register
 
@@ -66,6 +66,7 @@ Create the directories to store the logs and pid information. The properties
         @file
           source: "#{__dirname}/../resources/webhcat-env.sh.j2"
           local: true
+          if: options.post_component and options.takeover
           target: "#{options.cache_dir}/webhcat-env.sh"
           ssh: false
           mode: 0o0755

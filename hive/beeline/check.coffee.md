@@ -3,7 +3,7 @@
 
 This module check the Hive Server2 servers using the `beeline` command.
 
-    module.exports =  header: 'Ambari Hive Beeline Check', handler: (options) ->
+    module.exports =  header: 'Ambari Hive Beeline Check', handler: ({options}) ->
 
 ## Register
 

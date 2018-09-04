@@ -4,7 +4,7 @@
 TODO: Implement lock for Hive Server2
 http://www.cloudera.com/content/cloudera-content/cloudera-docs/CDH4/4.2.0/CDH4-Installation-Guide/cdh4ig_topic_18_5.html
 
-    module.exports =  header: 'Ambari Hive HCatalog Install', handler: (options) ->
+    module.exports =  header: 'Ambari Hive HCatalog Install', handler: ({options}) ->
 
 ## Register
 

@@ -3,7 +3,7 @@
 
 Wait transactions to be synced
 
-    module.exports = header: 'Zookeeper Server Ambari TakeOver', handler: (options) ->
+    module.exports = header: 'Zookeeper Server Ambari TakeOver', handler: ({options}) ->
       @service.stop
         header: 'Stop'
         name: 'zookeeper-server'

@@ -1,7 +1,7 @@
 
 # Ambari Takeover
 
-    module.exports = header: 'HADOOP Takeover', handler: (options) ->
+    module.exports = header: 'HADOOP Takeover', handler: ({options}) ->
 
 ## Register
 

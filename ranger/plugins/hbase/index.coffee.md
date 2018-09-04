@@ -15,25 +15,17 @@
         ambari_server: module: 'ryba-ambari-takeover/server', single: true
       configure:
         'ryba-ambari-takeover/ranger/plugins/hbase/configure'
-      plugin: (options) ->
+      plugin: ({options}) ->
         @before
           type: ['ambari', 'hosts', 'component_start']
           name: 'HBASE_MASTER'
         , ->
-          delete options.original.type
-          delete options.original.handler
-          delete options.original.argument
-          delete options.original.store
-          @call 'ryba-ambari-takeover/ranger/plugins/hbase/install', options.original
+          @call 'ryba-ambari-takeover/ranger/plugins/hbase/install', options
         @before
           type: ['ambari', 'hosts', 'component_start']
           name: 'HBASE_REGIONSERVER'
         , ->
-          delete options.original.type
-          delete options.original.handler
-          delete options.original.argument
-          delete options.original.store
-          @call 'ryba-ambari-takeover/ranger/plugins/hbase/install', options.original
+          @call 'ryba-ambari-takeover/ranger/plugins/hbase/install', options
       commands:
         install:
           'ryba-ambari-takeover/ranger/plugins/hbase/install'

@@ -1,7 +1,7 @@
 
 # Ranger HBase Plugin Install
 
-    module.exports = header: 'Ranger Atlas Plugin', handler: (options) ->
+    module.exports = header: 'Ranger Atlas Plugin', handler: ({options}) ->
 
       console.log options.configurations['ranger-atlas-policymgr-ssl']
       

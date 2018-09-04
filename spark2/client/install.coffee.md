@@ -8,7 +8,7 @@ Resources:
 
 [Tips and Tricks from Altic Scale][https://www.altiscale.com/blog/tips-and-tricks-for-running-spark-on-hadoop-part-2-2/)   
 
-    module.exports = header: 'Ambari Spark2 Client Install', handler: (options) ->
+    module.exports = header: 'Ambari Spark2 Client Install', handler: ({options}) ->
 
 ## Register
 

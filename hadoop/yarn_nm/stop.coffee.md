@@ -1,7 +1,7 @@
 
 # YARN NodeManager Stop
 
-    module.exports = header: 'YARN NM Ambari Ambari Stop', handler: (options) ->
+    module.exports = header: 'YARN NM Ambari Ambari Stop', handler: ({options}) ->
 
 ## Registry
 

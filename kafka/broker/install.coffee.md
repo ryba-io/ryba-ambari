@@ -1,7 +1,7 @@
 
 # Kafka Broker Install
 
-    module.exports = header: 'Ambari Kafka Broker Install', handler: (options) ->
+    module.exports = header: 'Ambari Kafka Broker Install', handler: ({options}) ->
 
 ## Register
 

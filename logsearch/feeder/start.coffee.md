@@ -3,7 +3,7 @@
 
 Start the Metrics  Monitor service through ambari.
 
-    module.exports = header: 'Ambari Logsearch Feeder Start', handler: (options) ->
+    module.exports = header: 'Ambari Logsearch Feeder Start', handler: ({options}) ->
       
 ## Registry
 

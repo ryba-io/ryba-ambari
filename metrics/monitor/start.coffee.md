@@ -3,7 +3,7 @@
 
 Start the Metrics  Monitor service through ambari.
 
-    module.exports = header: 'Ambari Metrics Monitor Start', handler: (options) ->
+    module.exports = header: 'Ambari Metrics Monitor Start', handler: ({options}) ->
 
 ## Registry
 

@@ -3,7 +3,7 @@
 
 Stops the Spark Job HISTORYSERVER via AMBARI's REST API.
 
-    module.exports = header: 'Ambari Spark2 History Server Stop', handler: (options) ->
+    module.exports = header: 'Ambari Spark2 History Server Stop', handler: ({options}) ->
     
 ## Registry
 

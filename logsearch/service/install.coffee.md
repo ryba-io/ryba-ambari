@@ -1,7 +1,7 @@
 
 # Ambari Logsearch Install
 
-    module.exports =  header: 'Ambari Logsearch Install', handler: (options) ->
+    module.exports =  header: 'Ambari Logsearch Install', handler: ({options}) ->
     
 ## Register
 

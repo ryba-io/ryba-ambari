@@ -1,7 +1,7 @@
 
 # Hadoop HDFS DataNode Wait
 
-    module.exports = header: 'HDFS DN Ambari Wait', handler: (options) ->
+    module.exports = header: 'HDFS DN Ambari Wait', handler: ({options}) ->
 
 ## Wait for all datanode IPC Ports
 

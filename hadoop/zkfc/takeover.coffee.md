@@ -3,7 +3,7 @@
 
 Wait transactions to be synced
 
-    module.exports = header: 'HDFS ZKFC Ambari TakeOver', handler: (options) ->
+    module.exports = header: 'HDFS ZKFC Ambari TakeOver', handler: ({options}) ->
       @service.stop
         header: 'Stop'
         name: 'hadoop-hdfs-zkfc'

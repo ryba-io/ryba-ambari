@@ -1,5 +1,5 @@
 
-    module.exports = header: 'Ambari Ranger YARN Plugin install', handler: (options) ->
+    module.exports = header: 'Ambari Ranger YARN Plugin install', handler: ({options}) ->
       version = null
 
 ## Register

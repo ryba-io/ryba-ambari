@@ -6,7 +6,7 @@ Install and configure the MapReduce Job History Server (JHS).
 Run the command `./bin/ryba install -m ryba-ambari-takeover/hadoop/mapred_jhs` to install the
 Job History Server.
 
-    module.exports = header: 'Mapreduce Ambari JHS Install', handler: (options) ->
+    module.exports = header: 'Mapreduce Ambari JHS Install', handler: ({options}) ->
 
 ## Register
 

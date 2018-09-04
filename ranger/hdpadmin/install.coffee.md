@@ -1,7 +1,7 @@
 
 # Ranger Admin Install
 
-    module.exports =  header: 'Ambari Ranger Admin Install', handler: (options) ->
+    module.exports =  header: 'Ambari Ranger Admin Install', handler: ({options}) ->
 
 ## Register
 

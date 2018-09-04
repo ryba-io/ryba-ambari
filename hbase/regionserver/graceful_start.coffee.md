@@ -1,7 +1,7 @@
 
 # Graceful Stop For HBase regionserver
 
-    module.exports = header: 'Graceful Stop HBase Regionserver', handler: (options) ->
+    module.exports = header: 'Graceful Stop HBase Regionserver', handler: ({options}) ->
 
 ## Steps
 

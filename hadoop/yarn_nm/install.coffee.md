@@ -1,7 +1,7 @@
 
 # HADOOP YARN NodeManager Install
 
-    module.exports = header: 'YARN NM Ambari Install', handler: (options) ->
+    module.exports = header: 'YARN NM Ambari Install', handler: ({options}) ->
 
 ## Register
 
@@ -189,8 +189,8 @@ on Centos/Redhat7 OS. Legacy cgconfig and cgroup-tools package must be used. (ma
           target: '/etc/cgconfig.d/yarn.cgconfig.conf'
           merge: false
           groups: options.cgroup
-        , (err, _, cgroups) ->
-          options.yarn_site['yarn.nodemanager.linux-container-executor.cgroups.mount-path'] = cgroups.mount
+        , (err, data) ->
+          options.yarn_site['yarn.nodemanager.linux-container-executor.cgroups.mount-path'] = data.cgroups.mount
         @call ->
           # migration: wdavidw 170827, using store is a bad, very bad idea, ensure it works in the mean time
           # lucasbak 180127 not using store anymore

@@ -1,7 +1,7 @@
 
 # YARN NodeManager Check
 
-    module.exports = header: 'YARN NM Ambari Check', handler: (options) ->
+    module.exports = header: 'YARN NM Ambari Check', handler: ({options}) ->
 
 ## TCP Addresss
 

@@ -13,16 +13,12 @@
         ambari_server: module: 'ryba-ambari-takeover/server', single: true
       configure:
         'ryba-ambari-takeover/ranger/plugins/hdfs/configure'
-      plugin: (options) ->
+      plugin: ({options}) ->
         @before
           type: ['ambari', 'hosts', 'component_start']
           name: 'NAMENODE'
         , ->
-          delete options.original.type
-          delete options.original.handler
-          delete options.original.argument
-          delete options.original.store
-          @call 'ryba-ambari-takeover/ranger/plugins/hdfs/install', options.original
+          @call 'ryba-ambari-takeover/ranger/plugins/hdfs/install', options
       commands:
         'install':
           'ryba-ambari-takeover/ranger/plugins/hdfs/install'

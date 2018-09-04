@@ -1,7 +1,7 @@
 
 # Ambari HDFS HDFS_CLIENT Takeover
 
-    module.exports = header: 'HDFS Client Takeover', handler: (options) ->
+    module.exports = header: 'HDFS Client Takeover', handler: ({options}) ->
 
 ## Register
 

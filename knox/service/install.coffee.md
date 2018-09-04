@@ -1,7 +1,7 @@
 
 # Knox Install
 
-    module.exports = header: 'Ambari Knox Install', handler: (options) ->
+    module.exports = header: 'Ambari Knox Install', handler: ({options}) ->
       console.log 'TODO put kknox takeover config'
 
 ## Register

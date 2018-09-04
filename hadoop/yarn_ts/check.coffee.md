@@ -3,7 +3,7 @@
 
 Check the Timeline Server.
 
-    module.exports = header: 'YARN ATS Ambari Check', handler: (options) ->
+    module.exports = header: 'YARN ATS Ambari Check', handler: ({options}) ->
 
 
 ## Wait
@@ -32,9 +32,9 @@ Check the HTTP server with a JMX request.
       @system.execute
         header: 'HTTP Port'
         cmd: mkcmd.hdfs options.hdfs_krb5_user, "curl --negotiate -k -u : #{protocol}://#{address}/jmx?qry=Hadoop:service=ApplicationHistoryServer,name=JvmMetrics"
-      , (err, executed, stdout) ->
+      , (err, data) ->
         throw err if err
-        data = JSON.parse stdout
+        data = JSON.parse data.stdout
         throw Error "Invalid Response" unless Array.isArray data?.beans
 
 # Dependencies

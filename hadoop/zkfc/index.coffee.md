@@ -19,17 +19,13 @@ The [ZKFailoverController (ZKFC)](https://hadoop.apache.org/docs/r2.3.0/hadoop-y
         zkfc: module: 'ryba-ambari-takeover/hadoop/zkfc'
       configure:
         'ryba-ambari-takeover/hadoop/zkfc/configure'
-      plugin: (options) ->
+      plugin: ({options}) ->
         @after
           type: ['ambari', 'hosts', 'component_start']
           name: 'NAMENODE'
         , ->
-          delete options.original.type
-          delete options.original.handler
-          delete options.original.argument
-          delete options.original.store
-          @call 'ryba-ambari-takeover/hadoop/zkfc/install', options.original
-          @call 'ryba-ambari-takeover/hadoop/zkfc/start', options.original
+          @call 'ryba-ambari-takeover/hadoop/zkfc/install', options
+          @call 'ryba-ambari-takeover/hadoop/zkfc/start', options
       commands:
         'install': [
           'ryba-ambari-takeover/hadoop/zkfc/install'

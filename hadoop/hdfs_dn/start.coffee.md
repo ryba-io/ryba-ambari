@@ -3,7 +3,7 @@
 
 Start the JournalNode service through ambari.
 
-    module.exports = header: 'HDFS DN Ambari Start', handler: (options) ->
+    module.exports = header: 'HDFS DN Ambari Start', handler: ({options}) ->
 
 ## Registry
 

@@ -1,7 +1,7 @@
 
 # HDFS HttpFS Check
 
-    module.exports = header: 'HDFS HttpFS Check', handler: (options) ->
+    module.exports = header: 'HDFS HttpFS Check', handler: ({options}) ->
 
 ## Assert Connection
 
@@ -22,8 +22,8 @@ List the files and diretory from the HDFS root.
         curl --fail -k --negotiate -u: \
           #{protocol}://#{options.fqdn}:#{options.http_port}/webhdfs/v1?op=GETFILESTATUS
         """
-      , (err, _, stdout, stderr) ->
-        throw Error "Invalid output" unless JSON.parse(stdout).FileStatus.type is 'DIRECTORY'
+      , (err, data, stderr) ->
+        throw Error "Invalid output" unless JSON.parse(data.stdout).FileStatus.type is 'DIRECTORY'
 
 # Dependencies
 

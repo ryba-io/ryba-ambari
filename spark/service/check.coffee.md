@@ -6,7 +6,7 @@ Run twice "[Spark Pi][Spark-Pi]" example for validating installation . The confi
 Spark programs are divided into a driver part and executors part.
 The driver program manages the executors task.
 
-    module.exports = header: 'Spark Client Check', handler: (options) ->
+    module.exports = header: 'Spark Client Check', handler: ({options}) ->
 
 ## Register
 

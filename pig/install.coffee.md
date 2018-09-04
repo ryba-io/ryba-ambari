@@ -3,7 +3,7 @@
 
 Learn more about Pig optimization by reading ["Making Pig Fly"][fly].
 
-    module.exports = header: 'Ambari Pig Install', handler: (options) ->
+    module.exports = header: 'Ambari Pig Install', handler: ({options}) ->
 
 ## Registry
 

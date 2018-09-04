@@ -3,7 +3,7 @@
 
 Start the ZEPPELIN_MASTER Component with Ambari API
 
-    module.exports = header: 'Ambari Zeppelin Master Start', handler: (options) ->
+    module.exports = header: 'Ambari Zeppelin Master Start', handler: ({options}) ->
     
 ## Registry
 

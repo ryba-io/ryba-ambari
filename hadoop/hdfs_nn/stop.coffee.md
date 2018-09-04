@@ -2,7 +2,7 @@
 # Hadoop HDFS NameNode Stop
 
 
-    module.exports = header: 'HDFS NN Ambari Stop', handler: (options) ->
+    module.exports = header: 'HDFS NN Ambari Stop', handler: ({options}) ->
 
 ## Registry
 

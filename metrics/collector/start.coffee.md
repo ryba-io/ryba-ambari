@@ -3,7 +3,7 @@
 
 Start the METRICS_COLLECTOR service through ambari.
 
-    module.exports = header: 'Ambari Metrics Collector Start', handler: (options) ->
+    module.exports = header: 'Ambari Metrics Collector Start', handler: ({options}) ->
 
 ## Registry
 

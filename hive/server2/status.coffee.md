@@ -7,7 +7,7 @@ inside "/var/run/hive/hive-server2.pid".
 Exit code is "3" if server not runnig or "1" if server not running but pid file
 still exists.
 
-    module.exports = header: 'Ambari Hive Server2 Status', handler: (options) ->
+    module.exports = header: 'Ambari Hive Server2 Status', handler: ({options}) ->
 
 ## Registry
 
