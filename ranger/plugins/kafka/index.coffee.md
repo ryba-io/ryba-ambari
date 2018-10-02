@@ -17,9 +17,11 @@
         'ryba-ambari-takeover/ranger/plugins/kafka/configure'
       plugin: ({options}) ->
         @before
-          type: ['ambari', 'hosts', 'component_start']
+          action: ['ambari', 'hosts', 'component_start']
           name: 'KAFKA_BROKER'
         , ->
           @call 'ryba-ambari-takeover/ranger/plugins/kafka/install', options
-        # @after 'ryba/kafka/broker/install', ->
+      commands:
+        'install':
+          'ryba-ambari-takeover/ranger/plugins/kafka/install'
         #   @call 'ryba/ranger/plugins/kafka/install', options

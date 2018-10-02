@@ -15,7 +15,7 @@
         'ryba-ambari-takeover/ranger/plugins/hdfs/configure'
       plugin: ({options}) ->
         @before
-          type: ['ambari', 'hosts', 'component_start']
+          action: ['ambari', 'hosts', 'component_start']
           name: 'NAMENODE'
         , ->
           @call 'ryba-ambari-takeover/ranger/plugins/hdfs/install', options

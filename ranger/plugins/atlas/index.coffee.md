@@ -13,7 +13,7 @@
         ambari_server: module: 'ryba-ambari-takeover/server', single: true
       plugin: ({options}) ->
         @before
-          type: ['ambari', 'hosts', 'component_start']
+          action: ['ambari', 'hosts', 'component_start']
           name: 'ATLAS_METADATA_SERVER'
         , ->
           @call 'ryba-ambari-takeover/ranger/plugins/atlas/install', options

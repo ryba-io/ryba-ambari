@@ -47,16 +47,20 @@ We use the SPNEGO keytab, so we let hadoop/core handle principal & keytab
       #     uid: options.user.name
       #     gid: options.group.name
 
-      @ambari.configs.update
-        header: 'hbase-site'
-        url: options.ambari_url
-        username: 'admin'
-        password: options.ambari_admin_password
-        config_type: 'hbase-site'
-        cluster_name: options.cluster_name
-        properties:
-          'phoenix.queryserver.kerberos.principal': options.phoenix_site['phoenix.queryserver.kerberos.principal']
-          'phoenix.queryserver.keytab.file': options.phoenix_site['phoenix.queryserver.keytab.file']
+      console.log
+        'phoenix.queryserver.kerberos.principal': options.phoenix_site['phoenix.queryserver.kerberos.principal']
+        'phoenix.queryserver.keytab.file': options.phoenix_site['phoenix.queryserver.keytab.file']
+
+      # @ambari.configs.update
+      #   header: 'hbase-site'
+      #   url: options.ambari_url
+      #   username: 'admin'
+      #   password: options.ambari_admin_password
+      #   config_type: 'hbase-site'
+      #   cluster_name: options.cluster_name
+      #   properties:
+      #     'phoenix.queryserver.kerberos.principal': options.phoenix_site['phoenix.queryserver.kerberos.principal']
+      #     'phoenix.queryserver.keytab.file': options.phoenix_site['phoenix.queryserver.keytab.file']
           
 # ## Layout
 # 

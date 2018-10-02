@@ -16,28 +16,6 @@
       @registry.register 'hconfigure', 'ryba/lib/hconfigure'
       @registry.register 'hdp_select', 'ryba/lib/hdp_select'
 
-      @call
-        if: options.post_component
-      , ->
-        {ambari_url, ambari_admin_password, cluster_name} = options
-        @each options.config_groups, ({options}, cb) ->
-          {key, value} = options
-          @ambari.configs.groups_add
-            header: "#{key}"
-            url: ambari_url
-            username: 'admin'
-            password: ambari_admin_password
-            cluster_name: cluster_name
-            group_name: key
-            tag: key
-            description: "#{key} config groups"
-            hosts: value.hosts
-            desired_configs: 
-              type: value.type
-              tag: value.tag
-              properties: value.properties
-          @next cb
-
 ## Kerberos
 Create HDFS Headless keytab.
 

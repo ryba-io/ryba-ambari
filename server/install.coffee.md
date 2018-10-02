@@ -86,7 +86,7 @@ IPTables rules are only inserted if the parameter "iptables.action" is set to
         config_type: 'cluster-env'
         cluster_name: options.cluster_name
         properties: options.cluster_env_stack_properties
-
+      
       @ambari.configs.update
         header: 'cluster-env main'
         if: options.takeover
@@ -96,7 +96,7 @@ IPTables rules are only inserted if the parameter "iptables.action" is set to
         config_type: 'cluster-env'
         cluster_name: options.cluster_name
         properties: options.cluster_env_global_properties
-
+      
       @ambari.configs.update
         header: 'upload krb5-conf'
         if: options.takeover
@@ -106,7 +106,7 @@ IPTables rules are only inserted if the parameter "iptables.action" is set to
         config_type: 'krb5-conf'
         cluster_name: options.cluster_name
         properties: options.configurations['krb5-conf']
-
+      
       @ambari.configs.update
         header: 'upload kerberos-env'
         if: options.takeover
@@ -130,7 +130,14 @@ IPTables rules are only inserted if the parameter "iptables.action" is set to
             --header 'x-requested-by: ambari' \
             --data '{"Credential":{"principal":"#{options.krb5.admin.kadmin_principal}","key":"#{options.krb5.admin.kadmin_password}","type":"persisted"}}'
         """
-      
+        unless_exec: """
+          curl --request GET \
+            -u admin:#{options.ambari_admin_password} \
+            --insecure \
+            --url #{options.ambari_url}/api/v1/clusters/#{ options.cluster_name}/credentials/kdc.admin.credential \
+            --header 'x-requested-by: ambari' | grep '"cluster_name" : "#{options.cluster_name}"'
+          """
+
       @ambari.kerberos.descriptor.update
         header: 'Kerberos Artifact'
         url: options.ambari_url

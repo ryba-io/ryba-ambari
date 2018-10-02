@@ -23,9 +23,9 @@
         hdfs dfs -touchz #{options.fqdn}-webhcat
         """
         code_skipped: 2
-      , (err, executed, stdout) ->
+      , (err, {status, stdout}) ->
         return if err
-        return unless executed
+        return unless status
         throw Error "WebHCat not started" if JSON.parse(stdout).status isnt 'ok'
 
 ## Dependencies

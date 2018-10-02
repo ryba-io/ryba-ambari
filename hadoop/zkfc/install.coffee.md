@@ -119,9 +119,9 @@ setAcl /hadoop-ha sasl:zkfc:cdrwa,sasl:nn:cdrwa,digest:zkfc:ePBwNWc34ehcTu1FTNI7
           """
           shy: true
           if: !!options.digest.password
-        , (err, generated, data.stdout) ->
+        , (err, {status, stdout}) ->
           throw err if err
-          return unless generated
+          return unless stdout
           digest = match[1] if match = /\->(.*)/.exec(data.stdout)
           throw Error "Failed to get digest" unless digest
           acls.push "digest:#{digest}:cdrwa"

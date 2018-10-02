@@ -16,8 +16,8 @@
         hadoop fs -cat #{remote_dir}/output/*
         """
         unless_exec: unless options.force_check then mkcmd.test options.test_krb5_user, "hdfs dfs -test -d #{remote_dir}/output"
-      , (err, executed, stdout) ->
-        throw Error "Invalid output" if executed and stdout?.trim().split('\n').slice(-2).join('\n') isnt 'bar\t2\nfoo\t3'
+      , (err, {status, stdout}) ->
+        throw Error "Invalid output" if status and stdout?.trim().split('\n').slice(-2).join('\n') isnt 'bar\t2\nfoo\t3'
 
 ## Dependencies
 

@@ -23,9 +23,9 @@
         cmd: """
         hdp-select versions | tail -1
         """
-       , (err, executed,stdout, stderr) ->
-          return  err if err or not executed
-          version = stdout.trim() if executed
+       , (err, {status, stdout, stderr}) ->
+          return  err if err or not status
+          version = stdout.trim() if status
 
 ## Package
 

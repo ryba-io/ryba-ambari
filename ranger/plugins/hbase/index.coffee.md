@@ -17,12 +17,12 @@
         'ryba-ambari-takeover/ranger/plugins/hbase/configure'
       plugin: ({options}) ->
         @before
-          type: ['ambari', 'hosts', 'component_start']
+          action: ['ambari', 'hosts', 'component_start']
           name: 'HBASE_MASTER'
         , ->
           @call 'ryba-ambari-takeover/ranger/plugins/hbase/install', options
         @before
-          type: ['ambari', 'hosts', 'component_start']
+          action: ['ambari', 'hosts', 'component_start']
           name: 'HBASE_REGIONSERVER'
         , ->
           @call 'ryba-ambari-takeover/ranger/plugins/hbase/install', options

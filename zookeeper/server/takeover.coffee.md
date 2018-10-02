@@ -16,6 +16,7 @@ Wait transactions to be synced
         target: '/etc/init.d/zookeeper-server'
         code_skipped: 1
       @system.execute
+        if_os: name: ['redhat','centos'], version: '7'
         header: 'Daemon reload'
         cmd: 'systemctl daemon-reload;systemctl reset-failed'
         code_skipped: 1

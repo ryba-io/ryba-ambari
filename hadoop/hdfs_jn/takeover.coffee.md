@@ -18,14 +18,17 @@ Wait transactions to be synced
         header: 'Stop'
         name: 'hadoop-hdfs-journalnode'
       @system.remove
+        if_os: name: ['redhat','centos'], version: '7'
         header: 'Remove systemd file'
         target: '/usr/lib/systemd/system/hadoop-hdfs-journalnode.service'
         code_skipped: 1
       @system.remove
+        if_os: name: ['redhat','centos'], version: '6'
         header: 'Remove initd file'
         target: '/etc/init.d/hadoop-hdfs-journalnode'
         code_skipped: 1
       @system.execute
+        if_os: name: ['redhat','centos'], version: '7'
         header: 'Daemon reload'
         cmd: 'systemctl daemon-reload;systemctl reset-failed'
         code_skipped: 1

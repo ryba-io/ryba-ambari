@@ -4,7 +4,7 @@
 Check if the HCatalog is running. The process ID is located by default
 inside "/var/run/hive-hcatalog/hive-hcatalog.pid".
 
-    module.exports = header: 'Ambari Hive HCatalog Status', handler: ->
+    module.exports = header: 'Ambari Hive HCatalog Status', handler: ({options}) ->
 
 ## Registry
 
@@ -12,7 +12,7 @@ inside "/var/run/hive-hcatalog/hive-hcatalog.pid".
 
 ## Ambari Agent's status
 
-      @ambari.hosts.component_start
+      @ambari.hosts.component_status
         url: options.ambari_url
         username: 'admin'
         password: options.ambari_admin_password

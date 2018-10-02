@@ -16,7 +16,7 @@
         'ryba-ambari-takeover/ranger/plugins/yarn/configure'
       plugin: ({options}) ->
         @before
-          type: ['ambari', 'hosts', 'component_start']
+          action: ['ambari', 'hosts', 'component_start']
           name: 'RESOURCEMANAGER'
         , ->
           @call 'ryba-ambari-takeover/ranger/plugins/yarn/install', options

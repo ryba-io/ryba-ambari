@@ -22,7 +22,7 @@
           cmd: """
           hdp-select versions | tail -1
           """
-         , (err, executed,stdout, stderr) ->
+         , (err, {executed,stdout, stderr}) ->
             return  err if err or not executed
             version = stdout.trim() if executed
         @service

@@ -18,7 +18,7 @@
         'ryba-ambari-takeover/ranger/plugins/hiveserver2/configure'
       plugin: ({options}) ->
         @before
-          type: ['ambari', 'hosts', 'component_start']
+          action: ['ambari', 'hosts', 'component_start']
           name: 'HIVE_SERVER'
         , ->
           @call 'ryba-ambari-takeover/ranger/plugins/hiveserver2/install', options

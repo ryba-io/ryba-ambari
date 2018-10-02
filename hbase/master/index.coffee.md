@@ -35,9 +35,10 @@ J Mohamed Zahoor goes into some more detail on the Master Architecture in this b
           'ryba-ambari-takeover/hbase/master/check'
         'install': [
           'ryba-ambari-takeover/hbase/master/install'
-          'ryba-ambari-takeover/hbase/master/layout'
           'ryba-ambari-takeover/hbase/master/start'
+          'ryba-ambari-takeover/hbase/master/layout'
           'ryba-ambari-takeover/hbase/master/check'
+
         ]
         'start':
           'ryba-ambari-takeover/hbase/master/start'

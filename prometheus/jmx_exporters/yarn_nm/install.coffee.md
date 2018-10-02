@@ -41,3 +41,30 @@
         port: options.port
         user: options.user
         group: options.group
+
+## SSL
+
+      @java.keystore_add
+        keystore: options.opts.java_properties['javax.net.ssl.trustStore']
+        storepass: options.opts.java_properties['javax.net.ssl.trustStorePassword']
+        caname: "hadoop_root_ca"
+        cacert: options.ssl.cacert.source
+        local: options.ssl.cacert.local
+      # Server: import certificates, private and public keys to hosts with a server
+      @java.keystore_add
+        keystore: options.jmx_ssl_config['javax.net.ssl.keyStore']
+        storepass: options.jmx_ssl_config['javax.net.ssl.keyStorePassword']
+        # caname: "hadoop_root_ca"
+        # cacert: "#{options.ssl.cacert}"
+        key: options.ssl.key.source
+        cert: options.ssl.cert.source
+        keypass: options.jmx_ssl_config['javax.net.ssl.keyStorePassword']
+        name: options.ssl.key.name
+        local: options.ssl.key.local
+      @java.keystore_add
+        keystore: options.jmx_ssl_config['javax.net.ssl.keyStore']
+        storepass: options.jmx_ssl_config['javax.net.ssl.keyStorePassword']
+        caname: "hadoop_root_ca"
+        cacert: options.ssl.cacert.source
+        local: options.ssl.cacert.local
+          

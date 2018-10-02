@@ -14,7 +14,7 @@
         'ryba-ambari-takeover/ranger/plugins/knox/configure'
       plugin: ({options}) ->
         @before
-          type: ['ambari', 'hosts', 'component_start']
+          action: ['ambari', 'hosts', 'component_start']
           name: 'KNOX_GATEWAY'
         , ->
           @call 'ryba-ambari-takeover/ranger/plugins/knox/install', options

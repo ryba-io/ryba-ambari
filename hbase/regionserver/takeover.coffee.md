@@ -16,12 +16,15 @@
         echo 'balance_switch true; balancer' | hbase --config /etc/hbase-regionserver/conf/ shell
         """
       @system.execute
+        if_os: name: ['redhat','centos'], version: '6'
         cmd: 'rm -f /etc/init.d/hbase-regionserver'
         code_skipped: 1
       @system.execute
+        if_os: name: ['redhat','centos'], version: '7'
         cmd: 'rm -f /usr/lib/systemd/system/hbase-regionserver.service'
         code_skipped: 1
       @system.execute
+        if_os: name: ['redhat','centos'], version: '7'
         header: 'Daemon reload'
         cmd: 'systemctl daemon-reload;systemctl reset-failed'
         code_skipped: 1

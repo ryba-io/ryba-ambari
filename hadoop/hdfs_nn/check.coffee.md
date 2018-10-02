@@ -28,9 +28,9 @@ Wait for the HDFS NameNode to be started.
         retry: 2
         header: 'HTTP'
         cmd: mkcmd.hdfs options.hdfs_krb5_user, "curl --negotiate -k -u : #{protocol}://#{options.fqdn}:#{port}/jmx?qry=Hadoop:service=NameNode,name=NameNodeStatus"
-      , (err, data) ->
+      , (err, {status, stdout}) ->
         throw err if err
-        data = JSON.parse data.stdout
+        data = JSON.parse stdout
         # After HDP2.2, the response needs some time before returning any beans
         throw Error "Invalid Response" unless Array.isArray data?.beans
         # throw Error "Invalid Response" unless /^Hadoop:service=NameNode,name=NameNodeStatus$/.test data?.beans[0]?.name

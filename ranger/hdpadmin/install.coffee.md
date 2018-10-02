@@ -251,24 +251,24 @@ Create the rangeradmin and rangerlogger databases.
         properties: options.install
 
       @call (_, callback) ->
-          ssh2fs.readFile null, "#{__dirname}/../resources/solr/solrconfig.xml.#{options.download}.j2", (err, content) =>
-            try
-              throw err if err
-              content = content.toString()
-              options.configurations = merge {}, options.configurations,
-                'ranger-solr-configuration':
-                  'content': content
-              @ambari.configs.update
-                header: 'ranger-solr-configuration'
-                url: options.ambari_url
-                username: 'admin'
-                password: options.ambari_admin_password
-                config_type: 'ranger-solr-configuration'
-                cluster_name: options.cluster_name
-                properties: options.configurations['ranger-solr-configuration']
-              @next callback
-            catch err
-              callback err
+        ssh2fs.readFile null, "#{__dirname}/../resources/solr/solrconfig.xml.#{options.download}.j2", (err, content) =>
+          try
+            throw err if err
+            content = content.toString()
+            options.configurations = merge {}, options.configurations,
+              'ranger-solr-configuration':
+                'content': content
+            @ambari.configs.update
+              header: 'ranger-solr-configuration'
+              url: options.ambari_url
+              username: 'admin'
+              password: options.ambari_admin_password
+              config_type: 'ranger-solr-configuration'
+              cluster_name: options.cluster_name
+              properties: options.configurations['ranger-solr-configuration']
+            @next callback
+          catch err
+            callback err
 
       @call
         header: 'admin-log4j'
@@ -347,6 +347,7 @@ Create the rangeradmin and rangerlogger databases.
       @system.execute
         header: 'Fix Setup Execution'
         cmd: "chown -R #{options.user.name}:#{options.user.name} /etc/ranger/admin"
+
 ## Dependencies
 
     glob = require 'glob'

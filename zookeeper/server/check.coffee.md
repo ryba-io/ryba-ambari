@@ -22,7 +22,7 @@ Execute these commands on the ZooKeeper host machine(s).
       @system.execute
         header: 'Registration'
         cmd: cmds.join ';'
-      , (err, _, stdout) ->
+      , (err, {status, stdout, stderr}) ->
         return if err
         if options.zookeeper_server.length is 1 # Standalone mode
           unless stdout.trim().split('\n').sort().join(',') is '0'
