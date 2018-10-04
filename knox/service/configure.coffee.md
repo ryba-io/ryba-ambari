@@ -299,7 +299,7 @@ This mechanism can be used to configure a specific gateway without having to dec
           throw Error 'Cannot autoconfigure KNOX oozie service, no oozie declared' unless service.deps.oozie_server
           topology.services['oozie'] = []
           for srv in service.deps.oozie_server
-            topology.services['oozie'].push srv.options.oozie_site['oozie.base.url']
+            topology.services['oozie'].push srv.options.oozie_site['oozie.base.url'].replace('${OOZIE_HTTP_HOSTNAME}', srv.node.fqdn)
           if service.deps.oozie_server.length > 1
             topology.providers['ha'] ?= name: 'HaProvider'
             topology.providers['ha'].config ?= {}

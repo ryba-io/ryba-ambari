@@ -219,7 +219,7 @@ Install the LZO compression library as part of enabling the Oozie Web Console.
             lzo_jar = null
             @system.execute
               cmd: 'ls /usr/hdp/current/share/lzo/*/lib/hadoop-lzo-*.jar'
-            , (err, _, stdout) ->
+            , (err, {status, stdout}) ->
               return if err
               lzo_jar = stdout.trim()
             @call ->
@@ -242,7 +242,7 @@ Install the LZO compression library as part of enabling the Oozie Web Console.
             lzo_jar = null
             @system.execute
               cmd: 'ls /usr/hdp/current/hadoop-client/lib/hadoop-lzo-*.jar | grep -m1 .jar'
-            , (err, _, stdout) ->
+            , (err, {status, stdout}) ->
               return if err
               lzo_jar = stdout.trim()
             @call ->

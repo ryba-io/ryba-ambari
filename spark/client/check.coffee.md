@@ -38,7 +38,7 @@ In this mode the driver is the YARN application master (running inside YARN).
           hdfs dfs -test \
             -f check-#{options.hostname}-spark-cluster
           """
-        , (err, status, stdout, stderr) ->
+        , (err, {status, stdout, stderr}) ->
           throw err if err
           return unless status
           tracking_url_result = stdout.trim().split("/")
@@ -50,7 +50,7 @@ In this mode the driver is the YARN application master (running inside YARN).
             cmd: mkcmd.test options.test_krb5_user, """
             yarn logs -applicationId #{applicationId} 2>&1 /dev/null | grep -m 1 "Pi is roughly";
             """
-          , (err, status, stdout, stderr) ->
+          , (err, {status, stdout, stderr}) ->
             throw err if err
             return unless status
             log_result = stdout.split(" ")
@@ -83,9 +83,9 @@ In this mode the driver is the spark master running outside yarn.
             | grep -m 1 "Pi is roughly";
           """
           unless_exec : unless options.force_check then mkcmd.test options.test_krb5_user, "hdfs dfs -test -f #{file_check}"
-        , (err, executed, stdout, stderr) ->
+        , (err, {status, stdout, stderr}) ->
           return err if err
-          return unless executed
+          return unless status
           log_result = stdout.split(" ")
           pi = parseFloat(log_result[log_result.length - 1])
           return Error 'Invalid Output' unless pi > 3.00 and pi < 3.20
@@ -110,9 +110,9 @@ yarn-client mode, not yarn-cluster.
           echo 'println(\"spark_shell_scala\")' | spark-shell --master yarn-client --driver-memory 512m  --executor-memory 512m 2>/dev/null | grep ^spark_shell_scala$
           """
           unless_exec : unless options.force_check then mkcmd.test options.test_krb5_user, "hdfs dfs -test -f #{file_check}"
-        , (err, executed, stdout) ->
+        , (err, {status, stdout}) ->
           return err if err
-          return unless executed
+          return unless status
           return Error 'Invalid Output' unless stdout.indexOf 'spark_shell_scala' > -1
         @system.execute
           cmd: mkcmd.test options.test_krb5_user, """
@@ -240,9 +240,9 @@ Creating database from SparkSql is not supported for now.
           echo 'print \"spark_shell_python\"' | pyspark  --master yarn-client 2>/dev/null | grep ^spark_shell_python$
           """
           unless_exec : unless options.force_check then mkcmd.test options.test_krb5_user, "hdfs dfs -test -f #{file_check}"
-        , (err, executed, stdout) ->
+        , (err, {status, stdout}) ->
           return err if err
-          return unless executed
+          return unless status
           return Error 'Invalid Output' unless stdout.indexOf 'spark_shell_python' > -1
         @system.execute
           cmd: mkcmd.test options.test_krb5_user, """

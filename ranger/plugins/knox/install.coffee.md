@@ -85,6 +85,28 @@ such as "%app-type% and %time:yyyyMMdd%".
           cacert: "#{options.ssl.cacert.source}"
           local: "#{options.ssl.cacert.local}"
 
+        @call
+          if: options.importCerts?
+        , (_, cb) ->
+          {truststore, configurations} = options
+          tmp_location = "/tmp/ryba_cacert_#{Date.now()}"
+          @each options.importCerts, ({options}, callback) ->
+            {source, local, name} = options.value
+            @file.download
+              header: 'download cacert'
+              source: source
+              target: "#{tmp_location}/cacert"
+              local: true
+            @java.keystore_add
+              header: "add cacert to #{name}"
+              keystore: configurations['ranger-knox-policymgr-ssl']['xasecure.policymgr.clientssl.truststore']
+              storepass: configurations['ranger-knox-policymgr-ssl']['xasecure.policymgr.clientssl.truststore.password']
+              caname: name
+              cacert: "#{tmp_location}/cacert"
+            @next callback
+          @system.remove
+            target: tmp_location
+          @next cb
 ## Dependencies
 
     quote = require 'regexp-quote'
