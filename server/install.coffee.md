@@ -117,8 +117,15 @@ IPTables rules are only inserted if the parameter "iptables.action" is set to
         cluster_name: options.cluster_name
         properties: options.configurations['kerberos-env']
 
+      @ambari.services.add
+        header: 'KERBEROS Service'
+        if: options.takeover
+        url: options.ambari_url
+        username: 'admin'
+        password: options.ambari_admin_password
+        cluster_name: options.cluster_name
+        name: 'KERBEROS'
 
-      
       @system.execute
         header: 'Keberos Credential'
         if: options.takeover
@@ -149,14 +156,6 @@ IPTables rules are only inserted if the parameter "iptables.action" is set to
         identities: options.identities['smokeuser']
         source: 'COMPOSITE'
               
-      @ambari.services.add
-        header: 'KERBEROS Service'
-        if: options.takeover
-        url: options.ambari_url
-        username: 'admin'
-        password: options.ambari_admin_password
-        cluster_name: options.cluster_name
-        name: 'KERBEROS'
 
       {ambari_url, ambari_admin_password, cluster_name} = options
       @each options.config_groups, ({options}, cb) ->
