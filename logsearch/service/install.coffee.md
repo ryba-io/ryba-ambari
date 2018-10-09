@@ -21,33 +21,33 @@
 ## service_logs-solrconfig
 Render hadoop-env.sh and yarn-env.sh files, before uploading to Ambari Server.
 
-      @call
-        if: options.post_component
-      , (_, callback) ->
-          ssh2fs.readFile null, "#{__dirname}/../resources/service_logs-solrconfig-#{options.download}.xml.j2", (err, content) =>
-            try
-              throw err if err
-              content = content.toString()
-              options.configurations = merge {}, options.configurations,
-                'logsearch-service_logs-solrconfig':
-                  'content': content
-              callback()
-            catch err
-              callback err
-
-      @call
-        if: options.post_component
-      , (_, callback) ->
-          ssh2fs.readFile null, "#{__dirname}/../resources/audit_logs-solrconfig-#{options.download}.xml.j2", (err, content) =>
-            try
-              throw err if err
-              content = content.toString()
-              options.configurations = merge {}, options.configurations,
-                'logsearch-audit_logs-solrconfig':
-                  'content': content
-              callback()
-            catch err
-              callback err
+      # @call
+      #   if: options.post_component
+      # , (_, callback) ->
+      #     ssh2fs.readFile null, "#{__dirname}/../resources/service_logs-solrconfig-#{options.download}.xml.j2", (err, content) =>
+      #       try
+      #         throw err if err
+      #         content = content.toString()
+      #         options.configurations = merge {}, options.configurations,
+      #           'logsearch-service_logs-solrconfig':
+      #             'content': content
+      #         callback()
+      #       catch err
+      #         callback err
+      # 
+      # @call
+      #   if: options.post_component
+      # , (_, callback) ->
+      #     ssh2fs.readFile null, "#{__dirname}/../resources/audit_logs-solrconfig-#{options.download}.xml.j2", (err, content) =>
+      #       try
+      #         throw err if err
+      #         content = content.toString()
+      #         options.configurations = merge {}, options.configurations,
+      #           'logsearch-audit_logs-solrconfig':
+      #             'content': content
+      #         callback()
+      #       catch err
+      #         callback err
 
 
       # @file.download

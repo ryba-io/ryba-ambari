@@ -81,6 +81,15 @@
         uid: options.user.name
         gid: options.hadoop_group.name
 
+      @krb5.addprinc options.krb5.admin,
+        header: 'Keberos Principal'
+        principal: options.configurations['infra-solr-env']['infra_solr_kerberos_principal'].replace '_HOST', options.fqdn
+        randkey: true
+        mode: 0o640
+        keytab: options.configurations['infra-solr-env']['infra_solr_kerberos_keytab']
+        uid: options.user.name
+        gid: options.hadoop_group.name
+
 ### LOGSEARCH_SERVER component wait
 Wait for the NODEMANAGER component to be declared on the host
 

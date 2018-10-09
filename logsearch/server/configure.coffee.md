@@ -21,6 +21,7 @@
       options.configurations['logsearch-env'] ?= {}
       options.configurations['logsearch-common-env'] ?= {}
       options.download = service.deps.logsearch_service[0].options.download
+      options.ambari_infra_instance = !!service.deps.ambari_infra_instance.length
 
 ## Kerberos
 
@@ -32,6 +33,8 @@
         if service.deps.logsearch_service[0].options.configurations['logsearch-common-env']['logsearch_external_solr_kerberos_enabled'] is 'true'
           options.configurations['logsearch-env']['logsearch_external_solr_kerberos_keytab'] ?= '/etc/security/keytabs/logsearch.service.keytab'
           options.configurations['logsearch-env']['logsearch_external_solr_kerberos_principal'] ?= "logsearch/_HOST@#{options.krb5.realm}"
+      if options.ambari_infra_instance
+        options.configurations['infra-solr-env'] ?= service.deps.ambari_infra_instance[0].options.configurations['infra-solr-env']
 
 ## SSL
   
