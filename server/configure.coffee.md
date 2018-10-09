@@ -117,6 +117,7 @@
 ## Config kerberos-env
         
         options.configurations['kerberos-env'] ?= {}
+        options.configurations['kerberos-env']['encryption_types'] ?= 'aes des3-cbc-sha1 rc4 des-cbc-md5'
         options.configurations['kerberos-env']['realm'] ?= options.krb5.realm
         options.configurations['kerberos-env']['executable_search_paths'] ?= '/usr/bin, /usr/kerberos/bin, /usr/sbin, /usr/lib/mit/bin, /usr/lib/mit/sbin'
         options.configurations['kerberos-env']['install_packages'] ?= 'false'
