@@ -21,7 +21,7 @@
       options.configurations['logsearch-env'] ?= {}
       options.configurations['logsearch-common-env'] ?= {}
       options.download = service.deps.logsearch_service[0].options.download
-      options.ambari_infra_instance = !!service.deps.ambari_infra_instance.length
+      options.ambari_infra_instance = !!service.deps.ambari_infra_instance?.length
 
 ## Kerberos
 
