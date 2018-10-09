@@ -1,5 +1,6 @@
 
-{  "input":[
+{
+  "input":[
     {
       "type":"hdfs_datanode",
       "rowtype":"service",
@@ -60,7 +61,7 @@
        },
       "log4j_format":"%d{ISO8601} %-5p %c{2} (%F:%M(%L)) - %m%n",
       "multiline_pattern":"^(%{TIMESTAMP_ISO8601:logtime})",
-      "message_pattern":"(?m)^%{TIMESTAMP_ISO8601:logtime}%{SPACE}%{LOGLEVEL:level}%{SPACE}%{JAVACLASS:logger_name}%{SPACE}\\\\(%{JAVAFILE:file}:%{JAVAMETHOD:method}\\\\(%{INT:line_number}\\\\)\\\\)%{SPACE}-%{SPACE}%{GREEDYDATA:log_message}",
+      "message_pattern":"(?m)^%{TIMESTAMP_ISO8601:logtime}%{SPACE}%{LOGLEVEL:level}%{SPACE}%{JAVACLASS:logger_name}%{SPACE}\\(%{JAVAFILE:file}:%{JAVAMETHOD:method}\\(%{INT:line_number}\\)\\)%{SPACE}-%{SPACE}%{GREEDYDATA:log_message}",
       "post_map_values":{
         "logtime":{
           "map_date":{
@@ -101,7 +102,7 @@
        },
       "source_field":"log_message",
       "value_split":"=",
-      "field_split":"\\t",
+      "field_split":"\t",
       "post_map_values":{
         "src":{
           "map_fieldname":{
