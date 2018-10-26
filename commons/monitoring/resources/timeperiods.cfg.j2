@@ -1,0 +1,7 @@
+{% for name, period in timeperiods %}
+define timeperiod{
+  timeperiod_name  {{ name }}
+  alias            {{ period.alias }}{% for prop, value in period.time %}
+  {{ prop }}       {{ value }}{% endfor %}
+}
+{% endfor %}

@@ -1,0 +1,163 @@
+define command {
+  command_name    ok
+  command_line    /bin/sh -c 'echo "Fake test. Always OK" && exit 0'
+}
+define command {
+  command_name    warning
+  command_line    /bin/sh -c 'echo "Fake test. Always WARNING" && exit 1'
+}
+define command {
+  command_name    critical
+  command_line    /bin/sh -c 'echo "Fake test. Always CRITICAL" && exit 2'
+}
+define command {
+  command_name    unknown
+  command_line    /bin/sh -c 'echo "Fake test. Always UNKNOWN" && exit 3'
+}
+## Generic commands
+define command {
+  command_name    check_host
+  command_line    $PLUGINSDIR$/check_ping -H $HOSTADDRESS$ -w 3000.0,80% -c 5000.0,100% -p 5
+}
+define command {
+  command_name    check_tcp
+  command_line    $PLUGINSDIR$/check_tcp -H $HOSTADDRESS$ -p $ARG1$ -w 7 -c 10 -t 20 $ARG2$
+}
+define command {
+  command_name    check_cert
+  command_line    $PLUGINSDIR$/check_tcp -H $HOSTADDRESS$ -p $ARG1$ -D $ARG2$,$ARG3$ -S
+}
+define command {
+  command_name    check_socket
+  command_line    $DOCKER_EXEC$ ./check_socket.php -H $HOSTADDRESS$ -p $ARG1$ -m $ARG2$ -r $ARG3$ $ARG4$
+}
+define command {
+  command_name    ssh
+  command_line    $DOCKER_EXEC$ sudo ./ssh_exec.sh $ARG1$
+}
+define command {
+  command_name    service_start
+  command_line    $DOCKER_EXEC$ sudo ./ssh_service.sh $HOSTNAME$ $SERVICESTATE$ $SERVICEATTEMPT$ start $ARG1$
+}
+## Multi Service commands
+define command {
+  command_name    check_tcp_ha
+  command_line    $PLUGINSDIR$/check_tcp -H `$DOCKER_EXEC$ ./service_status.php -H {{ brokers }} -p 50000 -d $ARG1$ -f "host_groups >= $HOSTNAME$" -u` -p $ARG2$ -w 1 -c 1 $ARG3$
+}
+define command {
+  command_name    check_rpc_latency
+  command_line    $DOCKER_EXEC$ ./check_rpc_latency.php -H $HOSTNAME$ -n $ARG1$ -p $ARG2$ -w $ARG3$ -c $ARG4$ $ARG5$
+}
+define command {
+  command_name    check_rpc_latency_ha
+  command_line    $DOCKER_EXEC$ ./check_rpc_latency.php -H `$DOCKER_EXEC$ ./service_status.php -H {{ brokers }} -p 50000 -d $ARG1$ -f "host_groups >= $HOSTNAME$" -u` -n $ARG2$ -p $ARG3$ -w $ARG4$ -c $ARG5$ $ARG6$
+}
+## Service-Specific commands
+define command{
+  command_name    check_mysql
+  command_line    $DOCKER_EXEC$ mysql/check_health --hostname $HOSTNAME$:$ARG1$ --username {{ credentials.sql_user.username }} --password {{ credentials.sql_user.password }} --mode $ARG2$ --warning $ARG3$ --critical $ARG4$
+}
+define command {
+  command_name    check_zk_stat
+  command_line    $DOCKER_EXEC$ zookeeper/check_stat.php -H $HOSTADDRESS$ -p $ARG1$ -f $ARG2$ -w $ARG3$ -c $ARG4$ $ARG5$
+}
+define command {
+  command_name    check_hdfs_content_summary
+  command_line    $DOCKER_EXEC$ hdfs/check_content_summary.php -H `$DOCKER_EXEC$ ./service_status.php -H {{ brokers }} -p 50000 -d 'HDFS NN - Active Node' -f "host_groups >= $HOSTNAME$" -u` -p $ARG1$ -P $ARG2$ -f $ARG3$ -w $ARG4$ -c $ARG5$ $ARG6$
+}
+define command {
+  command_name    check_live_dn
+  command_line    $DOCKER_EXEC$ hdfs/check_live_dn.php -H `$DOCKER_EXEC$ ./service_status.php -H {{ brokers }} -p 50000 -d 'HDFS NN - Active Node' -f "host_groups >= $HOSTNAME$" -u` -p $ARG1$ $ARG2$
+}
+define command {
+  command_name    check_hdfs_safemode
+  command_line    $DOCKER_EXEC$ hdfs/check_safemode.php -H $HOSTNAME$ -p $ARG1$ $ARG2$
+}
+define command {
+  command_name    check_hdfs_state
+  command_line    $DOCKER_EXEC$ hdfs/check_state.php -H $HOSTNAME$ -p $ARG1$ -j $ARG2$ -f $ARG3$ -w $ARG4$ -c $ARG5$ $ARG6$
+}
+define command {
+  command_name    active_nn
+  command_line    $DOCKER_EXEC$ hdfs/active_nn.php -H {{ brokers }} -p 50000 -C $HOSTNAME$ -P $ARG1$ $ARG2$
+}
+define command {
+  command_name    check_nn_last_checkpoint
+  command_line    $DOCKER_EXEC$ hdfs/check_nn_last_checkpoint.php -H $HOSTNAME$ -p $ARG1$ -d $ARG2$ -x $ARG3$ -w $ARG4$ -c $ARG5$ $ARG6$
+}
+define command {
+  command_name    check_nn_namedirs_status
+  command_line    $DOCKER_EXEC$ hdfs/check_nn_namedirs_status.php -H $HOSTNAME$ -p $ARG1$ $ARG2$
+}
+define command {
+  command_name    check_hdfs_capacity
+  command_line    $DOCKER_EXEC$ hdfs/check_capacity.php -H $HOSTNAME$ -p $ARG1$ -w $ARG2$ -c $ARG3$ $ARG4$
+}
+define command {
+  command_name    check_dn_storage
+  command_line    $DOCKER_EXEC$ hdfs/check_dn_storage.php -H $HOSTNAME$ -p $ARG1$ -w $ARG2$ -c $ARG3$ $ARG4$
+}
+{# From knox #}
+define command {
+  command_name    check_hdfs_write
+  command_line    $DOCKER_EXEC$ hdfs/check_write.php -H $HOSTNAME$ -p $ARG1$ -u {{ credentials.knox_user.username }} -P {{ credentials.knox_user.password }} -t /tmp/__monitoring_test $ARG2$
+}
+define command {
+  command_name    active_rm
+  command_line    $DOCKER_EXEC$ yarn/active_rm.php -H {{ brokers }} -p 50000 -C $HOSTNAME$ -P $ARG1$ $ARG2$
+}
+define command {
+  command_name    check_nm_info
+  command_line    $DOCKER_EXEC$ yarn/check_nm_info.php -H $HOSTNAME$ -p $ARG1$ -f $ARG2$ -r $ARG3$ $ARG4$
+}
+define command {
+  command_name    active_hm
+  command_line    $DOCKER_EXEC$ hbase/active_hm.php -H {{ brokers }} -p 50000 -C $HOSTNAME$ -P $ARG1$ $ARG2$
+}
+define command {
+  command_name    check_hbase_scan
+  command_line    $DOCKER_EXEC$ hbase/scan.php -H $HOSTNAME$ -p $ARG1$ -u {{ credentials.knox_user.username }} -P {{ credentials.knox_user.password }} -t $ARG2$ $ARG3$
+}
+define command {
+  command_name    check_hbase_write
+  command_line    $DOCKER_EXEC$ hbase/write.php -H $HOSTNAME$ -p $ARG1$ -u {{ credentials.knox_user.username }} -P {{ credentials.knox_user.password }} -t $ARG2$ -c $ARG3$ $ARG4$
+}
+define command {
+  command_name    check_hbase_unavailable_regions
+  command_line    $DOCKER_EXEC$ hbase/unavailable_regions.php -H `$DOCKER_EXEC$ ./service_status.php -H {{ brokers }} -p 50000 -d 'HBase Master - Active Node' -f "host_groups >= $HOSTNAME$" -u` -p $ARG1$ $ARG2$
+}
+define command {
+  command_name    check_webhcat_status
+  command_line    $DOCKER_EXEC$ hive/check_webhcat_status.sh $HOSTNAME$ $ARG1$
+}
+define command {
+  command_name    check_webhcat_database
+  command_line    $DOCKER_EXEC$ hive/check_webhcat_database.sh $HOSTNAME$ $ARG1$ $ARG2$
+}
+define command {
+  command_name    check_es_containers_tcps
+  command_line    $DOCKER_EXEC$ elasticsearch/containers_tcps.php -H $HOSTNAME$ -p $ARG1$ -c {{ credentials.swarm_user.cert }} -k {{ credentials.swarm_user.key }} $ARG2$
+}
+define command {
+  command_name    check_es_containers_status
+  command_line    $DOCKER_EXEC$ elasticsearch/containers_status.py -H $HOSTNAME$ -p $ARG1$ -u {{ credentials.swarm_user.username }} -P {{ credentials.swarm_user.password }} -c {{ credentials.swarm_user.cert }} -k {{ credentials.swarm_user.key }} $ARG2$
+}
+define command {
+  command_name    monitor_hbase_usage
+  command_line    $DOCKER_EXEC$ hbase/monitor_usage.php -H $ARG1$ -P $ARG2$ -C $ARG3$ -D $ARG4$ -T $ARG5$ -O $ARG6$
+}
+define command {
+  command_name    replication_presence_check
+  command_line    $DOCKER_EXEC$ hbase/check_replication_presence.php --H1 $HOSTNAME$ --p1 $ARG1$ --H2 $ARG2$ --p2 $ARG3$ $ARG4$ $ARG5$
+} 
+define command {
+  command_name    check_late_rs
+  command_line    $DOCKER_EXEC$ hbase/check_late_RS.php -H $ARG1$ -p $ARG2$ -M $ARG3$ -P $ARG4$ $ARG5$
+}
+## User/ryba-defined commands
+{% for name, command in commands %}
+define command{
+  command_name    {{ name }}
+  command_line    {{ command }}
+}
+{% endfor %}
