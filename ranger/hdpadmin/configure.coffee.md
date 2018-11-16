@@ -64,6 +64,18 @@ variables but also inject some function to be executed.
       options.log4j['log4j.appender.hdfsAppender.layout.ConversionPattern'] = '%d{yy/MM/dd HH:mm:ss} [%t]: %p %c{2}: %m%n'
       options.log4j['log4j.appender.hdfsAppender.encoding'] = 'UTF-8'
 
+## Stack Version
+
+      options.stack_version ?= service.deps.ambari_server.options.stack_version
+      if options.stack_version[0] > 2
+        for prop in [
+          'rangerusersync_user_password'
+          'rangertagsync_user_password'
+          'keyadmin_user_password'
+        ]
+        
+          throw Error "Missing password ranger-env.#{prop} HDP 3" unless options.configurations['ranger-env'][prop]
+
 # Managed Users
 
 Ranger enable to create users with its REST API. Required user can be specified in the
@@ -636,6 +648,9 @@ Ryba injects function to the different contexts.
       options.configurations['ranger-ugsync-site']['ranger.usersync.unix.password.file'] ?=  "/etc/passwd"
       options.configurations['ranger-ugsync-site']['ranger.usersync.user.searchenabled'] ?=  "false"
 
+      options.configurations['ranger-admin-site'] ?= merge {}, options.site, options.configurations['ranger-admin-site']
+      
+      options.configurations['admin-properties'] ?= merge {}, options.install, options.configurations['ranger-admin-properties']
 ## Ambari
 
       #ambari server configuration
@@ -644,6 +659,7 @@ Ryba injects function to the different contexts.
       options.ambari_url ?= service.deps.ambari_server.options.ambari_url
       options.ambari_admin_password ?= service.deps.ambari_server.options.ambari_admin_password
       options.cluster_name ?= service.deps.ambari_server.options.cluster_name
+      options.stack_name ?= service.deps.ambari_server.options.stack_name
       options.takeover = service.deps.ambari_server.options.takeover
       options.baremetal = service.deps.ambari_server.options.baremetal
 

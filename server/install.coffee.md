@@ -34,6 +34,13 @@ IPTables rules are only inserted if the parameter "iptables.action" is set to
       @registry.register ['ambari','services','add'], 'ryba-ambari-actions/lib/services/add'
       @registry.register ['ambari','services','add'], 'ryba-ambari-actions/lib/services/add'
       @registry.register ['ambari','kerberos','descriptor', 'update'], 'ryba-ambari-actions/lib/kerberos/descriptor/update'
+      @registry.register ['ambari','services','add'], 'ryba-ambari-actions/lib/services/add'
+      @registry.register ['ambari','services','wait'], 'ryba-ambari-actions/lib/services/wait'
+      @registry.register ['ambari','services','component_add'], 'ryba-ambari-actions/lib/services/component_add'
+      @registry.register ['ambari', 'hosts', 'component_add'], "ryba-ambari-actions/lib/hosts/component_add"
+      @registry.register ['ambari', 'hosts', 'component_wait'], "ryba-ambari-actions/lib/hosts/component_wait"
+      @registry.register ['ambari', 'hosts', 'component_install'], "ryba-ambari-actions/lib/hosts/component_install"
+      @registry.register ['ambari','configs','default'], 'ryba-ambari-actions/lib/configs/set_default'
 
       options.cluster_env_stack_properties['stack_features'] = fs.readFileSync("#{options.stack_features_file}").toString()
       # options.cluster_env_stack_properties['stack_tools'] = fs.readFileSync('/home/bakalian/ryba/ryba-env-metal/resources/stack_tools.json').toString()
@@ -133,7 +140,7 @@ IPTables rules are only inserted if the parameter "iptables.action" is set to
           curl --request POST \
             -u admin:#{options.ambari_admin_password} \
             --insecure \
-            --url #{options.ambari_url}/api/v1/clusters/#{ options.cluster_name}/credentials/kdc.admin.credential \
+            --url #{options.ambari_url}/api/v1/clusters/#{options.cluster_name}/credentials/kdc.admin.credential \
             --header 'x-requested-by: ambari' \
             --data '{"Credential":{"principal":"#{options.krb5.admin.kadmin_principal}","key":"#{options.krb5.admin.kadmin_password}","type":"persisted"}}'
         """
@@ -144,6 +151,42 @@ IPTables rules are only inserted if the parameter "iptables.action" is set to
             --url #{options.ambari_url}/api/v1/clusters/#{ options.cluster_name}/credentials/kdc.admin.credential \
             --header 'x-requested-by: ambari' | grep '"cluster_name" : "#{options.cluster_name}"'
           """
+
+      @ambari.services.component_add
+        header: 'KERBEROS_CLIENT'
+        url: options.ambari_url
+        username: 'admin'
+        password: options.ambari_admin_password
+        cluster_name: options.cluster_name
+        component_name: 'KERBEROS_CLIENT'
+        service_name: 'KERBEROS'
+      
+      @ambari.hosts.component_add
+        header: 'KERBEROS_CLIENT ADD'
+        url: options.ambari_url
+        username: 'admin'
+        password: options.ambari_admin_password
+        cluster_name: options.cluster_name
+        component_name: 'KERBEROS_CLIENT'
+        hostname: options.fqdn
+
+      @ambari.hosts.component_wait
+        header: 'KERBEROS_CLIENT'
+        url: options.ambari_url
+        username: 'admin'
+        password: options.ambari_admin_password
+        cluster_name: options.cluster_name
+        component_name: 'KERBEROS_CLIENT'
+        hostname: options.fqdn
+      
+      @ambari.hosts.component_install
+        header: 'KERBEROS_CLIENT'
+        url: options.ambari_url
+        username: 'admin'
+        password: options.ambari_admin_password
+        cluster_name: options.cluster_name
+        component_name: 'KERBEROS_CLIENT'
+        hostname: options.fqdn
 
       @ambari.kerberos.descriptor.update
         header: 'Kerberos Artifact'
@@ -192,6 +235,14 @@ IPTables rules are only inserted if the parameter "iptables.action" is set to
         keytab:  options.analyzer_user.keytab
         uid: options.analyzer_user.name
         gid: options.analyzer_group.name
+      
+      # @krb5.addprinc options.krb5.admin,
+      #   header: 'Service Check Principal'
+      #   principal:  options.analyzer_user.principal.replace '_HOST', options.fqdn
+      #   randkey: true
+      #   keytab:  options.analyzer_user.keytab
+      #   uid: options.analyzer_user.name
+      #   gid: options.analyzer_group.name
 
       @call
         if: options.importCerts?

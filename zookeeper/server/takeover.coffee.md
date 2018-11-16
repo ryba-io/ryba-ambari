@@ -9,9 +9,11 @@ Wait transactions to be synced
         name: 'zookeeper-server'
       @system.remove
         header: 'Remove initd file'
+        if_os: name: ['redhat','centos'], version: '7'
         target: '/usr/lib/systemd/system/zookeeper-server.service'
         code_skipped: 1
       @system.remove
+        if_os: name: ['redhat','centos'], version: '6'
         header: 'Remove initd file'
         target: '/etc/init.d/zookeeper-server'
         code_skipped: 1

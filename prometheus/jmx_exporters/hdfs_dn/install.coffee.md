@@ -52,4 +52,5 @@
         cacert: "#{options.ssl.cacert.source}"
         local: "#{options.ssl.cacert.local}"
         uid: options.user.name
+        gid: options.group.name
 

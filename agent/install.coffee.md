@@ -14,7 +14,6 @@ The ambari server must be set in the configuration file.
 
       @call 'ryba/ambari/server/wait', rest: options.wait_ambari_rest
 
-
 ## Identities
 
 By default, the "ambari-agent" package does not create any identities.

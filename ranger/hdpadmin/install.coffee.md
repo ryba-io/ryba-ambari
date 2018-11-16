@@ -15,6 +15,7 @@
       @registry.register ['ambari', 'hosts', 'component_add'], "ryba-ambari-actions/lib/hosts/component_add"
       @registry.register ['ambari', 'hosts', 'component_wait'], "ryba-ambari-actions/lib/hosts/component_wait"
       @registry.register ['ambari', 'hosts', 'component_install'], "ryba-ambari-actions/lib/hosts/component_install"
+      @registry.register ['ambari','configs','default'], 'ryba-ambari-actions/lib/configs/set_default'
 
 ## Identities
 
@@ -187,7 +188,6 @@ Create the rangeradmin and rangerlogger databases.
 
 ## Ranger Admin Principal
 
-      @call -> console.log options.install['admin_keytab']
       @krb5.addprinc options.krb5.admin,
         if: options.plugins.principal
         header: 'Ranger Repositories principal'
@@ -213,82 +213,19 @@ Create the rangeradmin and rangerlogger databases.
 
 ## Upload Ranger Admin configurations
 
-      @ambari.configs.update
-        header: 'ranger-admin-site'
+      # @call -> console.log options.configurations
+      @ambari.configs.default
+        header: 'RANGER Configuration'
         url: options.ambari_url
+        if: options.post_component and options.takeover
         username: 'admin'
         password: options.ambari_admin_password
-        config_type: 'ranger-admin-site'
         cluster_name: options.cluster_name
-        properties: options.site
-
-      @ambari.configs.update
-        header: 'ranger-ugsync-site'
-        url: options.ambari_url
-        username: 'admin'
-        password: options.ambari_admin_password
-        config_type: 'ranger-ugsync-site'
-        cluster_name: options.cluster_name
-        properties: options.configurations['ranger-ugsync-site']
-
-      @ambari.configs.update
-        header: 'ranger-env'
-        if: options.takeover
-        url: options.ambari_url
-        username: 'admin'
-        password: options.ambari_admin_password
-        config_type: 'ranger-env'
-        cluster_name: options.cluster_name
-        properties: options.configurations['ranger-env']
-
-      @ambari.configs.update
-        header: 'admin-properties'
-        url: options.ambari_url
-        username: 'admin'
-        password: options.ambari_admin_password
-        config_type: 'admin-properties'
-        cluster_name: options.cluster_name
-        properties: options.install
-
-      @call (_, callback) ->
-        ssh2fs.readFile null, "#{__dirname}/../resources/solr/solrconfig.xml.#{options.download}.j2", (err, content) =>
-          try
-            throw err if err
-            content = content.toString()
-            options.configurations = merge {}, options.configurations,
-              'ranger-solr-configuration':
-                'content': content
-            @ambari.configs.update
-              header: 'ranger-solr-configuration'
-              url: options.ambari_url
-              username: 'admin'
-              password: options.ambari_admin_password
-              config_type: 'ranger-solr-configuration'
-              cluster_name: options.cluster_name
-              properties: options.configurations['ranger-solr-configuration']
-            @next callback
-          catch err
-            callback err
-
-      @call
-        header: 'admin-log4j'
-        if: options.post_component
-      , (_, callback)->
-        ssh2fs.readFile null, "#{__dirname}/../resources/log4j.properties", (err, content) =>
-          try
-            throw err if err
-            content = content.toString()
-            @ambari.configs.update
-              url: options.ambari_url
-              username: 'admin'
-              password: options.ambari_admin_password
-              config_type: 'admin-log4j'
-              cluster_name: options.cluster_name
-              properties: 
-                content: content
-            .next callback
-          catch err
-            callback err
+        stack_name: options.stack_name
+        stack_version: options.stack_version
+        discover: true
+        configurations: options.configurations
+        target_services: 'RANGER'
 
 ## Provision Ambari Services
 

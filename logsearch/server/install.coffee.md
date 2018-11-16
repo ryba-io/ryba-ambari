@@ -23,20 +23,20 @@
           { chain: 'INPUT', jump: 'ACCEPT', dport: parseInt(options.configurations['logsearch-env']['logsearch_ui_port']), protocol: 'tcp', state: 'NEW', comment: "Ambari Logsearch ui" }
         ]
 
-      @file
-        header: 'History Collection SolrConfig'
-        local: true
-        source: "#{__dirname}/../resources/history-solrconfig-#{options.download}.xml.j2"
-        target: "/etc/ambari-logsearch-portal/conf/solr_configsets/history/conf/solrconfig.xml"
-        context: 
-          logsearch_service_logs_max_retention: 7
-        backup: true
-      @file
-        header: 'History Collection managed-schema'
-        local: true
-        source: "#{__dirname}/../resources/history-managed-schema-#{options.download}.xml.j2"
-        target: "/etc/ambari-logsearch-portal/conf/solr_configsets/history/conf/managed-schema"
-        backup: true
+      # @file
+      #   header: 'History Collection SolrConfig'
+      #   local: true
+      #   source: "#{__dirname}/../resources/history-solrconfig-#{options.download}.xml.j2"
+      #   target: "/etc/ambari-logsearch-portal/conf/solr_configsets/history/conf/solrconfig.xml"
+      #   context: 
+      #     logsearch_service_logs_max_retention: 7
+      #   backup: true
+      # @file
+      #   header: 'History Collection managed-schema'
+      #   local: true
+      #   source: "#{__dirname}/../resources/history-managed-schema-#{options.download}.xml.j2"
+      #   target: "/etc/ambari-logsearch-portal/conf/solr_configsets/history/conf/managed-schema"
+      #   backup: true
 
 ## SSL
 

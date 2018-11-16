@@ -446,20 +446,20 @@ Render hadoop-env.sh and yarn-env.sh files, before uploading to Ambari Server.
 
 ## Metrics Properties
   
-      @file.properties
-        if: options.ambari_host and options.post_component and options.takeover
-        header: 'Metrics Render'
-        target: "#{options.cache_dir}/hadoop-metrics2.properties"
-        ssh: false
-        content: options.configurations['hadoop-metrics-properties']
-
-      @file.download
-        if: options.ambari_host and options.component and options.takeover
-        header: 'Metrics Upload'
-        target: '/var/lib/ambari-server/resources/stacks/HDP/2.0.6/hooks/before-START/templates/hadoop-metrics2.properties.j2'
-        source: "#{options.cache_dir}/hadoop-metrics2.properties"
-        backup: true
-        ssh: true
+      # @file.properties
+      #   if: options.ambari_host and options.post_component and options.takeover
+      #   header: 'Metrics Render'
+      #   target: "#{options.cache_dir}/hadoop-metrics2.properties"
+      #   ssh: false
+      #   content: options.configurations['hadoop-metrics-properties']
+      # 
+      # @file.download
+      #   if: options.ambari_host and options.component and options.takeover
+      #   header: 'Metrics Upload'
+      #   target: '/var/lib/ambari-server/resources/stacks/HDP/2.0.6/hooks/before-START/templates/hadoop-metrics2.properties.j2'
+      #   source: "#{options.cache_dir}/hadoop-metrics2.properties"
+      #   backup: true
+      #   ssh: true
 
 ## Ambari Config Groups
           

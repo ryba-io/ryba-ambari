@@ -74,7 +74,7 @@
       #tells ambari that packages are already installed
       service.deps.ambari_server_local.options.config['packages.pre.installed'] ?= true
       options.cluster_env_global_properties ?=
-        'override_uid': 'false'
+        'override_uid': 'true'
         'smokeuser': options.test_user.name
         'host_sys_prepped': 'false'
         'sysprep_skip_create_users_and_groups': 'true'
@@ -113,6 +113,10 @@
 
         options.configurations['krb5-conf'] ?= {}
         options.configurations['krb5-conf']['manage_krb5_conf'] ?= 'false'
+        options.configurations['krb5-conf']['manage_krb5_conf'] ?= 'true'
+        options.configurations['krb5-conf']['conf_dir'] ?= '/etc'
+        options.configurations['krb5-conf']['domains'] ?= '.metal.ryba,metal.ryba'
+        
 
 ## Config kerberos-env
         
@@ -120,16 +124,43 @@
         options.configurations['kerberos-env']['encryption_types'] ?= 'aes des3-cbc-sha1 rc4 des-cbc-md5'
         options.configurations['kerberos-env']['realm'] ?= options.krb5.realm
         options.configurations['kerberos-env']['executable_search_paths'] ?= '/usr/bin, /usr/kerberos/bin, /usr/sbin, /usr/lib/mit/bin, /usr/lib/mit/sbin'
-        options.configurations['kerberos-env']['install_packages'] ?= 'false'
         options.configurations['kerberos-env']['kdc_type'] ?= 'mit-kdc'
-        # test with manage identities to true
+        options.configurations['kerberos-env']['preconfigure_services'] ?= 'DEFAULT'
+        options.configurations['kerberos-env']['service_ckeck_principal_name'] ?= "#{options.cluster_name}"
+        options.configurations['kerberos-env']['service_ckeck_retry_count'] ?= '9'
+        options.configurations['kerberos-env']['service_ckeck_retry_period_sec'] ?= '15'
+        options.configurations['kerberos-env']['create_ambari_principal'] ?= 'false'
         options.configurations['kerberos-env']['manage_identities'] ?= 'false'
-        options.configurations['kerberos-env']['manage_auth_to_local'] ?= 'false'
         options.configurations['kerberos-env']['keytab_dir'] ?= '/etc/security/keytabs'
         options.configurations['kerberos-env']['kdc_hosts'] ?= service.deps.krb5_client.options.wait.kdc_tcp.map( (kdc) -> "#{kdc.host}:#{kdc.port}").join(',')
         options.configurations['kerberos-env']['admin_server_host'] ?= options.krb5.admin.admin_server
-          
-          # {"find": "terms", "field": "@hostname", "query": ''}
+        options.configurations['kerberos-env']['manage_auth_to_local'] ?= 'false'
+        options.configurations['kerberos-env']['install_packages'] ?= 'true'
+        options.configurations['kerberos-env']['ad_create_attributes_template'] ?= '{
+            "objectClass": ["top", "person", "organizationalPerson", "user"],
+            "cn": "$principal_name",
+            #if( $is_service )
+            "servicePrincipalName": "$principal_name",
+            #end
+            "userPrincipalName": "$normalized_principal",
+            "unicodePwd": "$password",
+            "accountExpires": "0",
+            "userAccountControl": "66048"
+          }'
+        options.configurations['kerberos-env']['kdc_create_attributes'] ?= ''
+        options.configurations['kerberos-env']['group'] ?= 'ambari-managed-principal'
+        options.configurations['kerberos-env']['password_length'] ?= '20'
+        options.configurations['kerberos-env']['password_min_lowercase_letters'] ?= '1'
+        options.configurations['kerberos-env']['service_check_principal_name'] ?= "${cluster_name|toLower()}-${short_date}"
+        options.configurations['kerberos-env']['password_chat_timeout'] ?= '5'
+        options.configurations['kerberos-env']['password_min_punctuation'] ?= '1'
+        options.configurations['kerberos-env']['set_password_expiry'] ?= 'false'
+        options.configurations['kerberos-env']['container_dn'] ?= ''
+        options.configurations['kerberos-env']['case_insensitive_username_rules'] ?= 'true'
+        options.configurations['kerberos-env']['password_min_whitespace'] ?= '0'
+        options.configurations['kerberos-env']['password_min_uppercase_letters'] ?= '1'
+        options.configurations['kerberos-env']['password_min_digits'] ?= '1'
+
 ## Kerberos Descriptor
 Ambari organizes principal and keytab configuration known as Kerberos descriptor,
 into three parts:

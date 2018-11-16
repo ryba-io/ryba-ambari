@@ -10,7 +10,7 @@
         ambari_server: module: 'ryba-ambari-takeover/server', single: true, required: true
         logsearch_server: module: 'ryba-ambari-takeover/logsearch/server', required: true
         logsearch_service: module: 'ryba-ambari-takeover/logsearch/service', required: true
-        ambari_infra_instance: module: 'ryba-ambari-takeover/ambari_infra/service'
+        ambari_infra_instance: module: 'ryba-ambari-takeover/ambari_infra/instance'
       configure:
         'ryba-ambari-takeover/logsearch/server/configure'
       commands:
