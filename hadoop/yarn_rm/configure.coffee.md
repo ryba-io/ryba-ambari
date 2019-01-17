@@ -492,9 +492,6 @@ Enrich `ryba-ambari-takeover/hadoop/hdfs` with hdfs_nn properties.
         enrich_config options.yarn_site, srv.options.configurations['yarn-site']
         enrich_config options.mapred_site, srv.options.configurations['mapred-site']
         enrich_config options.capacity_scheduler, srv.options.configurations['capacity-scheduler']
-
-        enrich_config options.ssl_server, srv.options.configurations['ssl-server']
-        enrich_config options.ssl_client, srv.options.configurations['ssl-client']
         
         #add hosts
         srv.options.rm_hosts ?= []

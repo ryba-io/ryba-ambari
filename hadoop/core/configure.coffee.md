@@ -338,7 +338,7 @@ source code, the list of supported prefixes is: "namenode", "resourcemanager",
         for k, v of source
           target[k] ?= v
 
-      for srv in service.deps.hdfs
+      for srv in [service.deps.hdfs...,service.deps.yarn...]
         # Register Java Options
         srv.options ?= {}
         srv.options.hadoop_opts ?= options.hadoop_opts

@@ -20,7 +20,7 @@ and perform actual file I/O directly with the DataNodes.
       commands:
         'install': [
           'ryba-ambari-takeover/hadoop/hdfs_client/install'
-          'ryba-ambari-takeover/hadoop/hdfs_client/check'
+          # 'ryba-ambari-takeover/hadoop/hdfs_client/check'
         ]
         'deploy': 'ryba-ambari-takeover/hadoop/hdfs_client/install'
 
