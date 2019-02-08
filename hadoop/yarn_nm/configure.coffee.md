@@ -12,6 +12,7 @@
 
     module.exports = (service) ->
       options = service.options
+      options.configurations ?= {}
 
 ## Identities
 
@@ -36,7 +37,7 @@
       options.conf_dir ?= '/etc/hadoop/conf'
       # Java
       options.java_home ?= service.deps.java.options.java_home
-      options.heapsize ?= '1024m'
+      options.heapsize ?= '1024'
       options.newsize ?= '200m'
       # Misc
       options.fqdn ?= service.node.fqdn
@@ -48,9 +49,6 @@
 ## Configuration
 
       # Hadoop core "core-site.xml"
-      options.core_site = merge {}, service.deps.hdfs_client[0].options.core_site, options.core_site or {}
-      # HDFS client "hdfs-site.xml"
-      options.hdfs_site = merge {}, service.deps.hdfs_client[0].options.hdfs_site, options.hdfs_site or {}
       # Yarn NodeManager "yarn-site.xml"
       options.yarn_site ?= {}
       options.yarn_site['yarn.http.policy'] ?= 'HTTPS_ONLY' # HTTP_ONLY or HTTPS_ONLY or HTTP_AND_HTTPS
@@ -101,10 +99,10 @@
 
 ## Container Executor
 
-[YARN containers][container] in a secure cluster use the operating system 
-facilities to offer execution isolation for containers. Secure containers 
-execute under the credentials of the job user. The operating system enforces 
-access restriction for the container. The container must run as the use that 
+[YARN containers][container] in a secure cluster use the operating system
+facilities to offer execution isolation for containers. Secure containers
+execute under the credentials of the job user. The operating system enforces
+access restriction for the container. The container must run as the use that
 submitted the application.
 
 Secure Containers work only in the context of secured YARN clusters.
@@ -139,7 +137,7 @@ Resources:
       options.yarn_site['yarn.nodemanager.linux-container-executor.resources-handler.class'] ?= 'org.apache.hadoop.yarn.server.nodemanager.util.CgroupsLCEResourcesHandler'
       hierarchy = options.yarn_site['yarn.nodemanager.linux-container-executor.cgroups.hierarchy'] ?= "/#{options.user.name}"
       options.yarn_site['yarn.nodemanager.linux-container-executor.cgroups.mount'] ?= 'false'
-      options.yarn_site['yarn.nodemanager.linux-container-executor.cgroups.mount-path'] ?= '/cgroup'
+      options.yarn_site['yarn.nodemanager.linux-container-executor.cgroups.mount-path'] ?= '/sys/fs/cgroup'
       # HDP doc, probably incorrect
       # options.yarn_site['yarn.nodemanager.container-executor.cgroups.hierarchy'] ?= options.yarn_site['yarn.nodemanager.linux-container-executor.cgroups.hierarchy']
       # options.yarn_site['yarn.nodemanager.container-executor.cgroups.mount'] ?= options.yarn_site['yarn.nodemanager.linux-container-executor.cgroups.mount']
@@ -172,42 +170,6 @@ Resources:
         'ssl.server.truststore.location': "#{options.ssl.conf_dir}/yarn-nodemanager-truststore"
       options.ssl_client = merge {}, service.deps.hadoop_core.options.ssl_client, options.ssl_client or {},
         'ssl.client.truststore.location': "#{options.ssl.conf_dir}/yarn-nodemanager-truststore"
-
-## Metrics
-
-      options.metrics = merge {}, service.deps.metrics?.options, options.metrics
-
-      options.metrics.config ?= {}
-      options.metrics.sinks ?= {}
-      options.metrics.sinks.file_enabled ?= true
-      options.metrics.sinks.ganglia_enabled ?= false
-      options.metrics.sinks.graphite_enabled ?= false
-      # File sink
-      if options.metrics.sinks.file_enabled
-        options.metrics.config["*.sink.file.#{k}"] ?= v for k, v of service.deps.metrics.options.sinks.file.config if service.deps.metrics?.options?.sinks?.file_enabled
-        options.metrics.config['maptask.sink.file.class'] ?= 'org.apache.hadoop.metrics2.sink.FileSink'
-        options.metrics.config['maptask.sink.file.filename'] ?= 'maptask-metrics.out'
-        options.metrics.config['nodemanager.sink.file.class'] ?= 'org.apache.hadoop.metrics2.sink.FileSink'
-        options.metrics.config['nodemanager.sink.file.filename'] ?= 'nodemanager-metrics.out'
-        options.metrics.config['reducetask.sink.file.class'] ?= 'org.apache.hadoop.metrics2.sink.FileSink'
-        options.metrics.config['reducetask.sink.file.filename'] ?= 'reducetask-metrics.out'
-      # Ganglia sink, accepted properties are "servers" and "supportsparse"
-      if options.metrics.sinks.ganglia_enabled
-        options.metrics.config['nodemanager.sink.ganglia.class'] ?= options.metrics.ganglia.class
-        options.metrics.config['nodemanager.sink.ganglia.servers'] ?= "#{service.deps.ganglia.node.fqdn}:#{service.deps.ganglia.options.nn_port}"
-        options.metrics.config['maptask.sink.ganglia.class'] ?= options.metrics.ganglia.class
-        options.metrics.config['maptask.sink.ganglia.servers'] ?= "#{service.deps.ganglia.node.fqdn}:#{service.deps.ganglia.options.nn_port}"
-        options.metrics.config['reducetask.sink.ganglia.class'] ?= options.metrics.ganglia.class
-        options.metrics.config['reducetask.sink.ganglia.servers'] ?= "#{service.deps.ganglia.node.fqdn}:#{service.deps.ganglia.options.nn_port}"
-        options.metrics.config["*.sink.ganglia.#{k}"] ?= v for k, v of options.sinks.ganglia.config if service.deps.metrics?.options?.sinks?.ganglia_enabled
-      # Graphite Sink
-      if options.metrics.sinks.graphite_enabled
-        throw Error 'Missing remote_host ryba.yarn.nm.metrics.sinks.graphite.config.server_host' unless options.metrics.sinks.graphite.config.server_host?
-        throw Error 'Missing remote_port ryba.yarn.nm.metrics.sinks.graphite.config.server_port' unless options.metrics.sinks.graphite.config.server_port?
-        options.metrics.config["nodemanager.sink.graphite.class"] ?= 'org.apache.hadoop.metrics2.sink.GraphiteSink'
-        options.metrics.config["maptask.sink.graphite.class"] ?= 'org.apache.hadoop.metrics2.sink.GraphiteSink'
-        options.metrics.config["reducetask.sink.graphite.class"] ?= 'org.apache.hadoop.metrics2.sink.GraphiteSink'
-        options.metrics.config["*.sink.graphite.#{k}"] ?= v for k, v of service.deps.metrics.options.sinks.graphite.config if service.deps.metrics?.options?.sinks?.graphite_enabled
 
 ## List of Services
 
@@ -250,62 +212,13 @@ Resources:
         port: options.yarn_site["yarn.nodemanager.webapp.#{protocol}address"].split(':')[1]
         host: options.yarn_site["yarn.nodemanager.webapp.#{protocol}address"].split(':')[0]
 
-## Hadoop Site Configuration
-Enrich `ryba-ambari-takeover/hadoop/hdfs` with hdfs_nn properties.
-  
-      enrich_config = (source, target) ->
-        for k, v of source
-          target[k] ?= v
-      
-      for srv in service.deps.yarn
-        srv.options.configurations ?= {}
-        srv.options.configurations['core-site'] ?= {}
-        srv.options.configurations['hdfs-site'] ?= {}
-        srv.options.configurations['yarn-site'] ?= {}
-        srv.options.configurations['mapred-site'] ?= {}
-        srv.options.configurations['ssl-server'] ?= {}
-        srv.options.configurations['ssl-client'] ?= {}
+## Ambari configuration
 
-        enrich_config options.core_site, srv.options.configurations['core-site']
-        enrich_config options.hdfs_site, srv.options.configurations['hdfs-site']
-        enrich_config options.yarn_site, srv.options.configurations['yarn-site']
-        enrich_config options.mapred_site, srv.options.configurations['mapred-site']
-        
-        #add hosts
-        srv.options.nm_hosts ?= []
-        srv.options.nm_hosts.push options.fqdn if srv.options.nm_hosts.indexOf(options.fqdn) is -1
-
-## System Options
-      
-        # Env
-        srv.options.configurations['yarn-env'] ?= {}
-        srv.options.configurations['yarn-env']['HADOOP_LIBEXEC_DIR'] ?= options.libexec
-        srv.options.configurations['yarn-env']['YARN_NODEMANAGER_HEAPSIZE'] ?= options.heapsize
-        srv.options.configurations['yarn-env']['hadoop_libexec_dir'] ?= options.libexec
-        srv.options.configurations['yarn-env']['nodemanager_heapsize'] ?= options.heapsize
-        # opts
-        srv.options.yarn_nm_opts = options.opts
-
-## Metrics Properties
-
-        srv.options.configurations['hadoop-metrics-properties'] ?= {}
-        enrich_config options.metrics.config, srv.options.configurations['hadoop-metrics-properties'] if service.deps.metrics?
-
-## Log4j Properties
-
-        srv.options.yarn_log4j ?= {}
-        enrich_config options.log4j.properties, options.yarn_log4j if service.deps.log4j?
-
-## Ambari
-
-      #ambari server configuration
-      options.post_component = service.instances[0].node.fqdn is service.node.fqdn
-      options.ambari_host = service.node.fqdn is service.deps.ambari_server.node.fqdn
-      options.ambari_url ?= service.deps.ambari_server.options.ambari_url
-      options.ambari_admin_password ?= service.deps.ambari_server.options.ambari_admin_password
-      options.cluster_name ?= service.deps.ambari_server.options.cluster_name
-      options.takeover = service.deps.ambari_server.options.takeover
-      options.baremetal = service.deps.ambari_server.options.baremetal
+      options.configurations ?= {}
+      options.configurations['yarn-site'] ?= {}
+      options.configurations['yarn-env'] ?= {}
+      options.configurations['yarn-env']['hadoop_libexec_dir'] ?= options.libexec
+      options.configurations['yarn-env']['nodemanager_heapsize'] ?= options.heapsize
 
 ## Dependencies
 

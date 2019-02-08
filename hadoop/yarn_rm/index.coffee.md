@@ -20,7 +20,6 @@
         metrics: module: 'ryba/metrics', local: true
         log4j: module: 'ryba/log4j', local: true
         yarn: module: 'ryba-ambari-takeover/hadoop/yarn', required: true
-        ambari_server: module: 'ryba-ambari-takeover/server', single: true, required: true
       configure:
         'ryba-ambari-takeover/hadoop/yarn_rm/configure'
       commands:
@@ -34,9 +33,6 @@
         ]
         'install': [
           'ryba-ambari-takeover/hadoop/yarn_rm/install'
-          'ryba-ambari-takeover/hadoop/yarn_rm/scheduler'
-          'ryba-ambari-takeover/hadoop/yarn_rm/start'
-          'ryba-ambari-takeover/hadoop/yarn_rm/check'
         ]
         'start':
           'ryba-ambari-takeover/hadoop/yarn_rm/start'
@@ -44,13 +40,6 @@
           'ryba-ambari-takeover/hadoop/yarn_rm/status'
         'stop':
           'ryba-ambari-takeover/hadoop/yarn_rm/stop'
-        'takeover': [
-          'ryba-ambari-takeover/hadoop/yarn_rm/install'
-          'ryba-ambari-takeover/hadoop/yarn_rm/takeover'
-          'ryba-ambari-takeover/hadoop/yarn_rm/start'
-          'ryba-ambari-takeover/hadoop/yarn_rm/wait'
-          'ryba-ambari-takeover/hadoop/yarn_rm/check'
-        ]
 
 [restart]: http://hadoop.apache.org/docs/current/hadoop-yarn/hadoop-yarn-site/ResourceManagerRestart.html
 [ml_root_acl]: http://lucene.472066.n3.nabble.com/Yarn-HA-Zookeeper-ACLs-td4138735.html

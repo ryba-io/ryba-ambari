@@ -33,7 +33,7 @@
       options.conf_dir ?= '/etc/hadoop/conf'
       # Java
       options.java_home ?= service.deps.java.options.java_home
-      options.heapsize ?= '1024m'
+      options.heapsize ?= '1024'
       options.newsize ?= '200m'
       # Misc
       options.fqdn = service.node.fqdn
@@ -97,7 +97,6 @@
       options.yarn_site['yarn.timeline-service.ttl-enable'] ?= "true"
       options.yarn_site['yarn.timeline-service.ttl-ms'] ?= "#{604800000 * 2}" # 14 days, HDP default is "604800000"
       # Kerberos Authentication
-      console.log 'TODO yarn ts princ/keytab'
       options.yarn_site['yarn.timeline-service.principal'] ?= "yarn/_HOST@#{options.krb5.realm}"
       options.yarn_site['yarn.timeline-service.keytab'] ?= '/etc/security/keytabs/yarn.service.keytab'
       options.yarn_site['yarn.timeline-service.http-authentication.type'] ?= "kerberos"
@@ -108,24 +107,24 @@
 
 ## Ambari Kerberos Principal and Keytab
 
-      service.deps.ambari_server.options.identities ?= {}
-      service.deps.ambari_server.options.identities ?= {}
-      service.deps.ambari_server.options.identities['app_timeline_server_yarn'] ?= {}
-      service.deps.ambari_server.options.identities['app_timeline_server_yarn']['principal'] ?= {}
-      service.deps.ambari_server.options.identities['app_timeline_server_yarn']['principal']['configuration'] ?= 'yarn-site/yarn.timeline-service.principal'
-      service.deps.ambari_server.options.identities['app_timeline_server_yarn']['principal']['type'] ?= 'service'
-      service.deps.ambari_server.options.identities['app_timeline_server_yarn']['principal']['local_username'] ?= options.user.name
-      service.deps.ambari_server.options.identities['app_timeline_server_yarn']['principal']['value'] ?= options.yarn_site['yarn.timeline-service.principal'] 
-      service.deps.ambari_server.options.identities['app_timeline_server_yarn']['name'] ?= 'app_timeline_server_yarn'
-      service.deps.ambari_server.options.identities['app_timeline_server_yarn']['keytab'] ?= {}
-      service.deps.ambari_server.options.identities['app_timeline_server_yarn']['keytab']['owner'] ?= {}
-      service.deps.ambari_server.options.identities['app_timeline_server_yarn']['keytab']['owner']['access'] ?= 'r' 
-      service.deps.ambari_server.options.identities['app_timeline_server_yarn']['keytab']['owner']['name'] ?= options.user.name 
-      service.deps.ambari_server.options.identities['app_timeline_server_yarn']['keytab']['group'] ?= {}
-      service.deps.ambari_server.options.identities['app_timeline_server_yarn']['keytab']['group']['access'] ?= 'r'
-      service.deps.ambari_server.options.identities['app_timeline_server_yarn']['keytab']['group']['name'] ?= options.group.name
-      service.deps.ambari_server.options.identities['app_timeline_server_yarn']['keytab']['file'] ?= options.yarn_site['yarn.timeline-service.keytab'] 
-      service.deps.ambari_server.options.identities['app_timeline_server_yarn']['keytab']['configuration'] ?= 'yarn-site/yarn.timeline-service.keytab'
+      # service.deps.ambari_server.options.identities ?= {}
+      # service.deps.ambari_server.options.identities ?= {}
+      # service.deps.ambari_server.options.identities['app_timeline_server_yarn'] ?= {}
+      # service.deps.ambari_server.options.identities['app_timeline_server_yarn']['principal'] ?= {}
+      # service.deps.ambari_server.options.identities['app_timeline_server_yarn']['principal']['configuration'] ?= 'yarn-site/yarn.timeline-service.principal'
+      # service.deps.ambari_server.options.identities['app_timeline_server_yarn']['principal']['type'] ?= 'service'
+      # service.deps.ambari_server.options.identities['app_timeline_server_yarn']['principal']['local_username'] ?= options.user.name
+      # service.deps.ambari_server.options.identities['app_timeline_server_yarn']['principal']['value'] ?= options.yarn_site['yarn.timeline-service.principal'] 
+      # service.deps.ambari_server.options.identities['app_timeline_server_yarn']['name'] ?= 'app_timeline_server_yarn'
+      # service.deps.ambari_server.options.identities['app_timeline_server_yarn']['keytab'] ?= {}
+      # service.deps.ambari_server.options.identities['app_timeline_server_yarn']['keytab']['owner'] ?= {}
+      # service.deps.ambari_server.options.identities['app_timeline_server_yarn']['keytab']['owner']['access'] ?= 'r' 
+      # service.deps.ambari_server.options.identities['app_timeline_server_yarn']['keytab']['owner']['name'] ?= options.user.name 
+      # service.deps.ambari_server.options.identities['app_timeline_server_yarn']['keytab']['group'] ?= {}
+      # service.deps.ambari_server.options.identities['app_timeline_server_yarn']['keytab']['group']['access'] ?= 'r'
+      # service.deps.ambari_server.options.identities['app_timeline_server_yarn']['keytab']['group']['name'] ?= options.group.name
+      # service.deps.ambari_server.options.identities['app_timeline_server_yarn']['keytab']['file'] ?= options.yarn_site['yarn.timeline-service.keytab'] 
+      # service.deps.ambari_server.options.identities['app_timeline_server_yarn']['keytab']['configuration'] ?= 'yarn-site/yarn.timeline-service.keytab'
 
 ## YARN ATS 1.5
 
@@ -180,59 +179,14 @@
         [host, port] = srv.options.yarn_site["yarn.timeline-service.webapp.#{protocol}address"].split ':'
         host: host, port: port
 
-## Hadoop Site Configuration
-Enrich `ryba-ambari-takeover/hadoop/hdfs` with hdfs_nn properties.
-  
-      enrich_config = (source, target) ->
-        for k, v of source
-          target[k] ?= v
-      
-      for srv in service.deps.yarn
-        srv.options.configurations ?= {}
-        srv.options.configurations['core-site'] ?= {}
-        srv.options.configurations['hdfs-site'] ?= {}
-        srv.options.configurations['yarn-site'] ?= {}
-        srv.options.configurations['mapred-site'] ?= {}
-        srv.options.configurations['ssl-server'] ?= {}
-        srv.options.configurations['ssl-client'] ?= {}
+## Configuration
 
-        # enrich_config options.core_site, srv.options.configurations['core-site']
-        # enrich_config options.hdfs_site, srv.options.configurations['hdfs-site']
-        enrich_config options.yarn_site, srv.options.configurations['yarn-site']
-        # enrich_config options.mapred_site, srv.options.configurations['mapred-site']
-        
-        #add hosts
-        srv.options.ts_hosts ?= []
-        srv.options.ts_hosts.push options.fqdn if srv.options.ts_hosts.indexOf(options.fqdn) is -1
-
-## System Options
-      
-        # Env
-        srv.options.configurations['yarn-env'] ?= {}
-        srv.options.configurations['yarn-env']['apptimelineserver_heapsize'] ?= options.heapsize
-        # opts
-        srv.options.yarn_ts_opts = options.opts
-
-## Metrics Properties
-
-        srv.options.configurations['hadoop-metrics-properties'] ?= {}
-        enrich_config options.metrics.config, srv.options.configurations['hadoop-metrics-properties'] if service.deps.metrics?
-
-## Log4j Properties
-
-        srv.options.yarn_log4j ?= {}
-        enrich_config options.log4j.properties, options.yarn_log4j if service.deps.log4j?
-
-## Ambari
-
-      #ambari server configuration
-      options.post_component = service.instances[0].node.fqdn is service.node.fqdn
-      options.ambari_host = service.node.fqdn is service.deps.ambari_server.node.fqdn
-      options.ambari_url ?= service.deps.ambari_server.options.ambari_url
-      options.ambari_admin_password ?= service.deps.ambari_server.options.ambari_admin_password
-      options.cluster_name ?= service.deps.ambari_server.options.cluster_name
-      options.takeover = service.deps.ambari_server.options.takeover
-      options.baremetal = service.deps.ambari_server.options.baremetal
+      options.configurations ?= {}
+      # Env
+      options.configurations['yarn-env'] ?= {}
+      options.configurations['yarn-env']['apptimelineserver_heapsize'] ?= options.heapsize
+      # opts
+      options.yarn_ts_opts = options.opts
 
 ## Dependencies
 

@@ -87,28 +87,11 @@ Example:
         throw Error "Required Option: ssl.cert" if  not options.ssl.cert
         throw Error "Required Option: ssl.key" if not options.ssl.key
         throw Error "Required Option: ssl.cacert" if not options.ssl.cacert
-        options.ssl.keystore.target = "#{options.conf_dir}/keystore"
+        options.ssl.keystore.target = "/etc/security/serverKeys/oozie-keystore"
         throw Error "Required Property: ssl.keystore.password" if not options.ssl.keystore.password
-        options.ssl.truststore.target = "#{options.conf_dir}/truststore"
+        options.ssl.truststore.target = "/etc/security/serverKeys/oozie-truststore"
         throw Error "Required Property: ssl.truststore.password" if not options.ssl.truststore.password
 
-## Oozie Layout
-
-      options.server_hosts ?= []
-      options.client_hosts ?= []
-
-## Ambari REST API
-
-      #ambari server configuration
-      options.post_component = service.instances[0].node.fqdn is service.node.fqdn
-      options.ambari_host = service.node.fqdn is service.deps.ambari_server.node.fqdn
-      options.ambari_url ?= service.deps.ambari_server.options.ambari_url
-      options.ambari_admin_password ?= service.deps.ambari_server.options.ambari_admin_password
-      options.cluster_name = service.deps.ambari_server.options.cluster_name
-      options.stack_name ?= service.deps.ambari_server.options.stack_name
-      options.stack_version ?= service.deps.ambari_server.options.stack_version
-      options.takeover = service.deps.ambari_server.options.takeover
-      options.baremetal = service.deps.ambari_server.options.baremetal
 
 ## Ambari Configurations
 
@@ -116,28 +99,9 @@ Example:
       options.configurations['oozie-site'] ?= {}
       options.configurations['oozie-env'] ?= {}
       options.configurations['oozie-env']['oozie_java_home'] ?= options.java_home
+      options.configurations['oozie-env']['ssl_keystore_path'] ?= options.ssl.keystore.target
+      options.configurations['oozie-env']['ssl_keystore_password'] ?= options.ssl.keystore.password
 
-## Ambari Agent
-Register users to ambari agent's user list.
-
-      for srv in service.deps.ambari_agent
-        srv.options.users ?= {}
-        srv.options.users['oozie'] ?= options.user
-        srv.options.groups ?= {}
-        srv.options.groups['oozie'] ?= options.group
-
-## Ambari Config Groups
-`config_groups` contains final object that install will submit to ambari.
-`groups` is the array of config_groups name to which the host belongs to.
-
-      options.config_groups ?= {}
-      options.groups ?= []
-      for srv in service.deps.oozie
-        for name in options.groups
-          srv.options.config_groups ?= {}
-          srv.options.config_groups[name] ?= {}
-          srv.options.config_groups[name]['hosts'] ?= []
-          srv.options.config_groups[name]['hosts'].push service.node.fqdn unless srv.options.config_groups[name]['hosts'].indexOf(service.node.fqdn) > -1
       
 ## Dependencies
 

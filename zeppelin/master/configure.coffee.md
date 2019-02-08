@@ -63,44 +63,6 @@
       options.krb5.admin ?= service.deps.krb5_client.options.admin[options.krb5.realm]
       options.configurations['zeppelin-env'] ?= {}
       options.configurations['zeppelin-env']['zeppelin.executor.mem'] ?= '1024m'
-      options.configurations['zeppelin-env']['zeppelin.server.kerberos.principal'] ?= service.deps.zeppelin_service[0].options.identities['zeppelin_master']['principal']['value']
-      options.configurations['zeppelin-env']['zeppelin.server.kerberos.keytab'] ?= service.deps.zeppelin_service[0].options.identities['zeppelin_master']['keytab']['file']
-
-## Ambari Configuration
-
-      enrich_config = (source, target) ->
-        for k, v of source
-          target[k] ?= v
-
-      for srv in service.deps.zeppelin_service
-        srv.options.configurations['zeppelin-config'] ?= {}
-        srv.options.configurations['zeppelin-env'] ?= {}
-        enrich_config options.configurations['zeppelin-config'], srv.options.configurations['zeppelin-config']
-        enrich_config options.configurations['zeppelin-env'], srv.options.configurations['zeppelin-env']
-
-
-        srv.options.master_hosts ?= []
-        srv.options.master_hosts.push service.node.fqdn if srv.options.master_hosts.indexOf(service.node.fqdn) is -1
-
-## Ambari rest api
-
-      #ambari server configuration
-      options.post_component = service.instances[0].node.fqdn is service.node.fqdn
-      options.ambari_host = service.node.fqdn is service.deps.ambari_server.node.fqdn
-      options.ambari_url ?= service.deps.ambari_server.options.ambari_url
-      options.ambari_admin_password ?= service.deps.ambari_server.options.ambari_admin_password
-      options.cluster_name ?= service.deps.ambari_server.options.cluster_name
-      options.stack_name = service.deps.ambari_server.options.stack_name
-      options.stack_version = service.deps.ambari_server.options.stack_version
-      options.takeover = service.deps.ambari_server.options.takeover
-      options.baremetal = service.deps.ambari_server.options.baremetal
-
-## Wait
-
-      options.wait ?= {}
-      options.wait.http = 
-        host: options.fqdn
-        port: if options.ssl.enabled then options.configurations['zeppelin-config']['zeppelin.server.ssl.port'] else options.configurations['zeppelin-config']['zeppelin.server.port']
 
 ## Dependencies
 

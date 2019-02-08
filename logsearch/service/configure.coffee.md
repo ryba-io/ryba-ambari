@@ -42,7 +42,6 @@
       # options.conf_dir ?= '/etc/ambari-server/conf'
       options.sudo ?= false
       options.admin ?= {}
-      options.krb5 ?= merge {}, service.deps.ambari_server.options.krb5, options.krb5
       options.configurations ?= {}
 
 ## Kerberos
@@ -51,19 +50,6 @@
       options.krb5.realm ?= service.deps.krb5_client.options.etc_krb5_conf?.libdefaults?.default_realm
       # Admin Information
       options.krb5.admin ?= service.deps.krb5_client.options.admin[options.krb5.realm]
-
-## Ambari REST API
-
-      #ambari server configuration
-      options.post_component = service.instances[0].node.fqdn is service.node.fqdn
-      options.ambari_host = service.node.fqdn is service.deps.ambari_server.node.fqdn
-      options.ambari_url ?= service.deps.ambari_server.options.ambari_url
-      options.ambari_admin_password ?= service.deps.ambari_server.options.ambari_admin_password
-      options.cluster_name ?= service.deps.ambari_server.options.cluster_name
-      options.stack_name = service.deps.ambari_server.options.stack_name
-      options.stack_version = service.deps.ambari_server.options.stack_version
-      options.takeover = service.deps.ambari_server.options.takeover
-      options.baremetal = service.deps.ambari_server.options.baremetal
 
 ## Ambari Logsearch Solr Configuration
 
@@ -90,45 +76,6 @@
           options.configurations['logsearch-common-env']['logsearch_external_solr_zk_znode'] ?= options.solr.cluster_config.zk_node
           options.configurations['logsearch-common-env']['logsearch_external_solr_zk_quorum'] ?= options.solr.cluster_config.zk_quorum
       
-## Ambari Logsearch Server Configuration
-
-      options.server_hosts ?= []
-
-## Ambari Logsearch Feeder Configuration
-
-      options.feeder_hosts ?= []
-
-## Ambari Agent
-Register users to ambari agent's user list.
-
-      for srv in service.deps.ambari_agent
-        srv.options.users ?= {}
-        srv.options.users['logsearch'] ?= options.user
-        srv.options.groups ?= {}
-        srv.options.groups['logsearch'] ?= options.group
-
-## Stack File Upload
-Upload Solr template file for LOGSEARCH collections creations.
-
-      for srv in service.deps.ambari_service
-        if parseFloat(options.stack_version) >= 2.5
-          [version] = /^[0-9](.[0-9]){1}/.exec options.solr.cluster_config.version
-          # if  /[0-9](.[0-9]){2}/.test options.solr.cluster_config.version
-          # version = "#{options.solr.cluster_config.version.split('.')[0]}.#{options.solr.cluster_config.version.split('.')[1]}"
-          if parseFloat(version) >= 7.0
-            options.download ?= '7'
-          else if parseFloat(version) >= 6.0
-            options.download ?= '6'
-          else if parseFloat(version) >= 5.0
-            options.download ?= '5'
-          else
-            throw Error 'Solr Version Not Supported'
-      
-## Wait
-
-      options.wait = {}
-      options.wait_ambari_rest = service.deps.ambari_server.options.wait.rest
-
 ## Dependencies
 
     url = require 'url'

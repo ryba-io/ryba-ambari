@@ -68,39 +68,17 @@ keystore file](https://cwiki.apache.org/confluence/display/Hive/AdminManual+Conf
       #misc
       options.fqdn = service.node.fqdn
 
-## Ambari REST API
-
-      #ambari server configuration
-      options.post_component = service.instances[0].node.fqdn is service.node.fqdn
-      options.ambari_host = service.node.fqdn is service.deps.ambari_server.node.fqdn
-      options.ambari_url ?= service.deps.ambari_server.options.ambari_url
-      options.ambari_admin_password ?= service.deps.ambari_server.options.ambari_admin_password
-      options.cluster_name ?= service.deps.ambari_server.options.cluster_name
-      options.takeover = service.deps.ambari_server.options.takeover
-      options.baremetal = service.deps.ambari_server.options.baremetal
-
-## Ambari Configurations
-Enrich `ryba-ambari-takeover/hive/service` with hive/server2 properties.
-  
-      enrich_config = (source, target) ->
-        for k, v of source
-          target[k] ?= v
-          
-      for srv in service.deps.hive
-        srv.options.configurations ?= {}
+      options.configurations ?= {}
         #hive-site
-        srv.options.configurations['hive-site'] ?= {}
-        srv.options.configurations['hive-site']['ambari.hive.db.schema.name'] ?= options.db.database
-        enrich_config options.hive_site, srv.options.configurations['hive-site']
+      options.configurations['hive-site'] ?= {}
+      options.configurations['hive-site']['ambari.hive.db.schema.name'] ?= options.db.database
+      options.configurations['hive-site'] = merge {}, options.hive_site, options.configurations['hive-site']
         #hive-env
-        srv.options.configurations['hive-env'] ?= {}
-        srv.options.configurations['hive-env']['hive_ambari_database'] ?= 'MySQL'
-        srv.options.configurations['hive-env']['hive_database'] ?= 'Existing MySQL / MariaDB Database'
-        srv.options.configurations['hive-env']['hive_database_name'] ?= options.db.database
-        srv.options.configurations['hive-env']['hive_database_type'] ?= 'mysql' if options.db.engine in ['mysql','mariadb']
-        #add hosts
-        srv.options.metastore_hosts ?= []
-        srv.options.metastore_hosts.push service.node.fqdn if srv.options.metastore_hosts.indexOf(service.node.fqdn) is -1
+      options.configurations['hive-env'] ?= {}
+      options.configurations['hive-env']['hive_ambari_database'] ?= 'MySQL'
+      options.configurations['hive-env']['hive_database'] ?= 'Existing MySQL / MariaDB Database'
+      options.configurations['hive-env']['hive_database_name'] ?= options.db.database
+      options.configurations['hive-env']['hive_database_type'] ?= 'mysql' if options.db.engine in ['mysql','mariadb']
 
 ## Module Dependencies
 

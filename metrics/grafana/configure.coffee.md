@@ -4,11 +4,6 @@
     module.exports = (service) ->
       options = service.options
 
-      options.group = merge service.deps.ambari_server.options.group, options.group
-      options.user = merge service.deps.ambari_server.options.user, options.user
-      options.test_user = merge service.deps.ambari_server.options.test_user, options.test_user
-      options.test_group = merge service.deps.ambari_server.options.test_group, options.test_group
-
 ## Environment
 
       options.fqdn = service.node.fqdn
@@ -18,7 +13,6 @@
       options.iptables ?= service.deps.iptables and service.deps.iptables.options.action is 'start'
       options.master_key ?= null
       options.admin ?= {}
-      options.krb5 ?= merge {}, service.deps.ambari_server.options.krb5, options.krb5
       options.configurations ?= {}
 
 ## Kerberos
@@ -58,38 +52,6 @@
       options.configurations['ams-grafana-env'] ?= {}
       throw Error 'Undefined metrics_grafana_password ' unless options.metrics_grafana_password?
       options.configurations['ams-grafana-env']['metrics_grafana_password'] ?= options.metrics_grafana_password
-
-
-## Ambari
-
-      #ambari server configuration
-      options.post_component = service.instances[0].node.fqdn is service.node.fqdn
-      options.ambari_host = service.node.fqdn is service.deps.ambari_server.node.fqdn
-      options.ambari_url ?= service.deps.ambari_server.options.ambari_url
-      options.ambari_admin_password ?= service.deps.ambari_server.options.ambari_admin_password
-      options.cluster_name ?= service.deps.ambari_server.options.cluster_name
-      options.takeover = service.deps.ambari_server.options.takeover
-      options.baremetal = service.deps.ambari_server.options.baremetal
-
-## Ambari Metrics Service Enrich
-
-      enrich_config = (source, target) ->
-        for k, v of source
-          target[k] ?= v
-
-      for srv in service.deps.metrics_service
-        srv.options.configurations['ams-grafana-env'] ?= {}
-        srv.options.configurations['ams-grafana-ini'] ?= {}
-        enrich_config options.configurations['ams-grafana-env'], srv.options.configurations['ams-grafana-env']
-        enrich_config options.configurations['ams-grafana-ini'], srv.options.configurations['ams-grafana-ini']
-        #register host
-        srv.options.grafana_hosts ?= []
-        srv.options.grafana_hosts.push service.node.fqdn if srv.options.grafana_hosts.indexOf(service.node.fqdn) is -1
-
-## Wait
-
-      options.wait = {}
-      options.wait_ambari_rest = service.deps.ambari_server.options.wait.rest
 
 ## Dependencies
 

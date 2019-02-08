@@ -27,7 +27,6 @@ J Mohamed Zahoor goes into some more detail on the Master Architecture in this b
         ganglia_collector: module: 'ryba/retired/ganglia/collector', single: true
         metrics: module: 'ryba/metrics', local: true
         log4j: module: 'ryba/log4j', local: true
-        ambari_server: module: 'ryba-ambari-takeover/server', single: true, required: true
       configure:
         'ryba-ambari-takeover/hbase/master/configure'
       commands:
@@ -35,10 +34,6 @@ J Mohamed Zahoor goes into some more detail on the Master Architecture in this b
           'ryba-ambari-takeover/hbase/master/check'
         'install': [
           'ryba-ambari-takeover/hbase/master/install'
-          'ryba-ambari-takeover/hbase/master/start'
-          'ryba-ambari-takeover/hbase/master/layout'
-          'ryba-ambari-takeover/hbase/master/check'
-
         ]
         'start':
           'ryba-ambari-takeover/hbase/master/start'

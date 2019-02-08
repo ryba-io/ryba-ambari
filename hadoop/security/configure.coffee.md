@@ -8,10 +8,12 @@
 ## Identities
 
       options.hadoop_group = merge {}, service.deps.hdfs[0].options.hadoop_group, options.hadoop_group
+      options.ssl_server = merge {}, service.deps.hdfs[0].options.ssl_server, options.ssl_server
+      options.ssl_client = merge {}, service.deps.hdfs[0].options.ssl_client, options.ssl_client
 
 ## Validation
 
-HDFS does not accept underscore "_" inside the hostname or it fails on startup 
+HDFS does not accept underscore "_" inside the hostname or it fails on startup
 with the log message:
 
 ```

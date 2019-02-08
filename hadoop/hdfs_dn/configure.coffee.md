@@ -28,6 +28,7 @@ Example:
 
     module.exports = (service) ->
       options = service.options
+      options.configurations ?= {}
 
 ## Environment
 
@@ -105,9 +106,9 @@ Set up Java heap size like in `ryba-ambari-takeover/hadoop/hdfs_nn`.
 
 Centralized cache management in HDFS is an explicit caching mechanism that enables you to specify paths to directories or files that will be cached by HDFS.
 
-If you get the error "Cannot start datanode because the configured max locked 
-memory size... is more than the datanode's available RLIMIT_MEMLOCK ulimit," 
-that means that the operating system is imposing a lower limit on the amount of 
+If you get the error "Cannot start datanode because the configured max locked
+memory size... is more than the datanode's available RLIMIT_MEMLOCK ulimit,"
+that means that the operating system is imposing a lower limit on the amount of
 memory that you can lock than what you have configured.
 
 ## Kerberos
@@ -168,66 +169,6 @@ memory that you can lock than what you have configured.
       options.hdfs_site['dfs.client.read.shortcircuit'] ?= if (service.node.services.some (srv) -> srv.module is 'ryba-ambari-takeover/hadoop/hdfs_dn') then 'true' else 'false'
       options.hdfs_site['dfs.domain.socket.path'] ?= '/var/lib/hadoop-hdfs/dn_socket'
 
-## Metrics
-
-      options.metrics = merge {}, service.deps.metrics?.options, options.metrics
-      options.metrics.config ?= {}
-      options.metrics.sinks ?= {}
-      options.metrics.sinks.file_enabled ?= true
-      options.metrics.sinks.ganglia_enabled ?= false
-      options.metrics.sinks.graphite_enabled ?= false
-      # File sink
-      if options.metrics.sinks.file_enabled
-        options.metrics.config["datanode.sink.file.class"] ?= 'org.apache.hadoop.metrics2.sink.FileSink'
-        options.metrics.config['datanode.sink.file.filename'] ?= 'datanode-metrics.out'
-      # Ganglia sink, accepted properties are "servers" and "supportsparse"
-      if options.metrics.sinks.ganglia_enabled
-        options.metrics.config["datanode.sink.ganglia.class"] ?= 'org.apache.hadoop.metrics2.sink.ganglia.GangliaSink31'
-        options.metrics.config["*.sink.ganglia.#{k}"] ?= v for k, v of options.sinks.ganglia.config if service.deps.metrics?.options?.sinks?.ganglia_enabled
-      # Graphite Sink
-      if options.metrics.sinks.graphite_enabled
-        throw Error 'Missing remote_host ryba.hdfs.dn.metrics.sinks.graphite.config.server_host' unless options.metrics.sinks.graphite.config.server_host?
-        throw Error 'Missing remote_port ryba.hdfs.dn.metrics.sinks.graphite.config.server_port' unless options.metrics.sinks.graphite.config.server_port?
-        options.metrics.config["datanode.sink.graphite.class"] ?= 'org.apache.hadoop.metrics2.sink.GraphiteSink'
-        options.metrics.config["*.sink.graphite.#{k}"] ?= v for k, v of service.deps.metrics.options.sinks.graphite.config if service.deps.metrics?.options?.sinks?.graphite_enabled
-
-## Configuration for Log4J
-Inherits log4j configuration from the `ryba/log4j`. The rendered file uses the variable
-`options.log4j.properties`
-
-      options.log4j = merge {}, service.deps.log4j?.options, options.log4j
-      options.log4j.properties ?= {}
-      options.log4j.root_logger ?= 'INFO,RFA'
-      options.log4j.security_logger ?= 'INFO,RFAS'
-      options.log4j.audit_logger ?= 'INFO,RFAAUDIT'
-      if options.log4j.remote_host? and options.log4j.remote_port?
-        # adding SOCKET appender
-        options.log4j.socket_client ?= "SOCKET"
-        # Root logger
-        if options.log4j.root_logger.indexOf(options.log4j.socket_client) is -1
-        then options.log4j.root_logger += ",#{options.log4j.socket_client}"
-        # Security Logger
-        if options.log4j.security_logger.indexOf(options.log4j.socket_client) is -1
-        then options.log4j.security_logger += ",#{options.log4j.socket_client}"
-        # Audit Logger
-        if options.log4j.audit_logger.indexOf(options.log4j.socket_client) is -1
-        then options.log4j.audit_logger += ",#{options.log4j.socket_client}"
-        # Adding Application name, remote host and port values in namenode's opts
-        options.opts['hadoop.log.application'] ?= 'datanode'
-        options.opts['hadoop.log.remote_host'] ?= options.log4j.remote_host
-        options.opts['hadoop.log.remote_port'] ?= options.log4j.remote_port
-
-        options.log4j.socket_opts ?=
-          Application: '${hadoop.log.application}'
-          RemoteHost: '${hadoop.log.remote_host}'
-          Port: '${hadoop.log.remote_port}'
-          ReconnectionDelay: '10000'
-
-        options.log4j.properties = merge options.log4j.properties, appender
-          type: 'org.apache.log4j.net.SocketAppender'
-          name: options.log4j.socket_client
-          logj4: options.log4j.properties
-          properties: options.log4j.socket_opts
 
 ## Wait
 
@@ -258,63 +199,17 @@ Inherits log4j configuration from the `ryba/log4j`. The rendered file uses the v
         [_, port] = addr.split ':'
         host: srv.node.fqdn, port: port
 
-## Hadoop Site Configuration
-Enrich `ryba-ambari-takeover/hadoop/hdfs` with hdfs_dn properties.
-  
-      enrich_config = (source, target) ->
-        for k, v of source
-          target[k] ?= v
-      
-      for srv in service.deps.hdfs
-        srv.options.configurations ?= {}
-        srv.options.configurations['core-site'] ?= {}
-        srv.options.configurations['hdfs-site'] ?= {}
-        srv.options.configurations['yarn-site'] ?= {}
-        srv.options.configurations['mapred-site'] ?= {}
-        srv.options.configurations['ssl-server'] ?= {}
-        srv.options.configurations['ssl-client'] ?= {}
-
-        enrich_config options.core_site, srv.options.configurations['core-site']
-        enrich_config options.hdfs_site, srv.options.configurations['hdfs-site']
-        enrich_config options.yarn_site, srv.options.configurations['yarn-site']
-        enrich_config options.mapred_site, srv.options.configurations['mapred-site']
-        #add hosts
-        srv.options.dn_hosts ?= []
-        srv.options.dn_hosts.push options.fqdn if srv.options.dn_hosts.indexOf(options.fqdn) is -1
-
 ## System Options
-      
+
         # Env
-        srv.options.configurations['hadoop-env'] ?= {}
+        options.configurations ?= {}
+        options.configurations['hadoop-env'] ?= {}
         # srv.options.configurations['hadoop-env']['HADOOP_SECURE_DN_USER'] ?= options.user.name
         # srv.options.configurations['hadoop-env']['HADOOP_SECURE_DN_LOG_DIR'] ?= options.log_dir
-        srv.options.configurations['hadoop-env']['hadoop_conf_secure_dir'] ?= "#{options.conf_dir}/secure"
-        srv.options.configurations['hadoop-env']['hadoop_conf_dir'] ?= "#{options.conf_dir}"
-        srv.options.configurations['hadoop-env']['dtnode_heapsize'] ?= options.heapsize
+        options.configurations['hadoop-env']['hadoop_conf_secure_dir'] ?= "#{options.conf_dir}/secure"
+        options.configurations['hadoop-env']['hadoop_conf_dir'] ?= "#{options.conf_dir}"
+        options.configurations['hadoop-env']['dtnode_heapsize'] ?= options.heapsize
         # opts
-        srv.options.hdfs_dn_opts = options.opts
-
-## Metrics Properties
-
-        srv.options.configurations['hadoop-metrics-properties'] ?= {}
-        enrich_config options.metrics.config, srv.options.configurations['hadoop-metrics-properties'] if service.deps.metrics?
-
-## Log4j Properties
-
-        srv.options.hdfs_log4j ?= {}
-        enrich_config options.log4j.properties, options.hdfs_log4j if service.deps.log4j?
-
-## Ambari
-
-      #ambari server configuration
-      options.post_component = service.instances[0].node.fqdn is service.node.fqdn
-      options.ambari_host = service.node.fqdn is service.deps.ambari_server.node.fqdn
-      options.ambari_url ?= service.deps.ambari_server.options.ambari_url
-      options.ambari_admin_password ?= service.deps.ambari_server.options.ambari_admin_password
-      options.cluster_name ?= service.deps.ambari_server.options.cluster_name
-      options.takeover = service.deps.ambari_server.options.takeover
-      options.baremetal = service.deps.ambari_server.options.baremetal
-
 ## Dependencies
 
     {merge} = require 'nikita/lib/misc'

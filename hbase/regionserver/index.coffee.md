@@ -25,7 +25,6 @@ In a distributed cluster, a RegionServer runs on a DataNode.
         ranger_admin: module: 'ryba/ranger/admin'
         ganglia_collector: module: 'ryba/retired/ganglia/collector'
         log4j: module: 'ryba/log4j', local: true
-        ambari_server: module: 'ryba-ambari-takeover/server', single: true, required: true
       configure:
         'ryba-ambari-takeover/hbase/regionserver/configure'
       commands:
@@ -33,8 +32,6 @@ In a distributed cluster, a RegionServer runs on a DataNode.
           'ryba-ambari-takeover/hbase/regionserver/check'
         'install': [
           'ryba-ambari-takeover/hbase/regionserver/install'
-          'ryba-ambari-takeover/hbase/regionserver/start'
-          'ryba-ambari-takeover/hbase/regionserver/check'
         ]
         'start':
           'ryba-ambari-takeover/hbase/regionserver/start'

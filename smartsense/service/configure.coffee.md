@@ -42,7 +42,6 @@
       # options.conf_dir ?= '/etc/ambari-server/conf'
       options.sudo ?= false
       options.admin ?= {}
-      options.krb5 ?= merge {}, service.deps.ambari_server.options.krb5, options.krb5
       options.configurations ?= {}
 
 ## Kerberos
@@ -52,46 +51,9 @@
       # Admin Information
       options.krb5.admin ?= service.deps.krb5_client.options.admin[options.krb5.realm]
 
-## Ambari REST API
-
-      #ambari server configuration
-      options.post_component = service.instances[0].node.fqdn is service.node.fqdn
-      options.ambari_host = service.node.fqdn is service.deps.ambari_server.node.fqdn
-      options.ambari_url ?= service.deps.ambari_server.options.ambari_url
-      options.ambari_admin_password ?= service.deps.ambari_server.options.ambari_admin_password
-      options.cluster_name ?= service.deps.ambari_server.options.cluster_name
-      options.stack_name = service.deps.ambari_server.options.stack_name
-      options.stack_version = service.deps.ambari_server.options.stack_version
-      options.takeover = service.deps.ambari_server.options.takeover
-      options.baremetal = service.deps.ambari_server.options.baremetal
-
 ## Ambari Logsearch Solr Configuration
 
       options.configurations['activity-zeppelin-site'] ?= {}
-
-      
-## Ambari Logsearch Server Configuration
-
-      options.hst_server_hosts ?= []
-
-## Ambari Logsearch Feeder Configuration
-
-      options.hst_agent_hosts ?= []
-
-## Ambari Agent
-Register users to ambari agent's user list.
-
-      # for srv in service.deps.ambari_agent
-      #   srv.options.users ?= {}
-      #   srv.options.users['smartsense'] ?= options.user
-      #   srv.options.groups ?= {}
-      #   srv.options.groups['smartsense'] ?= options.group
-
-      
-## Wait
-
-      options.wait = {}
-      options.wait_ambari_rest = service.deps.ambari_server.options.wait.rest
 
 ## Dependencies
 

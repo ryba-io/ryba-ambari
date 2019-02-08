@@ -113,14 +113,9 @@ Convert [deprecated values][dep] between HDP 2.1 and HDP 2.2.
         options.tez_site[current] = options.tez_site[previous]
         console.log "Deprecated property '#{previous}' [WARN]"
 
-## Tez Ports
+## Mapred Client Range
 
-Enrich the Yarn NodeManager with additionnal IPTables rules.
-
-      # Range of ports that the AM can use when binding for client connections
       options.tez_site['tez.am.client.am.port-range'] ?= '34816-36864'
-      for srv in service.deps.yarn_nm
-        srv.options.iptables_rules.push { chain: 'INPUT', jump: 'ACCEPT', dport: options.tez_site['tez.am.client.am.port-range'].replace('-',':'), protocol: 'tcp', state: 'NEW', comment: "Tez AM Range" }
 
 # ## UI
 # 
@@ -145,48 +140,6 @@ Enrich the Yarn NodeManager with additionnal IPTables rules.
 #         options.tez_site['tez.runtime.convert.user-payload.to.history-text'] ?= 'true'
 #         options.tez_site['tez.history.logging.service.class'] ?= 'org.apache.tez.dag.history.logging.ats.ATSHistoryLoggingService'
 
-## Ambari REST API
-
-      #ambari server configuration
-      options.post_component = service.instances[0].node.fqdn is service.node.fqdn
-      options.ambari_host = service.node.fqdn is service.deps.ambari_server.node.fqdn
-      options.ambari_url ?= service.deps.ambari_server.options.ambari_url
-      options.ambari_admin_password ?= service.deps.ambari_server.options.ambari_admin_password
-      options.cluster_name ?= service.deps.ambari_server.options.cluster_name
-      options.stack_name ?= service.deps.ambari_server.options.stack_name
-      options.stack_version ?= service.deps.ambari_server.options.stack_version
-      options.takeover = service.deps.ambari_server.options.takeover
-      options.baremetal = service.deps.ambari_server.options.baremetal
-
-## Ambari Configurations
-Enrich `ryba-ambari-takeover/hive/service` with TEZ properties.
-  
-      enrich_config = (source, target) ->
-        for k, v of source
-          target[k] ?= v
-          
-      for srv in service.deps.hive
-        srv.options.configurations ?= {}
-        #hive-site
-        srv.options.configurations['tez-site'] ?= {}
-        enrich_config options.tez_site, srv.options.configurations['tez-site']
-        #hive-env
-        srv.options.configurations['tez-env'] ?=
-        srv.options.server2_opts ?= options.opts
-        srv.options.server2_aux_jars ? options.aux_jars
-
-## Log4j Properties
-
-        srv.options.hive_log4j ?= {}
-        enrich_config options.log4j.properties, options.hive_log4j if service.deps.log4j?
-
-## Log4j Properties
-
-        srv.options.configurations['hiveserver2-site'] ?= {}
-        enrich_config options.hiveserver2_site, srv.options.configurations['hiveserver2-site']
-      # 
-      # 
-      # 
       options.configurations ?= {}
       # #tez-site
       # options.configurations['tez-site'] ?= {}
@@ -201,37 +154,12 @@ Enrich `ryba-ambari-takeover/hive/service` with TEZ properties.
       for k,v of options.tez_site
         options.configurations['tez-site'][k] ?= v
         
-## Ambari Configurations
-Enrich `ryba-ambari-takeover/hive/service` with TEZ properties.
-  
-      enrich_config = (source, target) ->
-        for k, v of source
-          target[k] ?= v
-          
-      for srv in service.deps.hive
-        srv.options.configurations ?= {}
-        #hive-site
-        srv.options.configurations['tez-site'] ?= {}
-        enrich_config options.tez_site, srv.options.configurations['tez-site']
-        #hive-env
-        srv.options.configurations['tez-env'] ?= {}
-        srv.options.configurations['tez-env']['enable_heap_dump'] ?= 'false'
-        srv.options.configurations['tez-env']['heap_dump_location'] ?= '/tmp'
-        srv.options.configurations['tez-env']['tez_user'] ?= options.user.name
-        srv.options.configurations['tez-env']['conf_dir'] ?= options.env['TEZ_CONF_DIR']
-        #add hosts
-        srv.options.tez_hosts ?= []
-        srv.options.tez_hosts.push service.node.fqdn if srv.options.tez_hosts.indexOf(service.node.fqdn) is -1
 
-## Ambari Agent - Register Hosts
-Register users to ambari agent's user list.
-
-      for srv in service.deps.ambari_agent
-        srv.options.users ?= {}
-        srv.options.users['tez'] ?= options.user
-        srv.options.groups ?= {}
-        srv.options.groups['tez'] ?= options.group
-      
+      options.configurations['tez-env'] ?= {}
+      options.configurations['tez-env']['enable_heap_dump'] ?= 'false'
+      options.configurations['tez-env']['heap_dump_location'] ?= '/tmp'
+      options.configurations['tez-env']['tez_user'] ?= options.user.name
+      options.configurations['tez-env']['conf_dir'] ?= options.env['TEZ_CONF_DIR']
 
 [tez]: http://tez.apache.org/
 [instructions]: (http://docs.hortonworks.com/HDPDocuments/HDP2/HDP-2.2.0/HDP_Man_Install_v22/index.html#Item1.8.4)

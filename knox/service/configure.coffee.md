@@ -345,33 +345,6 @@ This mechanism can be used to configure a specific gateway without having to dec
       options.configurations['knox-env']['knox_pid_dir'] ?= options.pid_dir
       options.configurations['knox-env']['knox_master_secret'] ?= options.ssl.keystore.password
 
-## Ambari REST API
-
-      #ambari server configuration
-      options.post_component = service.instances[0].node.fqdn is service.node.fqdn
-      options.ambari_host = service.node.fqdn is service.deps.ambari_server.node.fqdn
-      options.ambari_url ?= service.deps.ambari_server.options.ambari_url
-      options.ambari_admin_password ?= service.deps.ambari_server.options.ambari_admin_password
-      options.cluster_name ?= service.deps.ambari_server.options.cluster_name
-      options.stack_name = service.deps.ambari_server.options.stack_name
-      options.stack_version = service.deps.ambari_server.options.stack_version
-      options.takeover = service.deps.ambari_server.options.takeover
-      options.baremetal = service.deps.ambari_server.options.baremetal
-
-## Ambari Agent
-Register users to ambari agent's user list.
-
-      for srv in service.deps.ambari_agent
-        srv.options.users ?= {}
-        srv.options.users['knox'] ?= options.user
-        srv.options.groups ?= {}
-        srv.options.groups['knox'] ?= options.group
-
-## Knox Component Hosts
-
-      options.server_hosts ?= []
-      options.client_hosts ?= []
-
 ## Dependencies
 
     appender = require 'ryba/lib/appender'

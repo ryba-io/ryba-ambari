@@ -17,26 +17,6 @@ environmental variables. For example, HDP declare its version as
       @registry.register ['ambari', 'hosts', 'component_install'], "ryba-ambari-actions/lib/hosts/component_install"
       @registry.register ['ambari', 'hosts', 'component_wait'], "ryba-ambari-actions/lib/hosts/component_wait"
 
-# Install Component
-
-      @ambari.hosts.component_wait
-        header: 'OOZIE_CLIENT WAITED'
-        url: options.ambari_url
-        username: 'admin'
-        password: options.ambari_admin_password
-        cluster_name: options.cluster_name
-        component_name: 'OOZIE_CLIENT'
-        hostname: options.fqdn
-
-      @ambari.hosts.component_install
-        header: 'OOZIE_CLIENT INSTALL'
-        url: options.ambari_url
-        if: options.takeover
-        username: 'admin'
-        password: options.ambari_admin_password
-        cluster_name: options.cluster_name
-        component_name: 'OOZIE_CLIENT'
-        hostname: options.fqdn
 
 ## Profile
 

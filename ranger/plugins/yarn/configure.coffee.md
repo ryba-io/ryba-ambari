@@ -248,16 +248,6 @@ SSL can be configured to use SSL if ranger admin has SSL enabled.
         options.configurations['ranger-yarn-security']['ranger.plugin.yarn.policy.source.impl'] ?= 'org.apache.ranger.admin.client.RangerAdminRESTClient'
         options.configurations['ranger-yarn-security']['xasecure.add-hadoop-authorization'] ?= 'true'
 
-## Ambari Config REST Api
-
-        #ambari server configuration
-        options.post_component = service.instances[0].node.fqdn is service.node.fqdn
-        options.ambari_host = service.node.fqdn is service.deps.ambari_server.node.fqdn
-        options.ambari_url ?= service.deps.ambari_server.options.ambari_url
-        options.ambari_admin_password ?= service.deps.ambari_server.options.ambari_admin_password
-        options.cluster_name ?= service.deps.ambari_server.options.cluster_name
-        options.takeover = service.deps.ambari_server.options.takeover
-
 ## Enable Plugin in Ranger Admin
 
         service.deps.ranger_admin.options.configurations['ranger-env']['ranger-yarn-plugin-enabled'] = 'Yes'

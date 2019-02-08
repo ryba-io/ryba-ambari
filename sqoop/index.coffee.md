@@ -14,10 +14,5 @@ Apache Hadoop and structured datastores such as relational databases.
           hdfs_client: module: 'ryba-ambari-takeover/hadoop/hdfs_client', local: true, auto: true, implicit: true
           hive_client: module: 'ryba-ambari-takeover/hive/client', local: true, auto: true, implicit: true
           yarn_client: module: 'ryba-ambari-takeover/hadoop/yarn_client', local: true, auto: true, implicit: true
-          ambari_server: module: 'ryba-ambari-takeover/server', single: true, required: true
-          ambari_agent: module: 'ryba-ambari-takeover/agent'
         configure:
           'ryba-ambari-takeover/sqoop/configure'
-        commands:
-          'install':
-            'ryba-ambari-takeover/sqoop/install'

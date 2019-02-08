@@ -29,17 +29,12 @@ with Hadoop clusters.
         # hbase_rest: module: 'ryba-ambari-takeover/hbase/rest'
         knox_server: module: 'ryba-ambari-takeover/knox/server'
         ranger_admin: module: 'ryba-ambari-takeover/ranger/hdpadmin', single: true
-        log4j: module: 'ryba/ambari/log4j', local: true
-        ambari_server: module: 'ryba-ambari-takeover/server', single: true, required: true
-        ambari_agent: module: 'ryba-ambari-takeover/agent'
         knox: module: 'ryba-ambari-takeover/knox/service', required: true
       configure:
         'ryba-ambari-takeover/knox/server/configure'
       commands:
         install: [
           'ryba-ambari-takeover/knox/server/install'
-          'ryba-ambari-takeover/knox/server/start'
-          'ryba-ambari-takeover/knox/server/check'
         ]
         check:
           'ryba-ambari-takeover/knox/server/check'

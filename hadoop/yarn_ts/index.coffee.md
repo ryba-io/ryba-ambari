@@ -14,7 +14,6 @@ information for the applications running inside YARN.
         hdfs_nn: module: 'ryba-ambari-takeover/hadoop/hdfs_nn', required: true
         yarn_nm: module: 'ryba-ambari-takeover/hadoop/yarn_nm', required: true
         yarn_ts: module: 'ryba-ambari-takeover/hadoop/yarn_ts'
-        ambari_server: module: 'ryba-ambari-takeover/server', single: true, required: true
         yarn: module: 'ryba-ambari-takeover/hadoop/yarn'
         # yarn_client: 'ryba-ambari-takeover/hadoop/yarn_client'
       configure:
@@ -24,8 +23,6 @@ information for the applications running inside YARN.
           'ryba-ambari-takeover/hadoop/yarn_ts/check'
         'install': [
           'ryba-ambari-takeover/hadoop/yarn_ts/install'
-          'ryba-ambari-takeover/hadoop/yarn_ts/start'
-          'ryba-ambari-takeover/hadoop/yarn_ts/check'
         ]
         'start':
           'ryba-ambari-takeover/hadoop/yarn_ts/start'

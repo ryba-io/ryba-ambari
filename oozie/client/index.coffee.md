@@ -23,11 +23,8 @@ be installed in remote machines only.
         hive_client: module: 'ryba-ambari-takeover/hive/client', local: true
         hive_hcatalog: module: 'ryba-ambari-takeover/hive/hcatalog'
         hive_server2: module: 'ryba-ambari-takeover/hive/server2'
-        ambari_server: module: 'ryba-ambari-takeover/server', single: true, required: true
-        ambari_agent: module: 'ryba-ambari-takeover/agent'
         oozie_server: module: 'ryba-ambari-takeover/oozie/server'
         oozie: module: 'ryba-ambari-takeover/oozie/service', required: true
-        ambari_server: module: 'ryba-ambari-takeover/server', single: true, required: true
       configure: 'ryba-ambari-takeover/oozie/client/configure'
       commands:
         'install': [

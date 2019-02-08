@@ -14,15 +14,11 @@ running of those scans to produce regular JDBC result sets.
         hadoop_core: module: 'ryba-ambari-takeover/hadoop/core', local: true, auto: true, implicit: true
         hbase_client: module: 'ryba-ambari-takeover/hbase/client'
         phoenix_client: module: 'ryba-ambari-takeover/phoenix/client'
-        ambari_server: module: 'ryba-ambari-takeover/server', single: true, required: true
-        ambari_agent: module: 'ryba-ambari-takeover/agent'
       configure:
         'ryba-ambari-takeover/phoenix/queryserver/configure'
       commands:
         install: [
           'ryba-ambari-takeover/phoenix/queryserver/install'
-          'ryba-ambari-takeover/phoenix/queryserver/start'
-          'ryba-ambari-takeover/phoenix/queryserver/check'
         ]
         check:
           'ryba-ambari-takeover/phoenix/queryserver/check'

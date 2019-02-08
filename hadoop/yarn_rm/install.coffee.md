@@ -3,26 +3,6 @@
 
     module.exports = header: 'YARN RM Ambari Install', handler: ({options}) ->
 
-## Register
-
-      @registry.register 'hconfigure', 'ryba/lib/hconfigure'
-      @registry.register 'hdp_select', 'ryba/lib/hdp_select'
-      @registry.register 'hdfs_mkdir', 'ryba/lib/hdfs_mkdir'
-      @registry.register ['file', 'jaas'], 'ryba/lib/file_jaas'
-      @registry.register ['ambari','configs','update'], 'ryba-ambari-actions/lib/configs/update'
-      @registry.register ['ambari', 'hosts', 'component_install'], "ryba-ambari-actions/lib/hosts/component_install"
-      @registry.register ['ambari', 'hosts', 'component_wait'], "ryba-ambari-actions/lib/hosts/component_wait"
-
-
-## Ulimit
-
-Increase ulimit for the HDFS user. The HDP package create the following
-files:
-
-```bash
-cat /etc/security/limits.d/yarn.conf
-yarn   - nofile 32768
-yarn   - nproc  65536
 ```
 
 Note, a user must re-login for those changes to be taken into account.
@@ -36,43 +16,6 @@ Note, a user must re-login for those changes to be taken into account.
 
 | Service         | Port  | Proto  | Parameter                                     |
 |-----------------|-------|--------|-----------------------------------------------|
-| resourcemanager | 8025  | tcp    | yarn.resourcemanager.resource-tracker.address | x
-| resourcemanager | 8050  | tcp    | yarn.resourcemanager.address                  | x
-| scheduler       | 8030  | tcp    | yarn.resourcemanager.scheduler.address        | x
-| resourcemanager | 8088  | http   | yarn.resourcemanager.webapp.address           | x
-| resourcemanager | 8090  | https  | yarn.resourcemanager.webapp.https.address     |
-| resourcemanager | 8141  | tcp    | yarn.resourcemanager.admin.address            | x
-
-IPTables rules are only inserted if the parameter "iptables.action" is set to
-"start" (default value).
-
-      id = if options.yarn_site['yarn.resourcemanager.ha.enabled'] is 'true' then ".#{options.hostname}" else ''
-      rules = []
-      # Application
-      rpc_port = options.yarn_site["yarn.resourcemanager.address#{id}"].split(':')[1]
-      rules.push { chain: 'INPUT', jump: 'ACCEPT', dport: rpc_port, protocol: 'tcp', state: 'NEW', comment: "YARN RM Application Submissions" }
-      # Scheduler
-      s_port = options.yarn_site["yarn.resourcemanager.scheduler.address#{id}"].split(':')[1]
-      rules.push { chain: 'INPUT', jump: 'ACCEPT', dport: s_port, protocol: 'tcp', state: 'NEW', comment: "YARN Scheduler" }
-      # RM Scheduler
-      admin_port = options.yarn_site["yarn.resourcemanager.admin.address#{id}"].split(':')[1]
-      rules.push { chain: 'INPUT', jump: 'ACCEPT', dport: admin_port, protocol: 'tcp', state: 'NEW', comment: "YARN RM Scheduler" }
-      # HTTP
-      if options.yarn_site['yarn.http.policy'] in ['HTTP_ONLY', 'HTTP_AND_HTTPS']
-        http_port = options.yarn_site["yarn.resourcemanager.webapp.address#{id}"].split(':')[1]
-        rules.push { chain: 'INPUT', jump: 'ACCEPT', dport: http_port, protocol: 'tcp', state: 'NEW', comment: "YARN RM Web UI" }
-      # HTTPS
-      if options.yarn_site['yarn.http.policy'] in ['HTTPS_ONLY', 'HTTP_AND_HTTPS']
-        https_port = options.yarn_site["yarn.resourcemanager.webapp.https.address#{id}"].split(':')[1]
-        rules.push { chain: 'INPUT', jump: 'ACCEPT', dport: https_port, protocol: 'tcp', state: 'NEW', comment: "YARN RM Web UI" }
-      # Resource Tracker
-      rt_port = options.yarn_site["yarn.resourcemanager.resource-tracker.address#{id}"].split(':')[1]
-      rules.push { chain: 'INPUT', jump: 'ACCEPT', dport: rt_port, protocol: 'tcp', state: 'NEW', comment: "YARN RM Application Submissions" }
-      @tools.iptables
-        header: 'IPTables'
-        if: options.iptables
-        rules: rules
-
 ## Service
 
 Install the "hadoop-yarn-resourcemanager" service, symlink the rc.d startup script
@@ -108,90 +51,91 @@ inside "/etc/init.d" and activate it on startup.
         @file.touch
           target: "#{options.yarn_site['yarn.resourcemanager.nodes.exclude-path']}"
 
-## SSL
+# ## SSL
+# 
+#       @call header: 'SSL', ->
+#         # Client: import certificate to all hosts
+#         @java.keystore_add
+#           keystore: options.ssl_client['ssl.client.truststore.location']
+#           storepass: options.ssl_client['ssl.client.truststore.password']
+#           caname: 'hadoop_root_ca'
+#           cacert: options.ssl.cacert.source
+#           local: options.ssl.cacert.local
+#         # Server: import certificates, private and public keys to hosts with a server
+#         @java.keystore_add
+#           keystore: options.ssl_server['ssl.server.keystore.location']
+#           storepass: options.ssl_server['ssl.server.keystore.password']
+#           key: options.ssl.key.source
+#           cert: options.ssl.cert.source
+#           keypass: options.ssl_server['ssl.server.keystore.keypassword']
+#           name: options.ssl.key.name
+#           local: options.ssl.key.local
+#         @java.keystore_add
+#           keystore: options.ssl_server['ssl.server.keystore.location']
+#           storepass: options.ssl_server['ssl.server.keystore.password']
+#           caname: 'hadoop_root_ca'
+#           cacert: options.ssl.cacert.source
+#           local: options.ssl.cacert.local
 
-      @call header: 'SSL', ->
-        # Client: import certificate to all hosts
-        @java.keystore_add
-          keystore: options.ssl_client['ssl.client.truststore.location']
-          storepass: options.ssl_client['ssl.client.truststore.password']
-          caname: 'hadoop_root_ca'
-          cacert: options.ssl.cacert.source
-          local: options.ssl.cacert.local
-        # Server: import certificates, private and public keys to hosts with a server
-        @java.keystore_add
-          keystore: options.ssl_server['ssl.server.keystore.location']
-          storepass: options.ssl_server['ssl.server.keystore.password']
-          key: options.ssl.key.source
-          cert: options.ssl.cert.source
-          keypass: options.ssl_server['ssl.server.keystore.keypassword']
-          name: options.ssl.key.name
-          local: options.ssl.key.local
-        @java.keystore_add
-          keystore: options.ssl_server['ssl.server.keystore.location']
-          storepass: options.ssl_server['ssl.server.keystore.password']
-          caname: 'hadoop_root_ca'
-          cacert: options.ssl.cacert.source
-          local: options.ssl.cacert.local
-
-## Kerberos
-
-      @krb5.addprinc options.krb5.admin,
-        header: 'Kerberos'
-        principal: options.yarn_site['yarn.resourcemanager.principal'].replace '_HOST', options.fqdn
-        randkey: true
-        keytab: options.yarn_site['yarn.resourcemanager.keytab']
-        uid: options.user.name
-        gid: options.hadoop_group.name
+# ## Kerberos
+# 
+#       @krb5.addprinc options.krb5.admin,
+#         header: 'Kerberos'
+#         unless: options.kerberos_managed
+#         principal: options.yarn_site['yarn.resourcemanager.principal'].replace '_HOST', options.fqdn
+#         randkey: true
+#         keytab: options.yarn_site['yarn.resourcemanager.keytab']
+#         uid: options.user.name
+#         gid: options.hadoop_group.name
 
 ## Node Labels HDFS Layout
 
-      @hdfs_mkdir
-        if: options.yarn_site['yarn.node-labels.enabled'] is 'true'
-        header: 'HDFS node-labels'
-        target: options.yarn_site['yarn.node-labels.fs-store.root-dir']
-        mode: 0o700
-        user: options.user.name
-        group: options.group.name
-        unless_exec: mkcmd.hdfs options.hdfs_krb5_user, "hdfs --config #{options.conf_dir} dfs -test -d #{options.yarn_site['yarn.node-labels.fs-store.root-dir']}"
+      # @hdfs_mkdir
+      #   if: options.yarn_site['yarn.node-labels.enabled'] is 'true'
+      #   header: 'HDFS node-labels'
+      #   target: options.yarn_site['yarn.node-labels.fs-store.root-dir']
+      #   mode: 0o700
+      #   user: options.user.name
+      #   group: options.group.name
+      #   unless_exec: mkcmd.hdfs options.hdfs_krb5_user, "hdfs --config #{options.conf_dir} dfs -test -d #{options.yarn_site['yarn.node-labels.fs-store.root-dir']}"
 
-### RESOURCEMANAGER component wait
-Wait for the RESOURCEMANAGER component to be declared on the host
+# ### RESOURCEMANAGER component wait
+# Wait for the RESOURCEMANAGER component to be declared on the host
+# 
+#       @ambari.hosts.component_wait
+#         header: 'Component WAITED'
+#         url: options.ambari_url
+#         username: 'admin'
+#         password: options.ambari_admin_password
+#         cluster_name: options.cluster_name
+#         component_name: 'RESOURCEMANAGER'
+#         hostname: options.fqdn
 
-      @ambari.hosts.component_wait
-        header: 'Component WAITED'
-        url: options.ambari_url
-        username: 'admin'
-        password: options.ambari_admin_password
-        cluster_name: options.cluster_name
-        component_name: 'RESOURCEMANAGER'
-        hostname: options.fqdn
-
-### RESOURCEMANAGER component install
-Put the RESOURCEMANAGER component declared on the host as `INSTALLED` desired state
-
-      @ambari.hosts.component_install
-        if: options.takeover
-        header: 'Set installed'
-        url: options.ambari_url
-        username: 'admin'
-        password: options.ambari_admin_password
-        cluster_name: options.cluster_name
-        component_name: 'RESOURCEMANAGER'
-        hostname: options.fqdn
-
-      #fix overriden property by ambari when kerberos is installed
-      # ats.service.keytab become yarn.service.keytab
-      @ambari.configs.update
-        header: 'Fix hadoop-env'
-        if: options.takeover
-        url: options.ambari_url
-        username: 'admin'
-        password: options.ambari_admin_password
-        config_type: 'hadoop-env'
-        cluster_name: options.cluster_name
-        properties:
-          'hdfs_principal_name': options.hdfs_krb5_user.name
+# ### RESOURCEMANAGER component install
+# Put the RESOURCEMANAGER component declared on the host as `INSTALLED` desired state
+#
+#       @ambari.hosts.component_install
+#         if: options.takeover
+#         header: 'Set installed'
+#         url: options.ambari_url
+#         username: 'admin'
+#         password: options.ambari_admin_password
+#         cluster_name: options.cluster_name
+#         component_name: 'RESOURCEMANAGER'
+#         hostname: options.fqdn
+#
+#       #fix overriden property by ambari when kerberos is installed
+#       # ats.service.keytab become yarn.service.keytab
+#       @ambari.configs.update
+#         header: 'Fix hadoop-env'
+#         if: options.takeover
+#         url: options.ambari_url
+#         username: 'admin'
+#         password: options.ambari_admin_password
+#         config_type: 'hadoop-env'
+#         cluster_name: options.cluster_name
+#         properties:
+#           'hdfs_principal_name': options.hdfs_krb5_user.name
 
 ## Dependencies
 

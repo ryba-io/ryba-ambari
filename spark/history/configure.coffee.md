@@ -32,11 +32,6 @@
       options.ranger_install = service.deps.ranger_hive[0].options.install if service.deps.ranger_hive
       options.test = merge {}, service.deps.test_user.options, options.test
       # Hive Server2
-      if service.deps.hive_server2
-        options.hive_server2 = for srv in service.deps.hive_server2
-          fqdn: srv.options.fqdn
-          hostname: srv.options.hostname
-          hive_site: srv.options.hive_site
 
 ## Configuration
 
@@ -84,45 +79,7 @@ is a headless type keytab.
       options.conf['spark.history.retainedApplications'] ?= '50'
       options.conf['spark.yarn.historyServer.address'] ?= "#{service.node.fqdn}:#{options.conf['spark.history.ui.port']}"
       options.conf['spark.history.kerberos.enabled'] ?= if service.deps.hadoop_core.options.core_site['hadoop.http.authentication.type'] is 'kerberos' then 'true' else 'false'
-      options.conf['spark.history.kerberos.principal'] ?= service.deps.spark[0].options.krb5.principal
-      options.conf['spark.history.kerberos.keytab'] ?= service.deps.spark[0].options.krb5.keytab
       
-## Ambari Configurations
-
-      enrich_config = (source, target) ->
-        for k, v of source
-          target[k] ?= v
-                
-      for srv in service.deps.spark
-        #spark-defaults
-        srv.options.conf ?= {}
-        srv.options.configurations ?= {}
-        srv.options.configurations['spark-defaults'] ?= {}
-        enrich_config options.conf, srv.options.configurations['spark-defaults']
-        #register hosts
-        srv.options.history_hosts ?= []
-        srv.options.history_hosts.push service.node.fqdn if srv.options.history_hosts.indexOf(service.node.fqdn) is -1
-
-## Ambari Server REST API
-
-      #ambari server configuration
-      options.post_component = service.instances[0].node.fqdn is service.node.fqdn
-      options.ambari_host = service.node.fqdn is service.deps.ambari_server.node.fqdn
-      options.ambari_url ?= service.deps.ambari_server.options.ambari_url
-      options.ambari_admin_password ?= service.deps.ambari_server.options.ambari_admin_password
-      options.cluster_name ?= service.deps.ambari_server.options.cluster_name
-      options.takeover = service.deps.ambari_server.options.takeover
-      options.baremetal = service.deps.ambari_server.options.baremetal
-
-## Ambari Agent
-Register users to ambari agent's user list.
-
-      for srv in service.deps.ambari_agent
-        srv.options.users ?= {}
-        srv.options.users['spark'] ?= options.user
-        srv.options.groups ?= {}
-        srv.options.groups['spark'] ?= options.group
-
 ## Wait
 
       options.wait ?= {}

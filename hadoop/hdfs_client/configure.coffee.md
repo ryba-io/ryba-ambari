@@ -3,6 +3,7 @@
 
     module.exports = (service) ->
       options = service.options
+      options.configurations ?= {}
 
 ## Identities
 
@@ -53,7 +54,7 @@ is already handled by kerberos
         v.filename = path.basename v.source
 
 ## SSL
-    
+
       options.ssl = merge {}, service.deps.hadoop_core.options.ssl, options.ssl
       options.ssl_client = merge {}, service.deps.hadoop_core.options.ssl_client, options.ssl_client or {},
         'ssl.client.truststore.location': "#{options.conf_dir}/truststore"
@@ -89,13 +90,6 @@ is already handled by kerberos
         'dfs.domain.socket.path'
       ] then options.hdfs_site[property] ?= service.deps.hdfs_dn[0].options.hdfs_site[property]
 
-## Log4j
-
-      options.log4j = merge {}, service.deps.log4j?.options, options.log4j
-      options.log4j.hadoop_root_logger ?= 'INFO,RFA'
-      options.log4j.hadoop_security_logger ?= 'INFO,RFAS'
-      options.log4j.hadoop_audit_logger ?= 'INFO,RFAAUDIT'
-
 ## Test
 
       options.test = merge {}, service.deps.test_user.options, options.test or {}
@@ -104,57 +98,6 @@ is already handled by kerberos
 
       options.wait_hdfs_dn = service.deps.hdfs_dn[0].options.wait
       options.wait_hdfs_nn = service.deps.hdfs_nn[0].options.wait
-
-## Hadoop Site Configuration
-Enrich `ryba-ambari-takeover/hadoop/hdfs` with hdfs_dn properties.
-  
-      enrich_config = (source, target) ->
-        for k, v of source
-          target[k] ?= v
-          
-      for srv in service.deps.hdfs
-        srv.options.configurations ?= {}
-        srv.options.configurations['core-site'] ?= {}
-        srv.options.configurations['hdfs-site'] ?= {}
-        srv.options.configurations['yarn-site'] ?= {}
-        srv.options.configurations['mapred-site'] ?= {}
-        srv.options.configurations['ssl-server'] ?= {}
-        srv.options.configurations['ssl-client'] ?= {}
-      
-        enrich_config options.core_site, srv.options.configurations['core-site']
-        enrich_config options.hdfs_site, srv.options.configurations['hdfs-site']
-        enrich_config options.yarn_site, srv.options.configurations['yarn-site']
-        enrich_config options.mapred_site, srv.options.configurations['mapred-site']
-      
-        #add hosts
-        srv.options.client_hosts ?= []
-        srv.options.client_hosts.push service.node.fqdn if srv.options.client_hosts.indexOf(service.node.fqdn) is -1
-
-## System Options
-
-      # Env
-      srv.options.configurations['hadoop-env'] ?= {}
-
-## Metrics Properties
-
-      srv.options.configurations['hadoop-metrics-properties'] ?= {}
-      enrich_config options.metrics.config, srv.options.configurations['hadoop-metrics-properties'] if service.deps.metrics?
-
-## Log4j Properties
-
-      srv.options.hdfs_log4j ?= {}
-      enrich_config options.log4j.properties, options.hdfs_log4j if service.deps.log4j?
-
-## Ambari
-
-      #ambari server configuration
-      options.post_component = service.instances[0].node.fqdn is service.node.fqdn
-      options.ambari_host = service.node.fqdn is service.deps.ambari_server.node.fqdn
-      options.ambari_url ?= service.deps.ambari_server.options.ambari_url
-      options.ambari_admin_password ?= service.deps.ambari_server.options.ambari_admin_password
-      options.cluster_name ?= service.deps.ambari_server.options.cluster_name
-      options.takeover = service.deps.ambari_server.options.takeover
-      options.baremetal = service.deps.ambari_server.options.baremetal
 
 ## Dependencies
 

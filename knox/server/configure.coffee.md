@@ -117,70 +117,15 @@ Knox reads its own env variable to retrieve configuration.
         hosts = hosts.join ','
         srv.options.configurations['oozie-site']["oozie.service.ProxyUserService.proxyuser.#{options.user.name}.hosts"] ?= hosts
 
-## Configuration for Log4J
-      
-      # lucasbak: 22032018
-      # let ambari default configuration for log4j
-      # options.log4j ?= merge {}, service.deps.log4j?.options, options.log4j
-      # options.log4j.properties ?= {}
-      # options.log4j.properties ?= {}
-      # options.log4j.properties['app.log.dir'] ?= "#{options.log_dir}"
-      # options.log4j.properties['log4j.rootLogger'] ?= 'ERROR,rfa'
-      # if options.remote_host? and options.remote_port?
-      #   options.log4j.socket_client ?= 'SOCKET'
-      #   # Root logger
-      #   if options.log4j.properties['log4j.rootLogger'].indexOf(options.log4j.socket_client) is -1
-      #   then options.log4j.properties['log4j.rootLogger'] += ",#{options.log4j.socket_client}"
-      #   # Set java opts
-      #   options.log4j.properties['app.log.application'] ?= 'knox'
-      #   options.log4j.properties['app.log.remote_host'] ?= options.log4j.remote_host
-      #   options.log4j.properties['app.log.remote_port'] ?= options.log4j.remote_port
-      #   options.log4j.socket_opts ?=
-      #     Application: '${app.log.application}'
-      #     RemoteHost: '${app.log.remote_host}'
-      #     Port: '${app.log.remote_port}'
-      #     ReconnectionDelay: '10000'
-      #   appender
-      #     type: 'org.apache.log4j.net.SocketAppender'
-      #     name: options.log4j.socket_client
-      #     logj4: options.log4j.properties
-      #     properties: options.log4j.socket_opts
 
 ## Ambari Knox Topologies
 
       options.topologies ?= service.deps.knox[0].options.topologies
       options.realm_passwords ?= merge {} , service.deps.knox[0].options.realm_passwords, options.realm_passwords
 
-## Ambari Knox Service Configuration
-Enrich `ryba-ambari-takeover/knox/service` with gateway_site properties.
-  
-      enrich_config = (source, target) ->
-        for k, v of source
-          target[k] ?= v
-          
-      for srv in service.deps.knox
-        srv.options.configurations ?= {}
-        #hive-site
-        srv.options.configurations['gateway-site'] ?= {}
-        enrich_config options.gateway_site, srv.options.configurations['gateway-site']
-
-
-        #add hosts
-        srv.options.server_hosts ?= []
-        srv.options.server_hosts.push service.node.fqdn if srv.options.server_hosts.indexOf(service.node.fqdn) is -1  
+## Ambari configurations
       
-## Ambari REST API
-
-      #ambari server configuration
-      options.post_component = service.instances[0].node.fqdn is service.node.fqdn
-      options.ambari_host = service.node.fqdn is service.deps.ambari_server.node.fqdn
-      options.ambari_url ?= service.deps.ambari_server.options.ambari_url
-      options.ambari_admin_password ?= service.deps.ambari_server.options.ambari_admin_password
-      options.cluster_name ?= service.deps.ambari_server.options.cluster_name
-      options.stack_name = service.deps.ambari_server.options.stack_name
-      options.stack_version = service.deps.ambari_server.options.stack_version
-      options.takeover = service.deps.ambari_server.options.takeover
-      options.baremetal = service.deps.ambari_server.options.baremetal
+      options.configurations ?= {}
 
 ## Wait
 

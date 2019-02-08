@@ -22,15 +22,11 @@ does not store the data of these files itself. It’s important that this metada
         metrics: module: 'ryba/metrics', local: true
         log4j: module: 'ryba/log4j', local: true
         hdfs: module: 'ryba-ambari-takeover/hadoop/hdfs', required: true
-        ambari_server: module: 'ryba-ambari-takeover/server', single: true, required: true
       configure:
         'ryba-ambari-takeover/hadoop/hdfs_nn/configure'
       commands:
         'install': [
           'ryba-ambari-takeover/hadoop/hdfs_nn/install'
-          'ryba-ambari-takeover/hadoop/hdfs_nn/start'
-          'ryba-ambari-takeover/hadoop/hdfs_nn/layout'
-          'ryba-ambari-takeover/hadoop/hdfs_nn/check'
         ]
         'start': 'ryba-ambari-takeover/hadoop/hdfs_nn/start'
         'stop': 'ryba-ambari-takeover/hadoop/hdfs_nn/stop'

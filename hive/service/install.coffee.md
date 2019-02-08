@@ -13,7 +13,7 @@
       @registry.register ['ambari','services','wait'], 'ryba-ambari-actions/lib/services/wait'
       @registry.register ['ambari','services','component_add'], 'ryba-ambari-actions/lib/services/component_add'
       @registry.register ['ambari', 'hosts', 'component_add'], "ryba-ambari-actions/lib/hosts/component_add"
-      
+
 ## Layout
 
 Create the directories to store the logs and pid information. The properties
@@ -116,7 +116,7 @@ and webhcat-log4j
       #         .next callback
       #       catch err
       #         callback err
-      # 
+      #
       # @call
       #   header: 'Upload hive-interactive-env'
       #   if: options.post_component
@@ -344,48 +344,6 @@ and webhcat-log4j
         cluster_name: options.cluster_name
         properties: options.configurations['hiveserver2-site']
 
-## Upload Ranger Related Properties
-
-      @ambari.configs.update
-        header: 'Upload ranger-hive-plugin-properties'
-        if : options.post_component and options.takeover
-        url: options.ambari_url
-        username: 'admin'
-        password: options.ambari_admin_password
-        config_type: 'ranger-hive-plugin-properties'
-        cluster_name: options.cluster_name
-        properties: options.configurations['ranger-hive-plugin-properties']
-
-      @ambari.configs.update
-        header: 'Upload ranger-hive-security'
-        if : options.post_component and options.takeover
-        url: options.ambari_url
-        username: 'admin'
-        password: options.ambari_admin_password
-        config_type: 'ranger-hive-security'
-        cluster_name: options.cluster_name
-        properties: options.configurations['ranger-hive-security']
-
-      @ambari.configs.update
-        header: 'Upload ranger-hive-policymgr-ssl'
-        if : options.post_component and options.takeover
-        url: options.ambari_url
-        username: 'admin'
-        password: options.ambari_admin_password
-        config_type: 'ranger-hive-policymgr-ssl'
-        cluster_name: options.cluster_name
-        properties: options.configurations['ranger-hive-policymgr-ssl']
-
-      @ambari.configs.update
-        header: 'Upload ranger-hive-audit'
-        if : options.post_component and options.takeover
-        url: options.ambari_url
-        username: 'admin'
-        password: options.ambari_admin_password
-        config_type: 'ranger-hive-audit'
-        cluster_name: options.cluster_name
-        properties: options.configurations['ranger-hive-audit']
-
 ## WEBHCAT Environment
 
       @call header: 'Render wehbcat-env', ->
@@ -471,211 +429,6 @@ and webhcat-log4j
               callback()
             catch err
               callback err
-
-## Upload Default Configuration
-
-      # @call -> console.log options.configurations
-      @ambari.configs.default
-        header: 'HIVE Configuration'
-        url: options.ambari_url
-        if: options.post_component and options.takeover
-        username: 'admin'
-        password: options.ambari_admin_password
-        cluster_name: options.cluster_name
-        stack_name: options.stack_name
-        stack_version: options.stack_version
-        discover: true
-        configurations: options.configurations
-        target_services: 'HIVE'
-
-## RANGER PLUGIN Properties
-
-      @ambari.configs.update
-        header: 'Upload ranger-hive-plugin-properties'
-        if : options.post_component and options.takeover
-        url: options.ambari_url
-        username: 'admin'
-        password: options.ambari_admin_password
-        config_type: 'ranger-hive-plugin-properties'
-        cluster_name: options.cluster_name
-        properties: options.configurations['ranger-hive-plugin-properties']
-
-      @ambari.configs.update
-        header: 'Upload ranger-hive-security'
-        if : options.post_component and options.takeover
-        url: options.ambari_url
-        username: 'admin'
-        password: options.ambari_admin_password
-        config_type: 'ranger-hive-security'
-        cluster_name: options.cluster_name
-        properties: options.configurations['ranger-hive-security']
-
-      @ambari.configs.update
-        header: 'Upload ranger-hive-policymgr-ssl'
-        if : options.post_component and options.takeover
-        url: options.ambari_url
-        username: 'admin'
-        password: options.ambari_admin_password
-        config_type: 'ranger-hive-policymgr-ssl'
-        cluster_name: options.cluster_name
-        properties: options.configurations['ranger-hive-policymgr-ssl']
-
-      @ambari.configs.update
-        header: 'Upload ranger-hive-audit'
-        if : options.post_component and options.takeover
-        url: options.ambari_url
-        username: 'admin'
-        password: options.ambari_admin_password
-        config_type: 'ranger-hive-audit'
-        cluster_name: options.cluster_name
-        properties: options.configurations['ranger-hive-audit']
-
-## Add HIVE Service
-
-      @ambari.services.add
-        header: 'HIVE Service'
-        if: options.post_component and options.takeover
-        url: options.ambari_url
-        username: 'admin'
-        password: options.ambari_admin_password
-        cluster_name: options.cluster_name
-        name: 'HIVE'
-
-## Add and enable HIVE component
-add `HIVE_SERVER`, `HCAT`, `HIVE_CLIENT`, `HIVE_METASTORE` (LLAP)
- `WEBHCAT_SERVER` components to cluster in `INIT` state.
-
-      @ambari.services.wait
-        header: 'HIVE Service WAITED'
-        url: options.ambari_url
-        username: 'admin'
-        password: options.ambari_admin_password
-        cluster_name: options.cluster_name
-        name: 'HIVE'
-
-      @ambari.services.component_add
-        if: options.post_component and options.takeover
-        header: 'HIVE_SERVER'
-        url: options.ambari_url
-        username: 'admin'
-        password: options.ambari_admin_password
-        cluster_name: options.cluster_name
-        component_name: 'HIVE_SERVER'
-        service_name: 'HIVE'
-
-      @ambari.services.component_add
-        if: options.post_component and options.takeover
-        header: 'HCAT'
-        url: options.ambari_url
-        username: 'admin'
-        password: options.ambari_admin_password
-        cluster_name: options.cluster_name
-        component_name: 'HCAT'
-        service_name: 'HIVE'
-        
-      @ambari.services.component_add
-        if: options.post_component and options.takeover
-        header: 'HIVE_CLIENT'
-        url: options.ambari_url
-        username: 'admin'
-        password: options.ambari_admin_password
-        cluster_name: options.cluster_name
-        component_name: 'HIVE_CLIENT'
-        service_name: 'HIVE'
-
-      # @ambari.services.component_add
-      #   if: options.post_component
-      #   header: 'HCAT_CLIENT'
-      #   url: options.ambari_url
-      #   username: 'admin'
-      #   password: options.ambari_admin_password
-      #   cluster_name: options.cluster_name
-      #   component_name: 'HCAT_CLIENT'
-      #   service_name: 'HIVE'
-        
-      @ambari.services.component_add
-        if: options.post_component and options.takeover
-        header: 'HIVE_METASTORE'
-        url: options.ambari_url
-        username: 'admin'
-        password: options.ambari_admin_password
-        cluster_name: options.cluster_name
-        component_name: 'HIVE_METASTORE'
-        service_name: 'HIVE'
-
-      @ambari.services.component_add
-        if: options.post_component and options.takeover
-        header: 'WEBHCAT_SERVER'
-        url: options.ambari_url
-        username: 'admin'
-        password: options.ambari_admin_password
-        cluster_name: options.cluster_name
-        component_name: 'WEBHCAT_SERVER'
-        service_name: 'HIVE'
-
-      for host in options.server2_hosts
-        @ambari.hosts.component_add
-          header: 'HIVE_SERVER'
-          if: options.post_component and options.takeover
-          url: options.ambari_url
-          username: 'admin'
-          password: options.ambari_admin_password
-          cluster_name: options.cluster_name
-          component_name: 'HIVE_SERVER'
-          hostname: host
-
-      # for host in options.metastore_hosts
-      #   @ambari.hosts.component_add
-      #     header: 'HIVE_METASTORE'
-      #     if: options.post_component
-      #     url: options.ambari_url
-      #     username: 'admin'
-      #     password: options.ambari_admin_password
-      #     cluster_name: options.cluster_name
-      #     component_name: 'HIVE_METASTORE'
-      #     hostname: host
-
-      for host in options.hcatalog_hosts
-        @ambari.hosts.component_add
-          header: 'HIVE_METASTORE'
-          if: options.post_component and options.takeover
-          url: options.ambari_url
-          username: 'admin'
-          password: options.ambari_admin_password
-          cluster_name: options.cluster_name
-          component_name: 'HIVE_METASTORE'
-          hostname: host
-        @ambari.hosts.component_add
-          header: 'HIVE_METASTORE FIX'
-          if: options.post_component and options.takeover
-          url: options.ambari_url
-          username: 'admin'
-          password: options.ambari_admin_password
-          cluster_name: options.cluster_name
-          component_name: 'HIVE_CLIENT'
-          hostname: host
-
-      for host in options.hcatalog_hosts
-        @ambari.hosts.component_add
-          header: 'HIVE_CLIENT'
-          if: options.post_component and options.takeover
-          url: options.ambari_url
-          username: 'admin'
-          password: options.ambari_admin_password
-          cluster_name: options.cluster_name
-          component_name: 'HIVE_CLIENT'
-          hostname: host
-
-      for host in options.webhcat_hosts
-        @ambari.hosts.component_add
-          header: 'WEBHCAT_SERVER'
-          if: options.post_component and options.takeover
-          url: options.ambari_url
-          username: 'admin'
-          password: options.ambari_admin_password
-          cluster_name: options.cluster_name
-          component_name: 'WEBHCAT_SERVER'
-          hostname: host
 
 ## Dependencies
 

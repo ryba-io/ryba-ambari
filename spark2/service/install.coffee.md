@@ -6,7 +6,7 @@ Spark requires HDFS and Yarn. Install spark in Yarn cluster mode.
 
 Resources:
 
-[Tips and Tricks from Altic Scale][https://www.altiscale.com/blog/tips-and-tricks-for-running-spark-on-hadoop-part-2-2/)   
+[Tips and Tricks from Altic Scale][https://www.altiscale.com/blog/tips-and-tricks-for-running-spark-on-hadoop-part-2-2/)
 
     module.exports = header: 'Ambari Spark2 Client Install', handler: ({options}) ->
 
@@ -66,7 +66,7 @@ Resources:
         kadmin_server: options.krb5.admin.admin_server
         mode: 0o0640
         uid: options.user.name
-        gid: options.hadoop_group.name 
+        gid: options.hadoop_group.name
 
 ## Add SPARK2 Service
 

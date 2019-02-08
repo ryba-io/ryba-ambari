@@ -18,8 +18,6 @@ J Mohamed Zahoor goes into some more detail on the Master Architecture in this b
         zookeeper_server: module: 'ryba-ambari-takeover/zookeeper/server', required: true
         hadoop_core: module: 'ryba-ambari-takeover/hadoop/core', local: true, required: true
         hdfs_client: module: 'ryba-ambari-takeover/hadoop/hdfs', local: true, required: true
-        ambari_server: module: 'ryba-ambari-takeover/server', single: true, required: true
-        ambari_agent: module: 'ryba-ambari-takeover/agent'
       configure:
         'ryba-ambari-takeover/hbase/service/configure'
       commands:

@@ -78,49 +78,7 @@
       options.configurations['application-properties']['atlas.authentication.method.file'] ?= 'false'
       #custom properties
       # atlas.graph.index.search.solr.zookeeper-url
-      # atlas.rest.address
-      
-## Ambari HBase Hosts
-
-      options.atlas_hosts ?= []
-
-## Ambari REST API
-
-      #ambari server configuration
-      options.post_component = service.instances[0].node.fqdn is service.node.fqdn
-      options.ambari_host = service.node.fqdn is service.deps.ambari_server.node.fqdn
-      options.ambari_url ?= service.deps.ambari_server.options.ambari_url
-      options.ambari_admin_password ?= service.deps.ambari_server.options.ambari_admin_password
-      options.cluster_name ?= service.deps.ambari_server.options.cluster_name
-      options.stack_name ?= service.deps.ambari_server.options.stack_name
-      options.stack_version ?= service.deps.ambari_server.options.stack_version
-      options.takeover = service.deps.ambari_server.options.takeover
-      options.baremetal = service.deps.ambari_server.options.baremetal
-
-## System Options
-      
-
-## Ambari Agent
-Register users to ambari agent's user list.
-
-      for srv in service.deps.ambari_agent
-        srv.options.users ?= {}
-        srv.options.users['atlas'] ?= options.user
-        srv.options.groups ?= {}
-        srv.options.groups['atlas'] ?= options.group
-
-# ## Ambari Config Groups
-# `config_groups` contains final object that install will submit to ambari.
-# `groups` is the array of config_groups name to which the host belongs to.
-# 
-#       options.config_groups ?= {}
-#       options.groups ?= []
-#       for srv in service.deps.hbase
-#         for name in options.groups
-#           srv.options.config_groups ?= {}
-#           srv.options.config_groups[name] ?= {}
-#           srv.options.config_groups[name]['hosts'] ?= []
-#           srv.options.config_groups[name]['hosts'].push service.node.fqdn unless srv.options.config_groups[name]['hosts'].indexOf(service.node.fqdn) > -1
+      # atlas.rest.address      
 
 ## Dependencies
 

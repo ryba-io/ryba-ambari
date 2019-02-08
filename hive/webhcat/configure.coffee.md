@@ -117,51 +117,21 @@
         host: srv.node.fqdn
         port: srv.options.webhcat_site['templeton.port'] or 50111
 
-## Ambari REST API
 
-      #ambari server configuration
-      options.post_component = service.instances[0].node.fqdn is service.node.fqdn
-      options.ambari_host = service.node.fqdn is service.deps.ambari_server.node.fqdn
-      options.ambari_url ?= service.deps.ambari_server.options.ambari_url
-      options.ambari_admin_password ?= service.deps.ambari_server.options.ambari_admin_password
-      options.cluster_name ?= service.deps.ambari_server.options.cluster_name
-      options.takeover = service.deps.ambari_server.options.takeover
-      options.baremetal = service.deps.ambari_server.options.baremetal
+      options.configurations ?= {}
+      #hive-site
+      options.configurations['hive-site'] ?= {}
+      options.configurations['hive-site'] = merge {}, options.hive_site, options.configurations['hive-site']
+      options.configurations['webhcat-site'] ?= {}
+      options.configurations['webhcat-site'] = merge {}, options.webhcat_site, options.configurations['webhcat-site']
 
-## Ambari Configurations
-Enrich `ryba-ambari-takeover/hive/service` with hive/server2 properties.
-  
-      enrich_config = (source, target) ->
-        for k, v of source
-          target[k] ?= v
-          
-      for srv in service.deps.hive
-        srv.options.configurations ?= {}
-        #hive-site
-        srv.options.configurations['hive-site'] ?= {}
-        enrich_config options.hive_site, srv.options.configurations['hive-site']
-        srv.options.configurations['webhcat-site'] ?= {}
-        enrich_config options.webhcat_site, srv.options.configurations['webhcat-site']
+      #hive-env
+      options.configurations['hive-env'] ?= {}
+      options.configurations['hive-env']['webhcat_user'] ?= options.user.name
+      options.configurations['hive-env']['hcat_log_dir'] ?= options.log_dir
+      options.configurations['hive-env']['hcat_pid_dir'] ?= options.pid_dir
+      options.configurations['hive-env']['hcat_user'] ?= options.user.name
 
-        #hive-env
-        srv.options.configurations['hive-env'] ?= {}
-        srv.options.configurations['hive-env']['webhcat_user'] ?= options.user.name
-        srv.options.configurations['hive-env']['hcat_log_dir'] ?= options.log_dir
-        srv.options.configurations['hive-env']['hcat_pid_dir'] ?= options.pid_dir
-        srv.options.configurations['hive-env']['hcat_user'] ?= options.user.name
-
-        srv.options.webhcat_opts ?= options.opts
-        srv.options.webhcat_aux_jars ? options.aux_jars
-        #add hosts
-        srv.options.webhcat_hosts ?= []
-        srv.options.webhcat_hosts.push service.node.fqdn if srv.options.webhcat_hosts.indexOf(service.node.fqdn) is -1
-
-        srv.options.webhcat_opts ?= options.opts
-
-## Log4j Properties
-
-        srv.options.webhcat_log4j ?= {}
-        enrich_config options.log4j.properties, options.webhcat_log4j if service.deps.log4j?
 
 ## Dependencies
 

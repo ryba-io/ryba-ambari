@@ -11,11 +11,5 @@
         atlas: module: 'ryba-ambari-takeover/atlas/service'
         hadoop_core: module: 'ryba-ambari-takeover/hadoop/core', local: true, required: true
         hdfs_client: module: 'ryba-ambari-takeover/hadoop/hdfs', local: true, required: true
-        ambari_server: module: 'ryba-ambari-takeover/server', single: true, required: true
-        ambari_agent: module: 'ryba-ambari-takeover/agent'
       configure:
         'ryba-ambari-takeover/atlas/service/configure'
-      commands:
-        'install': [
-          'ryba-ambari-takeover/atlas/service/install'
-        ]

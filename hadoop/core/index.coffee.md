@@ -32,12 +32,5 @@ Managers, Web HDFS interactions, and others.
         hdfs: module: 'ryba-ambari-takeover/hadoop/hdfs', required: true
         yarn: module: 'ryba-ambari-takeover/hadoop/yarn', required: true
         security: module: 'ryba-ambari-takeover/hadoop/security', required: true, local: true
-        ambari_server: module: 'ryba-ambari-takeover/server', single: true, required: true
-        ambari_agent: module: 'ryba-ambari-takeover/agent', local: true, required: true
       configure:
         'ryba-ambari-takeover/hadoop/core/configure'
-      commands:
-        'install':
-          'ryba-ambari-takeover/hadoop/core/install'
-        'deploy':
-          'ryba-ambari-takeover/hadoop/core/install'

@@ -10,6 +10,7 @@
 
     module.exports = (service) ->
       options = service.options
+      options.configurations ?= {}
 
 ## Identities
 
@@ -34,7 +35,7 @@
       options.hadoop_conf_dir ?= '/etc/hadoop/conf'
       # Java
       options.java_home ?= service.deps.java.options.java_home
-      options.heapsize ?= '1024m'
+      options.heapsize ?= '1024'
       options.newsize ?= '200m'
       # Misc
       options.fqdn = service.node.fqdn
@@ -66,7 +67,9 @@
       options.yarn_site['yarn.http.policy'] ?= 'HTTPS_ONLY' # HTTP_ONLY or HTTPS_ONLY or HTTP_AND_HTTPS
       # remove from configuration as it is shared by both resourcemanager
       # options.yarn_site['yarn.resourcemanager.ha.id'] ?= service.node.hostname
-      options.yarn_site['yarn.resourcemanager.nodes.include-path'] ?= "#{options.hadoop_conf_dir}/yarn.include"
+      # options.yarn_site['yarn.resourcemanager.nodes.include-path'] ?= "#{options.hadoop_conf_dir}/yarn.include"
+      # not needed  by default
+      # if set the adminisitrator must write the file (ambari will not)
       options.yarn_site['yarn.resourcemanager.nodes.exclude-path'] ?= "#{options.hadoop_conf_dir}/yarn.exclude"
       options.yarn_site['yarn.resourcemanager.keytab'] ?= '/etc/security/keytabs/rm.service.keytab'
       options.yarn_site['yarn.resourcemanager.principal'] ?= "rm/_HOST@#{options.krb5.realm}"
@@ -292,70 +295,9 @@ rmr /rmstore/ZKRMStateRoot
       options.ssl.conf_dir ?= '/etc/security/serverKeys'
       options.ssl_server = merge {}, service.deps.hadoop_core.options.ssl_server, options.ssl_server or {},
       'ssl.server.keystore.location': "#{options.ssl.conf_dir}/yarn-resourcemanager-keystore"
-      'ssl.server.truststore.location': "#{options.conf_dir}/yarn-resourcemanager-truststore"
+      'ssl.server.truststore.location': "#{options.ssl.conf_dir}/yarn-resourcemanager-truststore"
       options.ssl_client = merge {}, service.deps.hadoop_core.options.ssl_client, options.ssl_client or {},
-      'ssl.client.truststore.location': "#{options.conf_dir}/yarn-resourcemanager-truststore"
-
-## Metrics
-
-      options.metrics = merge {}, service.deps.metrics?.options, options.metrics
-
-      options.metrics.config ?= {}
-      options.metrics.sinks ?= {}
-      options.metrics.sinks.file_enabled ?= true
-      options.metrics.sinks.ganglia_enabled ?= false
-      options.metrics.sinks.graphite_enabled ?= false
-      # File sink
-      if options.metrics.sinks.file_enabled
-        options.metrics.config["*.sink.file.#{k}"] ?= v for k, v of service.deps.metrics.options.sinks.file.config if service.deps.metrics?.options?.sinks?.file_enabled
-        options.metrics.config['resourcemanager.sink.file.class'] ?= 'org.apache.hadoop.metrics2.sink.FileSink'
-        options.metrics.config['resourcemanager.sink.file.filename'] ?= 'resourcemanager-metrics.out'
-      # Ganglia sink, accepted properties are "servers" and "supportsparse"
-      if options.metrics.sinks.ganglia_enabled
-        options.metrics.config['resourcemanager.sink.ganglia.class'] ?= options.metrics.ganglia.class
-        options.metrics.config['resourcemanager.sink.ganglia.servers'] ?= "#{service.deps.ganglia.node.fqdn}:#{service.deps.ganglia.options.nn_port}"
-        options.metrics.config["*.sink.ganglia.#{k}"] ?= v for k, v of options.sinks.ganglia.config if service.deps.metrics?.options?.sinks?.ganglia_enabled
-      # Graphite Sink
-      if options.metrics.sinks.graphite_enabled
-        throw Error 'Missing remote_host ryba.yarn.rm.metrics.sinks.graphite.config.server_host' unless options.metrics.sinks.graphite.config.server_host?
-        throw Error 'Missing remote_port ryba.yarn.rm.metrics.sinks.graphite.config.server_port' unless options.metrics.sinks.graphite.config.server_port?
-        options.metrics.config["resourcemanager.sink.graphite.class"] ?= 'org.apache.hadoop.metrics2.sink.GraphiteSink'
-        options.metrics.config["*.sink.graphite.#{k}"] ?= v for k, v of service.deps.metrics.options.sinks.graphite.config if service.deps.metrics?.options?.sinks?.graphite_enabled
-
-## Configuration for Log4J
-
-      options.log4j = merge {}, service.deps.log4j?.options, options.log4j
-      options.log4j.root_logger ?= 'INFO,EWMA,RFA'
-      options.opts.java_properties['yarn.server.resourcemanager.appsummary.logger'] = 'INFO,RMSUMMARY'
-      options.opts.java_properties['yarn.server.resourcemanager.audit.logger'] = 'INFO,RMAUDIT'
-      # adding SOCKET appender
-      if options.log4j.remote_host? and options.log4j.remote_port?
-        options.log4j.socket_client ?= "SOCKET"
-        # Root logger
-        if options.log4j.root_logger.indexOf(options.log4j.socket_client) is -1
-        then options.log4j.root_logger += ",#{options.log4j.socket_client}"
-        # Security Logger
-        if options.opts.java_properties['yarn.server.resourcemanager.appsummary.logger'].indexOf(options.log4j.socket_client) is -1
-        then options.opts.java_properties['yarn.server.resourcemanager.appsummary.logger'] += ",#{options.log4j.socket_client}"
-        # Audit Logger
-        if options.opts.java_properties['yarn.server.resourcemanager.audit.logger'].indexOf(options.log4j.socket_client) is -1
-        then options.opts.java_properties['yarn.server.resourcemanager.audit.logger'] += ",#{options.log4j.socket_client}"
-
-        options.opts.java_properties['hadoop.log.application'] = 'resourcemanager'
-        options.opts.java_properties['hadoop.log.remote_host'] = options.log4j.remote_host
-        options.opts.java_properties['hadoop.log.remote_port'] = options.log4j.remote_port
-
-        options.log4j.socket_opts ?=
-          Application: '${hadoop.log.application}'
-          RemoteHost: '${hadoop.log.remote_host}'
-          Port: '${hadoop.log.remote_port}'
-          ReconnectionDelay: '10000'
-
-        options.log4j.properties = merge options.log4j.properties, appender
-          type: 'org.apache.log4j.net.SocketAppender'
-          name: options.log4j.socket_client
-          logj4: options.log4j.properties
-          properties: options.log4j.socket_opts
+      'ssl.client.truststore.location': "/etc/security/clientKeys/yarn-resourcemanager-truststore"
 
 ## Import/Export to Yarn Timeline Server
 
@@ -433,6 +375,11 @@ rmr /rmstore/ZKRMStateRoot
       ]
         service.deps.mapred_jhs.options.yarn_site[property] ?= options.yarn_site[property]
 
+## Ambari Configurations
+
+      options.configurations['yarn-env'] ?= {}
+      options.configurations['yarn-env']['resourcemanager_heapsize'] ?= options.heapsize
+
 ## Wait
 
       options.wait_krb5_client = service.deps.krb5_client.options.wait
@@ -470,62 +417,6 @@ rmr /rmstore/ZKRMStateRoot
       for srv in service.deps.yarn_nm
         srv.options ?= {}
         srv.options.wait_yarn_rm ?= options.wait
-
-## Hadoop Site Configuration
-Enrich `ryba-ambari-takeover/hadoop/hdfs` with hdfs_nn properties.
-  
-      enrich_config = (source, target) ->
-        for k, v of source
-          target[k] ?= v
-      
-      for srv in service.deps.yarn
-        srv.options.configurations ?= {}
-        srv.options.configurations['core-site'] ?= {}
-        srv.options.configurations['hdfs-site'] ?= {}
-        srv.options.configurations['yarn-site'] ?= {}
-        srv.options.configurations['mapred-site'] ?= {}
-        srv.options.configurations['ssl-server'] ?= {}
-        srv.options.configurations['ssl-client'] ?= {}
-
-        enrich_config options.core_site, srv.options.configurations['core-site']
-        enrich_config options.hdfs_site, srv.options.configurations['hdfs-site']
-        enrich_config options.yarn_site, srv.options.configurations['yarn-site']
-        enrich_config options.mapred_site, srv.options.configurations['mapred-site']
-        enrich_config options.capacity_scheduler, srv.options.configurations['capacity-scheduler']
-        
-        #add hosts
-        srv.options.rm_hosts ?= []
-        srv.options.rm_hosts.push options.fqdn if srv.options.rm_hosts.indexOf(options.fqdn) is -1
-
-## System Options
-      
-        # Env
-        srv.options.configurations['yarn-env'] ?= {}
-        srv.options.configurations['yarn-env']['YARN_RESOURCEMANAGER_HEAPSIZE'] ?= options.heapsize
-        srv.options.configurations['yarn-env']['resourcemanager_heapsize'] ?= options.heapsize
-        # opts
-        srv.options.yarn_rm_opts = options.opts
-
-## Metrics Properties
-
-        srv.options.configurations['hadoop-metrics-properties'] ?= {}
-        enrich_config options.metrics.config, srv.options.configurations['hadoop-metrics-properties'] if service.deps.metrics?
-
-## Log4j Properties
-
-        srv.options.yarn_log4j ?= {}
-        enrich_config options.log4j.properties, options.yarn_log4j if service.deps.log4j?
-
-## Ambari
-
-      #ambari server configuration
-      options.post_component = service.instances[0].node.fqdn is service.node.fqdn
-      options.ambari_host = service.node.fqdn is service.deps.ambari_server.node.fqdn
-      options.ambari_url ?= service.deps.ambari_server.options.ambari_url
-      options.ambari_admin_password ?= service.deps.ambari_server.options.ambari_admin_password
-      options.cluster_name ?= service.deps.ambari_server.options.cluster_name
-      options.takeover = service.deps.ambari_server.options.takeover
-      options.baremetal = service.deps.ambari_server.options.baremetal
 
 ## Dependencies
 

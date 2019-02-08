@@ -405,64 +405,28 @@ Add Hive user as proxyuser
         then srv.options.hive_site['hive.server2.thrift.http.port']
         else srv.options.hive_site['hive.server2.thrift.port']
 
-## Ambari REST API
-
-      #ambari server configuration
-      options.post_component = service.instances[0].node.fqdn is service.node.fqdn
-      options.ambari_host = service.node.fqdn is service.deps.ambari_server.node.fqdn
-      options.ambari_url ?= service.deps.ambari_server.options.ambari_url
-      options.ambari_admin_password ?= service.deps.ambari_server.options.ambari_admin_password
-      options.cluster_name ?= service.deps.ambari_server.options.cluster_name
-      options.takeover = service.deps.ambari_server.options.takeover
-      options.baremetal = service.deps.ambari_server.options.baremetal
-
 ## Ambari Required Configurations
 
-      options.hiveserver2_site ?= {}
-      options.hiveserver2_site['hive.service.metrics.hadoop2.component'] ?= "hiveserver2"
-      options.hiveserver2_site['hive.security.authorization.enabled'] ?= "false"
-      options.hiveserver2_site['hive.metastore.metrics.enabled'] ?= "true"
-      options.hiveserver2_site['hive.service.metrics.reporter'] ?= "JSON_FILE, JMX, HADOOP2"
-      options.hiveserver2_site['hive.service.metrics.file.location'] ?= '/var/log/hive/hiveserver2-report.json'
+      options.configurations ?= {}
+      options.configurations['hiveserver2-site'] ?= {}
+      options.configurations['hiveserver2-site']['hive.service.metrics.hadoop2.component'] ?= "hiveserver2"
+      options.configurations['hiveserver2-site']['hive.security.authorization.enabled'] ?= "false"
+      options.configurations['hiveserver2-site']['hive.metastore.metrics.enabled'] ?= "true"
+      options.configurations['hiveserver2-site']['hive.service.metrics.reporter'] ?= "JSON_FILE, JMX, HADOOP2"
+      options.configurations['hiveserver2-site']['hive.service.metrics.file.location'] ?= '/var/log/hive/hiveserver2-report.json'
 
-## Ambari Configurations
-Enrich `ryba-ambari-takeover/hive/service` with hive/server2 properties.
-  
-      enrich_config = (source, target) ->
-        for k, v of source
-          target[k] ?= v
-          
-      for srv in service.deps.hive
-        srv.options.configurations ?= {}
-        #hive-site
-        srv.options.configurations['hive-site'] ?= {}
-        enrich_config options.hive_site, srv.options.configurations['hive-site']
-        #hive-env
-        srv.options.configurations['hive-env'] ?= {}
-        srv.options.configurations['hive-env']['hive.heapsize'] ?= '1024'
-        srv.options.configurations['hive-env']['hive_timeline_logging_enabled'] ?= 'true'
-        srv.options.configurations['hive-env']['heap_dump_location'] ?= '/tmp'
-        # srv.options.configurations['hive-env']['alert_ldap_username'] ?= ''
-        # srv.options.configurations['hive-env']['alert_ldap_password'] ?= 'admin123'
-        # srv.options.configurations['hive-env']['alert_ldap_url'] ?= ''
+      #hive-site
+      options.configurations['hive-site'] ?= {}
+      options.configurations['hive-site'] = merge {}, options.hive_site, options.configurations['hive-site']
+      #hive-env
+      options.configurations['hive-env'] ?= {}
+      options.configurations['hive-env']['hive.heapsize'] ?= '1024'
+      options.configurations['hive-env']['hive_timeline_logging_enabled'] ?= 'true'
+      options.configurations['hive-env']['heap_dump_location'] ?= '/tmp'
+      # options.configurations['hive-env']['alert_ldap_username'] ?= ''
+      # options.configurations['hive-env']['alert_ldap_password'] ?= 'admin123'
+      # options.configurations['hive-env']['alert_ldap_url'] ?= ''
         
-        srv.options.server2_opts ?= options.opts
-        srv.options.server2_aux_jars ? options.aux_jars
-        #add hosts
-        srv.options.server2_hosts ?= []
-        srv.options.server2_hosts.push service.node.fqdn if srv.options.server2_hosts.indexOf(service.node.fqdn) is -1
-
-
-## Log4j Properties
-
-        srv.options.hive_log4j ?= {}
-        enrich_config options.log4j.properties, options.hive_log4j if service.deps.log4j?
-
-## Log4j Properties
-
-        srv.options.configurations['hiveserver2-site'] ?= {}
-        enrich_config options.hiveserver2_site, srv.options.configurations['hiveserver2-site']
-
 
 ## Dependencies
 

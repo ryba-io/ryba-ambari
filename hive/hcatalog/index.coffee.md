@@ -30,15 +30,11 @@ format their data is stored — RCFile format, text files, SequenceFiles, or ORC
         hive_hcatalog: module: 'ryba-ambari-takeover/hive/hcatalog'
         hbase_client: module: 'ryba-ambari-takeover/hbase/client', local: true, recommanded: true
         log4j: module: 'ryba/log4j', local: true
-        ambari_server: module: 'ryba-ambari-takeover/server', single: true, required: true
-        ambari_agent: module: 'ryba-ambari-takeover/agent'
       configure:
         'ryba-ambari-takeover/hive/hcatalog/configure'
       commands:
         'install': [
           'ryba-ambari-takeover/hive/hcatalog/install'
-          'ryba-ambari-takeover/hive/hcatalog/start'
-          'ryba-ambari-takeover/hive/hcatalog/check'
         ]
         'check':
           'ryba-ambari-takeover/hive/hcatalog/check'

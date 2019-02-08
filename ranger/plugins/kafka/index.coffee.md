@@ -12,7 +12,6 @@
         ranger_admin: module: 'ryba-ambari-takeover/ranger/hdpadmin', single: true, required: true
         ranger_hdfs: module: 'ryba-ambari-takeover/ranger/plugins/hdfs', required: true
         ranger_kafka: module: 'ryba-ambari-takeover/ranger/plugins/kafka'
-        ambari_server: module: 'ryba/ambari/server', required: true, single: true
       configure:
         'ryba-ambari-takeover/ranger/plugins/kafka/configure'
       plugin: ({options}) ->

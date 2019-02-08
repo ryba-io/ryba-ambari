@@ -87,6 +87,7 @@ IPTables rules are only inserted if the parameter "iptables.action" is set to
           gid: options.group.name
           mode: 0o0600
         @krb5.addprinc options.krb5.admin, # Service Keytab
+          unless: options.kerberos_managed
           principal: options.httpfs_site['httpfs.hadoop.authentication.kerberos.principal']
           randkey: true
           keytab: options.httpfs_site['httpfs.hadoop.authentication.kerberos.keytab']

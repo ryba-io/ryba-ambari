@@ -19,7 +19,6 @@ Once installed you can type hive in a prompt and the hive client shell wil launc
         phoenix_client: module: 'ryba/phoenix/client', local: true
         ranger_admin: module: 'ryba-ambari-takeover/ranger/hdpadmin', single: true
         ranger_hdfs: module: 'ryba-ambari-takeover/ranger/plugins/hdfs'
-        ambari_server: module: 'ryba-ambari-takeover/server', single: true, required: true
       configure:
         'ryba-ambari-takeover/hive/client/configure'
       commands:

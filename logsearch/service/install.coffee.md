@@ -2,7 +2,8 @@
 # Ambari Logsearch Install
 
     module.exports =  header: 'Ambari Logsearch Install', handler: ({options}) ->
-    
+      return
+
 ## Register
 
       @registry.register ['ambari','configs','default'], 'ryba-ambari-actions/lib/configs/set_default'
@@ -72,60 +73,27 @@ Render hadoop-env.sh and yarn-env.sh files, before uploading to Ambari Server.
       #   backup: true
 
 
-## Upload Default Configuration
-
-      @call ->
-        @ambari.configs.default
-          header: 'LOGSEARCH Configuration'
-          url: options.ambari_url
-          if: options.post_component and options.takeover
-          username: 'admin'
-          password: options.ambari_admin_password
-          cluster_name: options.cluster_name
-          stack_name: options.stack_name
-          stack_version: options.stack_version
-          discover: true
-          configurations: options.configurations
-          target_services: 'LOGSEARCH'
-
-## Add LOGSEARCH Service
-
-      @ambari.services.add
-        header: 'LOGSEARCH Service'
-        if: options.post_component and options.takeover
-        url: options.ambari_url
-        username: 'admin'
-        password: options.ambari_admin_password
-        cluster_name: options.cluster_name
-        name: 'LOGSEARCH'
-
-      @ambari.services.wait
-        header: 'LOGSEARCH Service WAITED'
-        url: options.ambari_url
-        username: 'admin'
-        password: options.ambari_admin_password
-        cluster_name: options.cluster_name
-        name: 'LOGSEARCH'
-
-      @ambari.services.component_add
-        header: 'LOGSEARCH_SERVER Add'
-        if: options.post_component and options.takeover
-        url: options.ambari_url
-        username: 'admin'
-        password: options.ambari_admin_password
-        cluster_name: options.cluster_name
-        component_name: 'LOGSEARCH_SERVER'
-        service_name: 'LOGSEARCH'
-
-      @ambari.services.component_add
-        header: 'LOGSEARCH_LOGFEEDER Add'
-        if: options.post_component and options.takeover
-        url: options.ambari_url
-        username: 'admin'
-        password: options.ambari_admin_password
-        cluster_name: options.cluster_name
-        component_name: 'LOGSEARCH_LOGFEEDER'
-        service_name: 'LOGSEARCH'
+      # 
+      # 
+      # @ambari.services.component_add
+      #   header: 'LOGSEARCH_SERVER Add'
+      #   if: options.post_component and options.takeover
+      #   url: options.ambari_url
+      #   username: 'admin'
+      #   password: options.ambari_admin_password
+      #   cluster_name: options.cluster_name
+      #   component_name: 'LOGSEARCH_SERVER'
+      #   service_name: 'LOGSEARCH'
+      # 
+      # @ambari.services.component_add
+      #   header: 'LOGSEARCH_LOGFEEDER Add'
+      #   if: options.post_component and options.takeover
+      #   url: options.ambari_url
+      #   username: 'admin'
+      #   password: options.ambari_admin_password
+      #   cluster_name: options.cluster_name
+      #   component_name: 'LOGSEARCH_LOGFEEDER'
+      #   service_name: 'LOGSEARCH'
 
           
       @call

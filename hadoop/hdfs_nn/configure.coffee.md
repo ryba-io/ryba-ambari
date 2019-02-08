@@ -14,7 +14,7 @@ Example:
 ```json
 {
   "ryba": {
-    "hdfs": 
+    "hdfs":
       "nn": {
         "java_opts": "-Xms1024m -Xmx1024m",
         "include": ["in.my.cluster"],
@@ -26,6 +26,7 @@ Example:
 
     module.exports = (service) ->
       options = service.options
+      options.configurations ?= {}
 
 ## Identities
 
@@ -107,7 +108,7 @@ Example:
       options.hdfs_site['dfs.blockreport.initialDelay'] ?= '120'
       options.hdfs_site['dfs.blocksize'] ?= '134217728'
       options.hdfs_site['dfs.dfs.bytes-per-checksum'] ?= '512'
-      options.hdfs_site['dfs.cluster.administrators'] ?= "#{options.user.name},hdfs-#{service.deps.ambari_server.options.cluster_name}"
+      # options.hdfs_site['dfs.cluster.administrators'] ?= "#{options.user.name}"
       options.hdfs_site['dfs.replication.max'] ?= "50"
       options.hdfs_site['dfs.support.append'] ?= "true"
       options.hdfs_site['dfs.permissions.superusergroup'] ?= "#{options.user.name}"
@@ -167,17 +168,17 @@ service's TCP port.
         options.standby_nn_host = service.instances.filter( (instance) -> instance.node.fqdn isnt options.active_nn_host )[0].node.fqdn
         for srv in service.deps.hdfs_nn
           srv.options.hostname ?= srv.node.hostname
-        for srv in service.deps.hdfs_jn
-          options.hdfs_site['dfs.journalnode.kerberos.principal'] ?= srv.options.hdfs_site['dfs.journalnode.kerberos.principal']
+        # for srv in service.deps.hdfs_jn
+        #   options.hdfs_site['dfs.journalnode.kerberos.principal'] ?= srv.options.hdfs_site['dfs.journalnode.kerberos.principal']
       else throw Error "Invalid number of NanodeNodes, got #{service.instances.length}, expecting 2"
 
-Since [HDFS-6376](https://issues.apache.org/jira/browse/HDFS-6376), 
-Nameservice must be explicitely set as internal to provide other nameservices, 
+Since [HDFS-6376](https://issues.apache.org/jira/browse/HDFS-6376),
+Nameservice must be explicitely set as internal to provide other nameservices,
 for distcp purpose.
 
       options.hdfs_site['dfs.internal.nameservices'] ?= ''
       if options.nameservice not in options.hdfs_site['dfs.internal.nameservices'].split ','
-        options.hdfs_site['dfs.internal.nameservices'] += "#{if options.hdfs_site['dfs.internal.nameservices'] isnt '' then ',' else ''}#{options.nameservice}" 
+        options.hdfs_site['dfs.internal.nameservices'] += "#{if options.hdfs_site['dfs.internal.nameservices'] isnt '' then ',' else ''}#{options.nameservice}"
       options.hdfs_site["dfs.ha.namenodes.#{options.nameservice}"] = (for srv in service.deps.hdfs_nn then srv.options.hostname).join ','
       for srv in service.deps.hdfs_nn
         options.hdfs_site['dfs.namenode.http-address'] = null
@@ -199,67 +200,6 @@ for distcp purpose.
         'ssl.server.truststore.location': "#{options.ssl.conf_dir}/hdfs-namenode-truststore"
       options.ssl_client = merge {}, service.deps.hadoop_core.options.ssl_client, options.ssl_client or {},
         'ssl.client.truststore.location': "#{options.ssl.conf_dir}/hdfs-namenode-truststore"
-
-## Metrics
-
-      options.metrics = merge {}, service.deps.metrics?.options, options.metrics
-
-      options.metrics.config ?= {}
-      options.metrics.sinks ?= {}
-      options.metrics.sinks.file_enabled ?= true
-      options.metrics.sinks.ganglia_enabled ?= false
-      options.metrics.sinks.graphite_enabled ?= false
-      # File sink
-      if options.metrics.sinks.file_enabled
-        options.metrics.config["namenode.sink.file.class"] ?= 'org.apache.hadoop.metrics2.sink.FileSink'
-        options.metrics.config["*.sink.file.#{k}"] ?= v for k, v of service.deps.metrics.options.sinks.file.config if service.deps.metrics?.options?.sinks?.file_enabled
-        options.metrics.config['namenode.sink.file.filename'] ?= 'namenode-metrics.out'
-      # Ganglia sink, accepted properties are "servers" and "supportsparse"
-      if options.metrics.sinks.ganglia_enabled
-        options.metrics.config["namenode.sink.ganglia.class"] ?= 'org.apache.hadoop.metrics2.sink.ganglia.GangliaSink31'
-        options.metrics.config["*.sink.ganglia.#{k}"] ?= v for k, v of options.sinks.ganglia.config if service.deps.metrics?.options?.sinks?.ganglia_enabled
-      # Graphite Sink
-      if options.metrics.sinks.graphite_enabled
-        throw Error 'Missing remote_host ryba.hdfs.nn.metrics.sinks.graphite.config.server_host' unless options.metrics.sinks.graphite.config.server_host?
-        throw Error 'Missing remote_port ryba.hdfs.nn.metrics.sinks.graphite.config.server_port' unless options.metrics.sinks.graphite.config.server_port?
-        options.metrics.config["namenode.sink.graphite.class"] ?= 'org.apache.hadoop.metrics2.sink.GraphiteSink'
-        options.metrics.config["*.sink.graphite.#{k}"] ?= v for k, v of service.deps.metrics.options.sinks.graphite.config if service.deps.metrics?.options?.sinks?.graphite_enabled
-
-## Log4J
-Inherits log4j configuration from the `ryba/log4j`. The rendered file uses the variable
-`options.log4j.properties`
-
-      options.log4j = merge {}, service.deps.log4j?.options, options.log4j
-      options.log4j.properties ?= {}
-      options.log4j.root_logger ?= 'INFO,RFA'
-      options.log4j.security_logger ?= 'INFO,DRFAS'
-      options.log4j.audit_logger ?= 'INFO,RFAAUDIT'
-      # adding SOCKET appender
-      if options.log4j.remote_host? andoptions.log4j.remote_port?
-        options.log4j.socket_client ?= "SOCKET"
-        # Root logger
-        if options.log4j.root_logger.indexOf(options.log4j.socket_client) is -1
-        then options.log4j.root_logger += ",#{options.log4j.socket_client}"
-        # Security Logger
-        if options.log4j.security_logger.indexOf(options.log4j.socket_client) is -1
-        then options.log4j.security_logger += ",#{options.log4j.socket_client}"
-        # Audit Logger
-        if options.log4j.audit_logger.indexOf(options.log4j.socket_client) is -1
-        then options.log4j.audit_logger += ",#{options.log4j.socket_client}"
-        # Adding Application name, remote host and port values in namenode's opts
-        options.opts['hadoop.log.application'] ?= 'namenode'
-        options.opts['hadoop.log.remote_host'] ?= options.log4j.remote_host
-        options.opts['hadoop.log.remote_port'] ?= options.log4j.remote_port
-        options.log4j.socket_opts ?=
-          Application: '${hadoop.log.application}'
-          RemoteHost: '${hadoop.log.remote_host}'
-          Port: '${hadoop.log.remote_port}'
-          ReconnectionDelay: '10000'
-        options.log4j.properties = merge options.log4j.properties, appender
-          type: 'org.apache.log4j.net.SocketAppender'
-          name: options.log4j.socket_client
-          logj4: options.log4j.properties
-          properties: options.log4j.socket_opts
 
 ## Export configuration
 
@@ -320,7 +260,7 @@ Inherits log4j configuration from the `ryba/log4j`. The rendered file uses the v
         srv.options.hdfs_site ?= {}
         if srv.options.hdfs_site["dfs.namenode.rpc-address#{nameservice}#{hostname}"]
           [fqdn, port] = srv.options.hdfs_site["dfs.namenode.rpc-address#{nameservice}#{hostname}"].split(':')
-        else 
+        else
           fqdn = srv.node.fqdn
           port = 8020
         host: fqdn, port: port
@@ -331,78 +271,29 @@ Inherits log4j configuration from the `ryba/log4j`. The rendered file uses the v
         srv.options.hdfs_site ?= {}
         if srv.options.hdfs_site["dfs.namenode.rpc-address#{nameservice}#{hostname}"]
           [fqdn, port] = srv.options.hdfs_site["dfs.namenode.#{protocol}-address#{nameservice}#{hostname}"].split(':')
-        else 
+        else
           fqdn = srv.node.fqdn
           port = if options.hdfs_site['dfs.http.policy'] is 'HTTP_ONLY' then '50070' else '50470'
         host: fqdn, port: port
       options.wait.krb5_user = service.deps.hadoop_core.options.hdfs.krb5_user
 
-## HDFS/YARN Configuration
-Enrich `ryba-ambari-takeover/hadoop/hdfs` with hdfs_nn properties.
-  
-      enrich_config = (source, target) ->
-        for k, v of source
-          target[k] ?= v
-      
-      for srv in service.deps.hdfs
-        srv.options.configurations ?= {}
-        srv.options.configurations['core-site'] ?= {}
-        srv.options.configurations['hdfs-site'] ?= {}
-        srv.options.configurations['yarn-site'] ?= {}
-        srv.options.configurations['mapred-site'] ?= {}
-        srv.options.configurations['ssl-server'] ?= {}
-        srv.options.configurations['ssl-client'] ?= {}
+## Ambari Configuration
 
-        enrich_config options.core_site, srv.options.configurations['core-site']
-        enrich_config options.hdfs_site, srv.options.configurations['hdfs-site']
-        enrich_config options.yarn_site, srv.options.configurations['yarn-site']
-        enrich_config options.mapred_site, srv.options.configurations['mapred-site']
-        
-        #add hosts
-        srv.options.nn_hosts ?= []
-        srv.options.nn_hosts.push options.fqdn if srv.options.nn_hosts.indexOf(options.fqdn) is -1
-        #include/exclude
-        srv.options.include ?= options.include
-        srv.options.exclude ?= options.exclude
-        
-
-## System Options
-      
-        # Env
-        srv.options.configurations['hadoop-env'] ?= {}
-        # srv.options.configurations['hadoop-env']['HADOOP_SECURE_DN_USER'] ?= options.user.name
-        # srv.options.configurations['hadoop-env']['HADOOP_SECURE_DN_LOG_DIR'] ?= options.log_dir
-        srv.options.configurations['hadoop-env']['java_home'] ?= options.java_home
-        # srv.options.configurations['hadoop-env']['HADOOP_NAMENODE_INIT_HEAPSIZE'] ?= options.hadoop_namenode_init_heap
-        srv.options.configurations['hadoop-env']['namenode_heapsize'] ?= options.heapsize
-        srv.options.configurations['hadoop-env']['namenode_newsize'] ?= options.newsize
-        # Ambari required
-        srv.options.configurations['hadoop-env']['namenode_heapsize'] ?= options.heapsize
-        srv.options.configurations['hadoop-env']['namenode_opt_newsize'] ?= options.newsize
-        srv.options.configurations['hadoop-env']['namenode_opt_maxnewsize'] ?= options.newsize
-        # opts
-        srv.options.hdfs_nn_opts = options.opts
-
-## Metrics Properties/
-
-        srv.options.configurations['hadoop-metrics-properties'] ?= {}
-        enrich_config options.metrics.config, srv.options.configurations['hadoop-metrics-properties'] if service.deps.metrics?
-
-## Log4j Properties
-
-        srv.options.hdfs_log4j ?= {}
-        enrich_config options.log4j.properties, options.hdfs_log4j if service.deps.log4j?
-
-## Ambari
-
-      #ambari server configuration
-      options.post_component = service.instances[0].node.fqdn is service.node.fqdn
-      options.ambari_host = service.node.fqdn is service.deps.ambari_server.node.fqdn
-      options.ambari_url ?= service.deps.ambari_server.options.ambari_url
-      options.ambari_admin_password ?= service.deps.ambari_server.options.ambari_admin_password
-      options.cluster_name ?= service.deps.ambari_server.options.cluster_name
-      options.takeover = service.deps.ambari_server.options.takeover
-      options.baremetal = service.deps.ambari_server.options.baremetal
+      options.configurations ?= {}
+      # Env
+      options.configurations['hadoop-env'] ?= {}
+      # options.configurations['hadoop-env']['HADOOP_SECURE_DN_USER'] ?= options.user.name
+      # options.configurations['hadoop-env']['HADOOP_SECURE_DN_LOG_DIR'] ?= options.log_dir
+      options.configurations['hadoop-env']['java_home'] ?= options.java_home
+      # options.configurations['hadoop-env']['HADOOP_NAMENODE_INIT_HEAPSIZE'] ?= options.hadoop_namenode_init_heap
+      options.configurations['hadoop-env']['namenode_newsize'] ?= options.newsize
+      # Ambari required
+      options.configurations['hadoop-env']['namenode_heapsize'] ?= options.heapsize
+      options.configurations['hadoop-env']['namenode_opt_newsize'] ?= options.newsize
+      options.configurations['hadoop-env']['namenode_opt_maxnewsize'] ?= options.newsize
+      #HA
+      options.configurations['hadoop-env']['dfs_ha_initial_namenode_active'] ?= service.instances.filter( (instance) -> instance.node.fqdn is options.active_nn_host )[0].node.fqdn
+      options.configurations['hadoop-env']['dfs_ha_initial_namenode_standby'] ?= service.instances.filter( (instance) -> instance.node.fqdn isnt options.active_nn_host )[0].node.fqdn
 
 ## Dependencies
 

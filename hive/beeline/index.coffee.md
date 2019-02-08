@@ -13,7 +13,6 @@
         ranger_admin: module: 'ryba-ambari-takeover/ranger/hdpadmin', single: true
         ranger_hive: module: 'ryba-ambari-takeover/ranger/plugins/hiveserver2'
         hive: module: 'ryba-ambari-takeover/hive/service', required: true
-        ambari_server: module: 'ryba-ambari-takeover/server', required: true, single: true
       configure:
         'ryba-ambari-takeover/hive/beeline/configure'
       commands:

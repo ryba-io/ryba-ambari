@@ -105,7 +105,7 @@ Example:
 ## Configure SSL
 
       options.ssl = merge {}, service.deps.hadoop_core.options.ssl, options.ssl
-      options.truststore_location ?= "#{options.conf_dir}/truststore"
+      options.truststore_location ?= "/etc/security/clientKeys/hive-truststore"
       options.truststore_password ?= options.ssl.truststore.password
 
 ## Test
@@ -123,37 +123,9 @@ Example:
       options.wait_hive_hcatalog = service.deps.hive_hcatalog[0].options.wait
       options.wait_ranger_admin = service.deps.ranger_admin.options.wait if service.deps.ranger_admin
 
-## Ambari REST API
-
-      #ambari server configuration
-      options.post_component = service.instances[0].node.fqdn is service.node.fqdn
-      options.ambari_host = service.node.fqdn is service.deps.ambari_server.node.fqdn
-      options.ambari_url ?= service.deps.ambari_server.options.ambari_url
-      options.ambari_admin_password ?= service.deps.ambari_server.options.ambari_admin_password
-      options.cluster_name ?= service.deps.ambari_server.options.cluster_name
-      options.takeover = service.deps.ambari_server.options.takeover
-      options.baremetal = service.deps.ambari_server.options.baremetal
-
 ## Ambari Configurations
-Enrich `ryba-ambari-takeover/hive/service` with hive/server2 properties.
-  
-      enrich_config = (source, target) ->
-        for k, v of source
-          target[k] ?= v
-          
-      for srv in service.deps.hive
-        srv.options.configurations ?= {}
-        #hive-site
-        srv.options.configurations['hive-site'] ?= {}
-        enrich_config options.hive_site, srv.options.configurations['hive-site']
-        #hive-env
-        srv.options.configurations['hive-env'] ?= {}
-        srv.options.configurations['hive-env']['hive.client.heapsize'] ?= options.heapsize
-        srv.options.client_opts ?= options.opts
-        srv.options.client_aux_jars ? options.aux_jars
-        #add hosts
-        srv.options.client_hosts ?= []
-        srv.options.client_hosts.push service.node.fqdn if srv.options.client_hosts.indexOf(service.node.fqdn) is -1
+
+      options.configurations ?= {}
 
 ## Dependencies
 

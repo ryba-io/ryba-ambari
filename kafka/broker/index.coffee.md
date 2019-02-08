@@ -14,8 +14,6 @@ log. It is fast, scalable, durable and distributed by design.
         hdp: module: 'ryba/hdp', local: true
         hdf: module: 'ryba/hdf', local: true
         zookeeper_server: module: 'ryba-ambari-takeover/zookeeper/server', required: true
-        ambari_server: module: 'ryba-ambari-takeover/server', single: true, required: true
-        ambari_agent: module: 'ryba-ambari-takeover/agent'
         hadoop_core: module: 'ryba-ambari-takeover/hadoop/core', local: true, required: true
         kafka_broker: module: 'ryba-ambari-takeover/kafka/broker'
         kafka_service: module: 'ryba-ambari-takeover/kafka/service', required: true
@@ -25,8 +23,6 @@ log. It is fast, scalable, durable and distributed by design.
       commands:
         'install': [
           'ryba-ambari-takeover/kafka/broker/install'
-          'ryba-ambari-takeover/kafka/broker/start'
-          'ryba-ambari-takeover/kafka/broker/check'
         ]
         'check':
           'ryba-ambari-takeover/kafka/broker/check'

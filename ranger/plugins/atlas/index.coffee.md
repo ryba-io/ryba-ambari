@@ -10,14 +10,3 @@
         ranger_admin: module: 'ryba-ambari-takeover/ranger/hdpadmin', single: true, required: true
         ranger_hdfs: module: 'ryba-ambari-takeover/ranger/plugins/hdfs'
         hdfs_client: module: 'ryba-ambari-takeover/hadoop/hdfs_client'
-        ambari_server: module: 'ryba-ambari-takeover/server', single: true
-      plugin: ({options}) ->
-        @before
-          action: ['ambari', 'hosts', 'component_start']
-          name: 'ATLAS_METADATA_SERVER'
-        , ->
-          @call 'ryba-ambari-takeover/ranger/plugins/atlas/install', options
-      configure:
-        'ryba-ambari-takeover/ranger/plugins/atlas/configure'
-      commands:
-        install: 'ryba-ambari-takeover/ranger/plugins/atlas/install'

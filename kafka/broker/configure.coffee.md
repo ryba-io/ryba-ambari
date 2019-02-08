@@ -28,7 +28,6 @@ Example:
       options.krb5.realm ?= service.deps.krb5_client.options.etc_krb5_conf?.libdefaults?.default_realm
       throw Error 'Required Options: "realm"' unless options.krb5.realm
       options.krb5.admin ?= service.deps.krb5_client.options.admin[options.krb5.realm]
-      options.manage_identities ?= service.deps.ambari_server.options.configurations['kerberos-env']['manage_identities']
 
 ## Identities
 
@@ -245,82 +244,11 @@ Valid values are: PLAINTEXT, SSL, SASL_PLAINTEXT, SASL_SSL.
       .map (protocol) -> "#{protocol}://localhost:#{options.ports[protocol]}"
       .join ','
 
-## Ambari REST API
-
-      #ambari server configuration
-      options.post_component = service.instances[0].node.fqdn is service.node.fqdn
-      options.ambari_host = service.node.fqdn is service.deps.ambari_server.node.fqdn
-      options.ambari_url ?= service.deps.ambari_server.options.ambari_url
-      options.ambari_admin_password ?= service.deps.ambari_server.options.ambari_admin_password
-      options.cluster_name ?= service.deps.ambari_server.options.cluster_name
-      options.stack_name ?= service.deps.ambari_server.options.stack_name
-      options.stack_version ?= service.deps.ambari_server.options.stack_version
-      options.takeover = service.deps.ambari_server.options.takeover
-      options.baremetal = service.deps.ambari_server.options.baremetal
-
-## Kerberos Identities
-
-      options.identities ?= {}
-      options.identities ?= {}
-      options.identities['kafka'] ?= {}
-      options.identities['kafka']['principal'] ?= {}
-      options.identities['kafka']['principal']['configuration'] ?= 'kafka-env/kafka_principal_name'
-      options.identities['kafka']['principal']['type'] ?= 'service'
-      options.identities['kafka']['principal']['local_username'] ?= options.user.name
-      options.identities['kafka']['principal']['value'] ?= options.kerberos['principal']
-      options.identities['kafka']['name'] ?= 'kafka'
-      options.identities['kafka']['keytab'] ?= {}
-      options.identities['kafka']['keytab']['owner'] ?= {}
-      options.identities['kafka']['keytab']['owner']['access'] ?= 'r' 
-      options.identities['kafka']['keytab']['owner']['name'] ?= options.user.name 
-      options.identities['kafka']['keytab']['group'] ?= {}
-      options.identities['kafka']['keytab']['group']['access'] ?= 'r'
-      options.identities['kafka']['keytab']['group']['name'] ?= options.group.name
-      options.identities['kafka']['keytab']['file'] ?= options.kerberos.keyTab
-      options.identities['kafka']['keytab']['configuration'] ?= 'kafka-env/kafka_keytab'
+## Ambari Compatible configuration
       
       options.configurations ?= {}
       options.configurations['kafka-env'] ?= {}
-      options.configurations['kafka-env']['kafka_principal_name'] ?= options.kerberos['principal']
-      options.configurations['kafka-env']['kafka_keytab'] ?= options.kerberos['keyTab']
-
-## Ambari Kafka Service
-
-      enrich_config = (source, target) ->
-        for k, v of source
-          target[k] ?= v
-
-      for srv in service.deps.kafka_service
-        # Register Java Options
-        srv.options.configurations['kafka-broker'] ?= {}
-        srv.options.configurations['kafka-env'] ?= {}
-        srv.options.env ?= {}
-        srv.options['identities'] ?= {}
-        srv.options.log4j ?= {}
-        # enrich kafka service
-        enrich_config options.config, srv.options.configurations['kafka-broker']
-        enrich_config options.configurations['kafka-env'], srv.options.configurations['kafka-env']
-        enrich_config options.log4j, srv.options.log4j
-        enrich_config options.env, srv.options.env
-        srv.options.identities['kafka'] ?= options.identities['kafka']
-
-        srv.options.broker_hosts ?= []
-        srv.options.broker_hosts.push options.fqdn if srv.options.broker_hosts.indexOf(options.fqdn) is -1
-
-
-## Wait
-
-      options.wait_krb5_client = service.deps.krb5_client.options.wait
-      options.wait_zookeeper_server = service.deps.zookeeper_server[0].options.wait
-      options.wait = {}
-      # options.wait.brokers = for srv in service.deps.kafka_broker
-      #   for protocol in options.protocols
-      #     host: srv.node.fqdn
-      #     port: options.ports[protocol]
-      for protocol in options.protocols
-        options.wait[protocol] = for srv in service.deps.kafka_broker
-          host: srv.node.fqdn
-          port: options.ports[protocol]
+      options.configurations['kafka-broker'] ?= merge {}, options.configurations['kafka-broker'], options.config
 
 ## Dependencies
 

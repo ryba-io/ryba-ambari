@@ -312,7 +312,7 @@ Start the service or restart it if there were any changes.
         name: 'ambari-server'
         state: ['started', 'restarted']
         if: -> @status()
-      @call 'ryba/ambari/server/wait', options.wait, if: -> @status()
+      @call 'ryba-ambari-takeover/ambari/server/wait', options.wait, if: -> @status()
 
 ## Admin Credentials
 

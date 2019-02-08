@@ -13,14 +13,5 @@
         ranger_admin: module: 'ryba-ambari-takeover/ranger/hdpadmin', single: true, required: true
         ranger_hdfs: module: 'ryba-ambari-takeover/ranger/plugins/hdfs'
         ranger_hive: module: 'ryba-ambari-takeover/ranger/plugins/hiveserver2'
-        ambari_server: module: 'ryba/ambari/server', required: true, single: true
       configure:
         'ryba-ambari-takeover/ranger/plugins/hiveserver2/configure'
-      plugin: ({options}) ->
-        @before
-          action: ['ambari', 'hosts', 'component_start']
-          name: 'HIVE_SERVER'
-        , ->
-          @call 'ryba-ambari-takeover/ranger/plugins/hiveserver2/install', options
-        # @after 'ryba-ambari-takeover/hive/server2/install', ->
-        #   @call 'ryba-ambari-takeover/ranger/plugins/hiveserver2/install', options

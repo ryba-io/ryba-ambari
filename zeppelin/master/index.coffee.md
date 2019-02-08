@@ -9,13 +9,9 @@
         iptables: module: 'masson/core/iptables', local: true
         hadoop_core: module: 'ryba-ambari-takeover/hadoop/core', local: true, auto: true
         zeppelin_service: module: 'ryba-ambari-takeover/zeppelin/service', required: true
-        ambari_server: module: 'ryba-ambari-takeover/server', single: true, required: true
-        ambari_agent: module: 'ryba-ambari-takeover/agent'
       configure:
         'ryba-ambari-takeover/zeppelin/master/configure'
       commands:
         'install': [
           'ryba-ambari-takeover/zeppelin/master/install'
-          'ryba-ambari-takeover/zeppelin/master/start'
-          'ryba-ambari-takeover/zeppelin/master/check'
         ]

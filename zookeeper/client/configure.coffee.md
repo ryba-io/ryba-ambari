@@ -25,20 +25,6 @@
         continue unless srv.options.config['peerType'] is 'participant'
         "#{srv.node.fqdn}:#{srv.options.config['clientPort']}"
 
-## Wait
-      
-      options.wait_zookeeper_server ?= service.deps.zookeeper_server[0].options.wait
-
-## Ambari Server Properties
-
-      options.post_component = service.instances[0].node.fqdn is service.node.fqdn
-      options.ambari_url ?= service.deps.ambari_server.options.ambari_url
-      options.ambari_admin_password ?= service.deps.ambari_server.options.ambari_admin_password
-      options.cluster_name ?= service.deps.ambari_server.options.cluster_name
-      options.takeover = service.deps.ambari_server.options.takeover
-      options.baremetal = service.deps.ambari_server.options.baremetal
-      options.wait_ambari = service.deps.ambari_server.options.wait.rest
-
 ## Dependencies
 
     {merge} = require 'nikita/lib/misc'

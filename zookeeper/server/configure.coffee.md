@@ -3,7 +3,7 @@
 
     module.exports = (service) ->
       options = service.options
-      
+
 ## Identities
 
       # Groups
@@ -53,7 +53,7 @@
       options.env['ZOO_AUTH_TO_LOCAL'] ?= "RULE:[1:\\$1]RULE:[2:\\$1]"
       options.env['ZOO_LOG_DIR'] ?= "#{options.log_dir}"
       options.env['ZOOPIDFILE'] ?= "#{options.pid_dir}/zookeeper_server.pid"
-      options.env['JAVA_OPTS'] ?= options.opts.base += 
+      options.env['JAVA_OPTS'] ?= options.opts.base +=
       options.env['SERVER_JVMFLAGS'] ?= " -Djava.security.auth.login.config=#{options.conf_dir}/zookeeper_jaas.conf ${JAVA_OPTS}"
       options.env['CLIENT_JVMFLAGS'] ?= " -Djava.security.auth.login.config=#{options.conf_dir}/zookeeper_client_jaas.conf"
       options.env['JAVA'] ?= '$JAVA_HOME/bin/java'
@@ -121,84 +121,12 @@
       throw Error 'Required Options: "realm"' unless options.krb5.realm
       options.krb5.admin ?= service.deps.krb5_client.options.admin[options.krb5.realm]
 
-## Log4J
-
-      options.log4j = merge {}, service.deps.log4j?.options, options.log4j
-
-      if options.log4j.remote_host? and options.log4j.remote_port? and options.env['ZOO_LOG4J_PROP'].indexOf('SOCKET') is -1
-        options.env['ZOO_LOG4J_PROP'] = "#{options.env['ZOO_LOG4J_PROP']},SOCKET"
-      if options.log4j.server_port? and options.env['ZOO_LOG4J_PROP'].indexOf('SOCKETHUB') is -1
-        options.env['ZOO_LOG4J_PROP'] = "#{options.env['ZOO_LOG4J_PROP']},SOCKETHUB"
-      options.log4j.properties ?= {}
-      options.log4j.properties['log4j.rootLogger'] ?= options.env['ZOO_LOG4J_PROP']
-      options.log4j.properties['log4j.appender.CONSOLE'] ?= 'org.apache.log4j.ConsoleAppender'
-      options.log4j.properties['log4j.appender.CONSOLE.Threshold'] ?= 'INFO'
-      options.log4j.properties['log4j.appender.CONSOLE.layout'] ?= 'org.apache.log4j.PatternLayout'
-      options.log4j.properties['log4j.appender.CONSOLE.layout.ConversionPattern'] ?= '%d{ISO8601} - %-5p [%t:%C{1}@%L] - %m%n'
-      options.log4j.properties['log4j.appender.ROLLINGFILE'] ?= 'org.apache.log4j.RollingFileAppender'
-      options.log4j.properties['log4j.appender.ROLLINGFILE.Threshold'] ?= 'DEBUG'
-      options.log4j.properties['log4j.appender.ROLLINGFILE.File'] ?= "#{options.log_dir}/zookeeper.log"
-      options.log4j.properties['log4j.appender.ROLLINGFILE.MaxFileSize'] ?= '10MB'
-      options.log4j.properties['log4j.appender.ROLLINGFILE.MaxBackupIndex'] ?= '10'
-      options.log4j.properties['log4j.appender.ROLLINGFILE.layout'] ?= 'org.apache.log4j.PatternLayout'
-      options.log4j.properties['log4j.appender.ROLLINGFILE.layout.ConversionPattern'] ?= '%d{ISO8601} - %-5p [%t:%C{1}@%L] - %m%n'
-      options.log4j.properties['log4j.appender.TRACEFILE'] ?= 'org.apache.log4j.FileAppender'
-      options.log4j.properties['log4j.appender.TRACEFILE.Threshold'] ?= 'TRACE'
-      options.log4j.properties['log4j.appender.TRACEFILE.File'] ?= "#{options.log_dir}/zookeeper_trace.log"
-      options.log4j.properties['log4j.appender.TRACEFILE.layout'] = 'org.apache.log4j.PatternLayout'
-      options.log4j.properties['log4j.appender.TRACEFILE.layout.ConversionPattern'] ?= '%d{ISO8601} - %-5p [%t:%C{1}@%L][%x] - %m%n'
-      if options.log4j.server_port
-        options.log4j.properties['log4j.appender.SOCKETHUB'] ?= 'org.apache.log4j.net.SocketHubAppender'
-        options.log4j.properties['log4j.appender.SOCKETHUB.Application'] ?= 'zookeeper'
-        options.log4j.properties['log4j.appender.SOCKETHUB.Port'] ?= options.log4j.server_port
-        options.log4j.properties['log4j.appender.SOCKETHUB.BufferSize'] ?= '100'
-      if options.log4j.remote_host and options.log4j.remote_port
-        options.log4j.properties['log4j.appender.SOCKET'] ?= 'org.apache.log4j.net.SocketAppender'
-        options.log4j.properties['log4j.appender.SOCKET.Application'] ?= 'zookeeper'
-        options.log4j.properties['log4j.appender.SOCKET.RemoteHost'] ?= options.log4j.remote_host
-        options.log4j.properties['log4j.appender.SOCKET.Port'] ?= options.log4j.remote_port
-        options.log4j.properties['log4j.appender.SOCKET.ReconnectionDelay'] ?= '10000'
-
-## Ambari Takeover
-
-        #ambari services layout
-      options.post_component = options.inject ?= service.instances[0].node.fqdn is service.node.fqdn
-      options.ambari_url ?= service.deps.ambari_server.options.ambari_url
-      options.ambari_admin_password ?= service.deps.ambari_server.options.ambari_admin_password
-      options.cluster_name ?= service.deps.ambari_server.options.cluster_name
-      options.takeover = service.deps.ambari_server.options.takeover
-      options.baremetal = service.deps.ambari_server.options.baremetal
-
 ## Test
 
       # Zookeeper Server
       options.zookeeper_server = for srv in service.deps.zookeeper_server
         fqdn: srv.node.fqdn
         port: srv.options.config['clientPort'] or 2181
-
-      options.wait_ambari_rest = service.deps.ambari_server.options.wait.rest
-
-## Ambari Agent - Register Hosts
-Register users to ambari agent's user list.
-
-      for srv in service.deps.ambari_agent
-        srv.options.users ?= {}
-        srv.options.users['zookeeper'] ?= options.user
-        srv.options.groups ?= {}
-        srv.options.groups['zookeeper'] ?= options.group
-
-## Ambari Config Groups
-`config_groups` contains final object that install will submit to ambari.
-`groups` is the array of config_groups name to which the host belongs to.
-
-      options.config_groups ?= {}
-      options.groups ?= []
-      for srv in service.deps.zookeeper_server
-        for name in options.groups
-          srv.options.config_groups ?= {}
-          srv.options.config_groups[name] ?= {}
-          srv.options.config_groups[name]['hosts'] ?= []
-          srv.options.config_groups[name]['hosts'].push service.node.fqdn unless srv.options.config_groups[name]['hosts'].indexOf(service.node.fqdn) > -1
 
 ## Wait
 

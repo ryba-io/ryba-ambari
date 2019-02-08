@@ -15,8 +15,6 @@
         graphite: module: 'ryba/graphite/carbon'
         spark: module: 'ryba-ambari-takeover/spark2/service', required: true
         spark_local: module: 'ryba-ambari-takeover/spark2/service', required: true, local: true
-        ambari_server: module: 'ryba-ambari-takeover/server', single: true, required: true
-        ambari_agent: module: 'ryba-ambari-takeover/agent'
       configure:
         'ryba-ambari-takeover/spark2/history/configure'
       commands:

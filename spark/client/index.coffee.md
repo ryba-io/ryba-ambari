@@ -19,14 +19,12 @@
         ganglia_collector: module: 'ryba/retired/ganglia/collector'
         graphite: module: 'ryba/graphite/carbon'
         spark: module: 'ryba-ambari-takeover/spark/service', required: true
-        ambari_server: module: 'ryba-ambari-takeover/server', single: true, required: true
-        ambari_agent: module: 'ryba-ambari-takeover/agent'
       configure:
         'ryba-ambari-takeover/spark/client/configure'
       commands:
         'install': [
           'ryba-ambari-takeover/spark/client/install'
-          'ryba-ambari-takeover/spark/client/check'
+          # 'ryba-ambari-takeover/spark/client/check'
         ]
         'check':
           'ryba-ambari-takeover/spark/client/check'

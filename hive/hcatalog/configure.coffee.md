@@ -325,53 +325,9 @@ default to the [DBTokenStore]. Also worth of interest is the
         host: srv.node.fqdn
         port: srv.options.hive_site['hive.metastore.port']
 
-## Ambari REST API
-
-      #ambari server configuration
-      options.post_component = service.instances[0].node.fqdn is service.node.fqdn
-      options.ambari_host = service.node.fqdn is service.deps.ambari_server.node.fqdn
-      options.ambari_url ?= service.deps.ambari_server.options.ambari_url
-      options.ambari_admin_password ?= service.deps.ambari_server.options.ambari_admin_password
-      options.cluster_name ?= service.deps.ambari_server.options.cluster_name
-      options.takeover = service.deps.ambari_server.options.takeover
-      options.baremetal = service.deps.ambari_server.options.baremetal
-
-## Ambari Configurations
-Enrich `ryba-ambari-takeover/hive/service` with hive/server2 properties.
-  
-      enrich_config = (source, target) ->
-        for k, v of source
-          target[k] ?= v
-          
-      for srv in service.deps.hive
-        srv.options.configurations ?= {}
-        #hive-site
-        srv.options.configurations['hive-site'] ?= {}
-        enrich_config options.hive_site, srv.options.configurations['hive-site']
-        # srv.options.configurations['hivemetastore-site']
-        # enrich_config options.hive_site, srv.options.configurations['hivemetastore-site']
-        #hive-env
-        srv.options.configurations['hive-env'] ?= {}
-        srv.options.configurations['hive-env']['hive.metastore.heapsize'] ?= '1024'
-        srv.options.hcatalog_opts ?= options.opts
-        srv.options.hcatalog_aux_jars ? options.aux_jars
-        #add hosts
-        srv.options.hcatalog_hosts ?= []
-        srv.options.hcatalog_hosts.push service.node.fqdn if srv.options.hcatalog_hosts.indexOf(service.node.fqdn) is -1
-
-## Ambari - Hive Log4j Properties
-
-        srv.options.hive_log4j ?= {}
-        enrich_config options.log4j.properties, options.hive_log4j if service.deps.log4j?
-
-## Ambari Agent - Register Hosts
-Register users to ambari agent's user list.
-
-      for srv in service.deps.ambari_agent
-        srv.options.users ?= {}
-        srv.options.users['hcat'] ?= options.user
-        srv.options.groups ?= {}
-        srv.options.groups['hcat'] ?= options.group
+      options.configurations ?= {}
+      options.configurations['hive-env'] ?= {}
+      options.configurations['hive-env']['hive.metastore.heapsize'] ?= '1024'
 
 # Module Dependencies
 

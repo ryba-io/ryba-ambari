@@ -18,7 +18,6 @@
         sqoop: module: 'ryba/sqoop'
         log4j: module: 'ryba/log4j', local: true
         hive: module: 'ryba-ambari-takeover/hive/service', required: true
-        ambari_server: module: 'ryba-ambari-takeover/server', single: true, required: true
       configure:
         'ryba-ambari-takeover/hive/webhcat/configure'
       commands:
@@ -27,8 +26,6 @@
 
         'install': [
           'ryba-ambari-takeover/hive/webhcat/install'
-          'ryba-ambari-takeover/hive/webhcat/start'
-          'ryba-ambari-takeover/hive/webhcat/check'
         ]
         'start':
           'ryba-ambari-takeover/hive/webhcat/start'

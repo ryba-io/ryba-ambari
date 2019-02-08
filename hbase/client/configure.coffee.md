@@ -100,45 +100,8 @@
       options.wait_hbase_regionserver = service.deps.hbase_regionserver[0].options.wait
       options.wait_ranger_admin = service.deps.ranger_admin.options.wait if service.deps.ranger_admin
 
-## Ambari REST API
-
-      #ambari server configuration
-      options.post_component = service.instances[0].node.fqdn is service.node.fqdn
-      options.ambari_host = service.node.fqdn is service.deps.ambari_server.node.fqdn
-      options.ambari_url ?= service.deps.ambari_server.options.ambari_url
-      options.ambari_admin_password ?= service.deps.ambari_server.options.ambari_admin_password
-      options.cluster_name ?= service.deps.ambari_server.options.cluster_name
-      options.takeover = service.deps.ambari_server.options.takeover
-      options.baremetal = service.deps.ambari_server.options.baremetal
-
-## HBase Configuration
-Enrich `ryba-ambari-takeover/hbase/master` with regionservers properties.
-  
-      enrich_config = (source, target) ->
-        for k, v of source
-          target[k] ?= v
-      
-      for srv in service.deps.hbase
-        srv.options.configurations ?= {}
-        srv.options.configurations['hbase-site'] ?= {}
-        enrich_config options.hbase_site , srv.options.configurations['hbase-site']
-        #add hosts
-        srv.options.client_hosts ?= []
-        srv.options.client_hosts.push options.fqdn if srv.options.client_hosts.indexOf(options.fqdn) is -1
-
-## System Options
-      
-        # Env
-        srv.options.configurations['hbase-env'] ?= {}
-        # opts
-        # enrich_config options.opts , srv.options.client_opts
-        enrich_config options.opts , srv.options.opts
-
-
-## Log4j Properties
-
-        srv.options.hbase_log4j ?= {}
-        enrich_config options.log4j.properties, options.hbase_log4j if service.deps.metrics?
+      options.configurations ?= {}
+      options.configurations['hbase-site'] ?= merge {} , options.configurations['hbase-site'], options.hbase_site
 
 ## Dependencies
 

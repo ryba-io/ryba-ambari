@@ -38,32 +38,6 @@
       options.ssl = merge {}, service.deps.ssl?.options, options.ssl
       options.ssl.enabled ?= !!service.deps.ssl
 
-## Ambari REST API
-
-      #ambari server configuration
-      options.post_component = service.instances[0].node.fqdn is service.node.fqdn
-      options.ambari_host = service.node.fqdn is service.deps.ambari_server.node.fqdn
-      options.ambari_url ?= service.deps.ambari_server.options.ambari_url
-      options.ambari_admin_password ?= service.deps.ambari_server.options.ambari_admin_password
-      options.cluster_name ?= service.deps.ambari_server.options.cluster_name
-      options.takeover = service.deps.ambari_server.options.takeover
-      options.baremetal = service.deps.ambari_server.options.baremetal
-
-## Ambari Oozie Configuration
-Enrich `ryba-ambari-takeover/oozie/service` with master properties.
-  
-      enrich_config = (source, target) ->
-        for k, v of source
-          target[k] ?= v
-      
-      for srv in service.deps.oozie
-        srv.options.configurations ?= {}
-        srv.options.configurations['oozie-site'] ?= {}
-        enrich_config options.oozie_site , srv.options.configurations['oozie-site']
-        #add hosts
-        srv.options.client_hosts ?= []
-        srv.options.client_hosts.push options.fqdn if srv.options.client_hosts.indexOf(options.fqdn) is -1
-
 ## Test
 
       options.ranger_admin ?= service.deps.ranger_admin.options.admin if service.deps.ranger_admin

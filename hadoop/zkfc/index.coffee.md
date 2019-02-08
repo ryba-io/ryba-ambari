@@ -15,22 +15,18 @@ The [ZKFailoverController (ZKFC)](https://hadoop.apache.org/docs/r2.3.0/hadoop-y
         hdfs_nn_local: module: 'ryba-ambari-takeover/hadoop/hdfs_nn', local: true, required: true
         hdfs_nn: module: 'ryba-ambari-takeover/hadoop/hdfs_nn'
         hdfs: module: 'ryba-ambari-takeover/hadoop/hdfs'
-        ambari_server: module: 'ryba-ambari-takeover/server', single: true, required: true
         zkfc: module: 'ryba-ambari-takeover/hadoop/zkfc'
       configure:
         'ryba-ambari-takeover/hadoop/zkfc/configure'
-      plugin: ({options}) ->
-        @after
-          type: ['ambari', 'hosts', 'component_start']
-          name: 'NAMENODE'
-        , ->
-          @call 'ryba-ambari-takeover/hadoop/zkfc/install', options
-          @call 'ryba-ambari-takeover/hadoop/zkfc/start', options
+      # plugin: ({options}) ->
+      #   @after
+      #     action: ['java', 'keystore_add']
+      #     keystore: options.configurations['ssl-server']['ssl.server.keystore.location']
+      #   , ->
+      #     @call 'ryba-ambari-takeover/hadoop/zkfc/install', options
       commands:
         'install': [
           'ryba-ambari-takeover/hadoop/zkfc/install'
-          'ryba-ambari-takeover/hadoop/zkfc/start'
-          'ryba-ambari-takeover/hadoop/zkfc/check'
         ]
         'start': 'ryba-ambari-takeover/hadoop/zkfc/start'
         'stop': 'ryba-ambari-takeover/hadoop/zkfc/stop'
@@ -44,4 +40,3 @@ The [ZKFailoverController (ZKFC)](https://hadoop.apache.org/docs/r2.3.0/hadoop-y
           'ryba-ambari-takeover/hadoop/zkfc/wait'
           'ryba-ambari-takeover/hadoop/zkfc/check'
         ]
-

@@ -64,18 +64,6 @@ variables but also inject some function to be executed.
       options.log4j['log4j.appender.hdfsAppender.layout.ConversionPattern'] = '%d{yy/MM/dd HH:mm:ss} [%t]: %p %c{2}: %m%n'
       options.log4j['log4j.appender.hdfsAppender.encoding'] = 'UTF-8'
 
-## Stack Version
-
-      options.stack_version ?= service.deps.ambari_server.options.stack_version
-      if options.stack_version[0] > 2
-        for prop in [
-          'rangerusersync_user_password'
-          'rangertagsync_user_password'
-          'keyadmin_user_password'
-        ]
-        
-          throw Error "Missing password ranger-env.#{prop} HDP 3" unless options.configurations['ranger-env'][prop]
-
 # Managed Users
 
 Ranger enable to create users with its REST API. Required user can be specified in the
@@ -141,18 +129,6 @@ User can be External and Internal. Only Internal users can be created from the r
         options.site['ranger.spnego.kerberos.keytab'] ?= options.install['spnego_keytab']
         options.site['ranger.admin.kerberos.cookie.domain'] ?= options.install['cookie_domain']
         options.site['ranger.admin.kerberos.cookie.path'] ?= options.install['cookie_path']
-        if options.solr_type in ['cloud','cloud_docker',  'external']
-          #Configuring in memory jaas property for ranger to sol
-          options.site['xasecure.audit.destination.solr.force.use.inmemory.jaas.config'] ?= 'true'
-          options.site['xasecure.audit.jaas.inmemory.loginModuleName'] ?= 'com.sun.security.auth.module.Krb5LoginModule'
-          options.site['xasecure.audit.jaas.inmemory.loginModuleControlFlag'] ?= 'required'
-          options.site['xasecure.audit.jaas.inmemory.Client.option.useKeyTab'] ?= 'true'
-          options.site['xasecure.audit.jaas.inmemory.Client.option.debug'] ?= 'true'
-          options.site['xasecure.audit.jaas.inmemory.Client.option.doNotPrompt'] ?= 'yes'
-          options.site['xasecure.audit.jaas.inmemory.Client.option.storeKey'] ?= 'yes'
-          options.site['xasecure.audit.jaas.inmemory.Client.option.serviceName'] ?= 'solr'
-          options.site['xasecure.audit.jaas.inmemory.Client.option.keyTab'] ?= options.install['admin_keytab']
-          options.site['xasecure.audit.jaas.inmemory.Client.option.principal'] ?= options.install['admin_principal']
 
 # Audit Storage
 
@@ -165,222 +141,6 @@ Hortonworks recommandations are to enable SOLR and HDFS Storage.
 
       options.install['audit_store'] ?= 'solr'
       options.site['ranger.audit.source.type'] ?= options.install['audit_store']
-
-## Solr Audit Configuration
-
-Here SOLR configuration is discovered and ranger admin is set up.
-
-Ryba support both Solr Cloud mode and Solr Standalone installation. 
-
-The `solr_type` option designates the type of solr service (ie standalone, embedded, cloud, cloud indocker)
-used for Ranger.
-The type requires differents instructions/configuration for ranger plugin audit to work.
-- Solr Standalone `ryba/solr/standalone`
-  Ryba default. You need to set `ryba/solr/standalone` on one host.
-- Solr Standalone embedded
-  No need to have `ryba/solr/standalone` on one host, Solr will be installed on the same host as Ranger Admin.
-  Change property `solr_type` to `embedded` to use it.
-- Solr Cloud `ryba/solr/cloud`
-  Changes  property `solr_type` to `cloud` and deploy `ryba/solr/cloud`
-  module on at least one host.
-- Solr Cloud on docker `ryba/solr/cloud_docker`
-  Changes  property `solr_type` to `cloud_docker`.
-  Important:
-    For this to work you need to deploy `ryba/solr/cloud_docker` module on at least on host.
-    AND you also need to setup a solr cluster in your configuration, for ryba being able to configure
-      ranger with this cluster. 
-    Ryba configures Ranger by using one of the cluster available
-    You can configure it by using `config.ryba.solr.cloud_docker.clusters` property.
-    Ryba will search by default for an instance named `ranger_cluster` which is set
-    by the property `cluster_name`.
-    An example is available in [the ryba-cluster config file][ryba-cluster-conf].
-
-Note July 2016:
-The previous properties works only with (HDP 2.4) `solr.BasicAuthPlugin` (in solr cluster config).
-And it is configured by Ryba only in ryba/solr/cloud_docker installation.
-
-If no `ryba/solr/*` is configured Ranger admin deploys a `ryba/solr/standalone` 
-on the same host than `ryba/ranger/admin` module.
-
-## Example
-
-To use the embedded Solr mode, configure ranger-admin as follows:
-
-```json
-{ "ranger": {
-    "admin": {
-      "solr_type": "embedded"
-    }
-} }
-```
-
-If you have configured a Solr Cloud Docker in your cluster, you can configure like this:
-
-```json
-{ "ranger": {
-    "admin": {
-      "solr_type": "cloud_docker"
-    }
-} }
-```
-
-      options.solr_type ?= 'embedded'
-      options.configurations['ranger-solr-configuration'] ?= {}
-      options.solr_client_source ?= service.deps.solr_client.options.source if service.deps.solr_client
-      options.solr_client_source = if options.solr_client_source is 'HDP'
-      then '/opt/lucidworks-hdpsearch/solr'
-      else '/usr/solr/current'      # solr = {}
-      solrs_urls = ''
-      # solr_ctx = {}
-      # Retention period in day to keep audit logs
-      options.audit_retention_period ?= '1095' #value in days. default to 3 years.
-      options.configurations['ranger-solr-configuration']['ranger_audit_max_retention_days'] ?= options.audit_retention_period
-      options.configurations['ranger-solr-configuration']['ranger_audit_logs_merge_factor'] ?= '10'
-      options.retention ?=  "+#{options.audit_retention_period}"
-      switch options.solr_type
-        when 'embedded'
-          options.solr ?= {}
-          options.solr.group ?= {}
-          options.solr.group = name: options.solr.group if typeof options.solr.group is 'string'
-          options.solr.group.name ?= 'solr'
-          options.solr.group.system ?= true
-          options.solr.user ?= {}
-          options.solr.user ?= name: options.solr.user if typeof options.solr.user is 'string'
-          options.solr.user.name ?= 'solr'
-          options.solr.user.gid ?= options.solr.group.name
-          options.solr.user.home ?= "/var/lib/#{options.solr.user.name}"
-          options.solr.user.system ?= true
-          options.solr.user.comment ?= 'Solr User'
-          options.solr.user.groups ?= 'hadoop'
-          options.solr.fqdn = service.node.fqdn
-          options.solr.version ?= '5.5.2'
-          options.solr.root_dir ?= '/usr'
-          options.solr.install_dir ?= "#{options.solr.root_dir}/solr/#{options.solr.version}"
-          options.solr.latest_dir = '/opt/lucidworks-hdpsearch/solr'
-          options.solr.pid_dir ?= '/var/run/solr'
-          options.solr.log_dir ?= '/var/log/solr'
-          options.solr.conf_dir ?= '/etc/solr/conf'
-          options.solr.env ?= {}
-          options.solr.dir_factory ?= "${solr.directoryFactory:solr.NRTCachingDirectoryFactory}"
-          options.solr.lock_type = 'native'
-          options.solr.conf_source = "#{__dirname}/../resources/solr/solr_5.xml.j2"
-          if options.krb5.enabled
-            options.solr.principal ?= "#{options.solr.user.name}/#{service.node.fqdn}@#{options.krb5.realm}"
-            options.solr.keytab ?= '/etc/security/keytabs/solr.service.keytab'
-          options.solr.ssl = merge options.solr.ssl or {}, service.deps.hadoop_core.options.ssl
-          # lucasbak 11102017
-          # in HDP 2.5.3 SSL enabled solr sink is not supported
-          options.solr.ssl.enabled = false
-          options.solr.port ?= if options.solr.ssl.enabled then 19983 else 18983
-          options.solr.ssl_truststore_path ?= "#{options.solr.conf_dir}/truststore"
-          options.solr.ssl_truststore_pwd ?= 'solr123'
-          options.solr.ssl_keystore_path ?= "#{options.solr.conf_dir}/keystore"
-          options.solr.ssl_keystore_pwd ?= 'solr123'
-          options.solr.env['SOLR_JAVA_HOME'] ?= service.deps.java.options.java_home
-          options.solr.env['SOLR_HOST'] ?= service.node.fqdn
-          options.solr.env['SOLR_HEAP'] ?= "512m"
-          options.solr.env['SOLR_PORT'] ?= "#{options.solr.port}"
-          options.solr.env['ENABLE_REMOTE_JMX_OPTS'] ?= 'false'
-          if options.solr.ssl.enabled
-            options.solr.env['SOLR_SSL_KEY_STORE'] ?= options.solr.ssl_keystore_path
-            options.solr.env['SOLR_SSL_KEY_STORE_PASSWORD'] ?= options.solr.ssl_keystore_pwd
-            options.solr.env['SOLR_SSL_TRUST_STORE'] ?= options.solr.ssl_truststore_path
-            options.solr.env['SOLR_SSL_TRUST_STORE_PASSWORD'] ?= options.solr.ssl_truststore_pwd
-            options.solr.env['SOLR_SSL_NEED_CLIENT_AUTH'] ?= 'false'
-          options.solr.jre_home ?= service.deps.java.options.jre_home
-          solrs_urls = "#{if options.solr.ssl.enabled then 'https://' else 'http://'}#{service.node.fqdn}:#{options.solr.port}/solr/ranger_audits"
-          options.install['audit_solr_zookeepers'] ?= 'NONE'
-        when 'external'
-          options.solr.cluster_config ?= {}
-          options.solr.cluster_config.ranger_collection_dir ?= '/tmp/ranger-infra'
-          throw Error "Missing Solr options.solr.cluster_config.user property example: solr" unless options.solr.cluster_config.user?
-          throw Error "Missing Solr options.solr.cluster_config.ssl_enabled property example: true" unless options.solr.cluster_config.ssl_enabled?
-          throw Error "Missing Solr options.solr.cluster_config.hosts: ['master01.ryba', 'master02.ryba']" unless options.solr.cluster_config.hosts?
-          throw Error "Missing Solr options.solr.cluster_config.zk_urls: master01.metal.ryba:2181" unless options.solr.cluster_config.zk_urls?
-          throw Error "Missing Solr options.solr.cluster_config.zk_node: /solr_infra" unless options.solr.cluster_config.zk_node?
-          throw Error "Missing Solr options.solr.cluster_config.master: master01.metal.ryba" unless options.solr.cluster_config.master?
-          throw Error "Missing Solr options.solr.cluster_config.port: 8983" unless options.solr.cluster_config.port?
-          throw Error "Missing Solr options.solr.cluster_config.authentication: kerberos" unless options.solr.cluster_config.authentication?
-          throw Error "Missing Solr options.solr.cluster_config.version property example: 6.3.0" unless options.solr.cluster_config.version?
-          throw Error "Unexpected version format. Solr version should look like 6.3.0" unless /[0-9](.[0-9]){2}/.test options.solr.cluster_config.version
-          if options.solr.cluster_config.authentication? is 'kerberos'
-            throw Error "Missing Solr options.solr.cluster_config.admin_principal: " unless options.solr.cluster_config.admin_principal?
-            throw Error "Missing Solr options.solr.cluster_config.admin_password: " unless options.solr.cluster_config.admin_password?
-          options.solr.cluster_config.zk_connect ?= path.join options.solr.cluster_config.zk_urls , '/', options.solr.cluster_config.zk_node
-          options.solr.cluster_config.collection ?=
-            'name': 'ranger_audits'
-            'numShards': options.solr.cluster_config['hosts'].length
-            'replicationFactor': options.solr.cluster_config['hosts'].length-1
-            'maxShardsPerNode': options.solr.cluster_config['hosts'].length
-            'collection.configName': 'ranger_audits'
-          options.install['audit_solr_urls'] ?= options.solr.cluster_config.hosts.map( (host) ->
-              "#{if options.solr.cluster_config.ssl_enabled then 'https://' else 'http://'}#{host}:#{options.solr.cluster_config.port}")
-          options.install['audit_solr_zookeepers'] ?= options.solr.cluster_config.zk_connect
-          [version] = /^[0-9](.[0-9]){1}/.exec options.solr.cluster_config.version
-          if parseFloat(version) >= 7.0
-            options.download ?= '7'
-          else if parseFloat(version) >= 6.0
-            options.download ?= '6'
-          else if parseFloat(version) >= 5.0
-            options.download ?= '5'
-          else
-            throw Error 'Solr Version Not Supported'
-        # when 'cloud'
-        #   throw Error 'No Solr Cloud Server configured' unless service.deps.solr_cloud.length > 0
-        #     # options.solr_admin_user ?= 'solr'
-        #     # options.solr_admin_password ?= 'SolrRocks' #Default
-        #   options.solr.ssl = service.deps.solr_cloud[0].options.ssl
-        #   options.solr.cluster_config ?=
-        #     user: service.deps.solr_cloud[0].options.user
-        #     atlas_collection_dir: "#{options.user.home}/ranger-infra"
-        #     hosts: service.deps.solr_cloud.map (srv) -> srv.node.fqdn
-        #     zk_urls: service.deps.solr_cloud[0].options.zkhosts
-        #     zk_connect: service.deps.solr_cloud[0].options.zk_connect
-        #     master: service.deps.solr_cloud[0].node.fqdn
-        #     port: service.deps.solr_cloud[0].options.port
-        #     authentication: service.deps.hadoop_core.options.core_site['hadoop.security.authentication']
-        #     ssl_enabled: service.deps.solr_cloud[0].options.ssl.enabled
-        #   if service.deps.hadoop_core.options.core_site['hadoop.security.authentication'] is 'kerberos'
-        #     options.solr.cluster_config.admin_principal = service.deps.solr_cloud[0].options.admin_principal
-        #     options.solr.cluster_config.admin_password  = service.deps.solr_cloud[0].options.admin_password
-        #   urls = service.deps.solr_cloud[0].options.zk_connect.split(',').map( (host) -> "#{host}/#{service.deps.solr_cloud[0].options.zk_node}").join(',')
-        #   options.install['audit_solr_urls'] ?= options.solr.cluster_config.hosts.map( (host) ->
-        #       "#{if options.solr.cluster_config.ssl_enabled then 'https://' else 'http://'}#{host}:#{options.solr.cluster_config.port}")
-        #   options.install['audit_solr_zookeepers'] = 'NONE'
-          # break;
-
-## Solr Audit Database Bootstrap
-
-Create the `ranger_audits` collection('cloud')/core('standalone').
-
-      if options.install['audit_store'] is 'solr'
-        options.install['audit_solr_urls'] ?= solrs_urls
-        options.install['audit_solr_user'] ?= 'ranger'
-        options.install['audit_solr_password'] ?= 'ranger123'
-        options.site['ranger.audit.solr.zookeepers'] ?= options.install['audit_solr_zookeepers']
-        # options.install['audit_solr_zookeepers'] = 'NONE'
-
-When Basic authentication is used, the following property can be set to add 
-users to solr `cluster_config.ranger.solr_users`:
-  -  An object describing all the users used by the different plugins which will
-  write audit to solr.
-  - By default if no user are provided, Ryba configure only one user named ranger
-  to audit to solr.
-
-Example:
-
-```cson
-ranger.admin.cluster_config.ranger.solr_users =
-  name: 'my_plugin_user'
-  secret: 'my_plugin_password'
-```
-
-        options.solr_users ?= []
-        if options.solr_users.length is 0
-          options.solr_users.push {
-            name: "#{options.install['audit_solr_user']}"
-            secret:"#{options.install['audit_solr_password']}"
-          }
 
 ## Ranger Admin SSL & Credentials
 
@@ -448,6 +208,7 @@ Configures the Ranger WEBUi (policymanager) database. For now only mysql is supp
       options.site['ranger.jpa.jdbc.driver'] ?= options.db.java.driver
       options.site['ranger.jpa.jdbc.user'] ?= options.install['db_user']
       options.site['ranger.jpa.jdbc.password'] ?= options.install['db_password']
+      options.site['ranger.jpa.jdbc.database'] ?= options.install['db_name']
 
 
 
@@ -570,16 +331,35 @@ Ryba injects function to the different contexts.
       options.configurations['ranger-env']['ranger_solr_collection_name'] ?= "ranger_audits"
       options.configurations['ranger-env']['ranger_solr_shards'] ?= "1"
       options.configurations['ranger-env']['ranger_solr_replication_factor'] ?= "1"
-      switch options.solr_type
-        when 'embedded'
-          options.configurations['ranger-env']['is_solrCloud_enabled'] ?= "false"
-          options.site['ranger.audit.solr.urls'] ?= options.install['audit_solr_urls']
-          
-        else
-          options.configurations['ranger-env']['is_solrCloud_enabled'] ?= "true"
-          options.configurations['ranger-env']['is_external_solrCloud_enabled'] ?= "true"
-          options.configurations['ranger-env']['is_external_solrCloud_kerberos'] ?= 'true'
-          options.site['ranger.audit.solr.urls'] ?= options.install['audit_solr_urls']
+      if service.deps.ambari_infra?.length > 0
+        options.configurations['ranger-env']['is_solrCloud_enabled'] ?= "true"
+        # if options.solr_type in ['cloud','cloud_docker',  'external']
+          #Configuring in memory jaas property for ranger to sol
+        options.site['xasecure.audit.destination.solr.force.use.inmemory.jaas.config'] ?= 'true'
+        options.site['xasecure.audit.jaas.inmemory.loginModuleName'] ?= 'com.sun.security.auth.module.Krb5LoginModule'
+        options.site['xasecure.audit.jaas.inmemory.loginModuleControlFlag'] ?= 'required'
+        options.site['xasecure.audit.jaas.inmemory.Client.option.useKeyTab'] ?= 'true'
+        options.site['xasecure.audit.jaas.inmemory.Client.option.debug'] ?= 'true'
+        options.site['xasecure.audit.jaas.inmemory.Client.option.doNotPrompt'] ?= 'yes'
+        options.site['xasecure.audit.jaas.inmemory.Client.option.storeKey'] ?= 'yes'
+        options.site['xasecure.audit.jaas.inmemory.Client.option.serviceName'] ?= 'solr'
+        options.site['xasecure.audit.jaas.inmemory.Client.option.keyTab'] ?= options.install['admin_keytab']
+        options.site['xasecure.audit.jaas.inmemory.Client.option.principal'] ?= options.install['admin_principal']
+        throw Error 'Need Zookeeper service when using ambari infra for audit logs' unless service.deps.zookeeper?.length?
+        zookeeper_quorum = for srv in service.deps.zookeeper
+          continue unless srv.options.config['peerType'] is 'participant'
+          "#{srv.node.fqdn}:#{srv.options.config['clientPort']}"
+        options.site['ranger.audit.solr.zookeepers'] ?=  "#{zookeeper_quorum.join ','}/infra-solr"
+      else
+        switch options.solr_type
+          when 'embedded'
+            options.configurations['ranger-env']['is_solrCloud_enabled'] ?= "false"
+            options.site['ranger.audit.solr.urls'] ?= options.install['audit_solr_urls']
+          else
+            options.configurations['ranger-env']['is_solrCloud_enabled'] ?= "true"
+            # options.configurations['ranger-env']['is_external_solrCloud_enabled'] ?= "true"
+            options.configurations['ranger-env']['is_external_solrCloud_kerberos'] ?= 'true'
+            # options.site['ranger.audit.solr.urls'] ?= options.install['audit_solr_urls']
       options.configurations['ranger-env']['ranger-hdfs-plugin-enabled'] ?= 'No'#No
       options.configurations['ranger-env']['ranger-yarn-plugin-enabled'] ?= 'No'
       options.configurations['ranger-env']['ranger-hbase-plugin-enabled'] ?= 'No'
@@ -647,30 +427,9 @@ Ryba injects function to the different contexts.
       options.configurations['ranger-ugsync-site']['ranger.usersync.unix.minUserId'] ?=  "500"
       options.configurations['ranger-ugsync-site']['ranger.usersync.unix.password.file'] ?=  "/etc/passwd"
       options.configurations['ranger-ugsync-site']['ranger.usersync.user.searchenabled'] ?=  "false"
-
-      options.configurations['ranger-admin-site'] ?= merge {}, options.site, options.configurations['ranger-admin-site']
       
+      options.configurations['ranger-admin-site'] ?= merge {}, options.site, options.configurations['ranger-admin-site']
       options.configurations['admin-properties'] ?= merge {}, options.install, options.configurations['ranger-admin-properties']
-## Ambari
-
-      #ambari server configuration
-      options.post_component = service.instances[0].node.fqdn is service.node.fqdn
-      options.ambari_host = service.node.fqdn is service.deps.ambari_server.node.fqdn
-      options.ambari_url ?= service.deps.ambari_server.options.ambari_url
-      options.ambari_admin_password ?= service.deps.ambari_server.options.ambari_admin_password
-      options.cluster_name ?= service.deps.ambari_server.options.cluster_name
-      options.stack_name ?= service.deps.ambari_server.options.stack_name
-      options.takeover = service.deps.ambari_server.options.takeover
-      options.baremetal = service.deps.ambari_server.options.baremetal
-
-## Ambari Agent
-Register users to ambari agent's user list.
-
-      for srv in service.deps.ambari_agent
-        srv.options.users ?= {}
-        srv.options.users['ranger'] ?= options.user
-        srv.options.groups ?= {}
-        srv.options.groups['ranger'] ?= options.group
 
 ## Dependencies
 

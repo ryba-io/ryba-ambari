@@ -21,7 +21,7 @@ Start the Yarn NodeManager service. Using ambari REST API, the following is the
 CURL equivalent command
 
 ```
-curl 
+curl
 ```
 
       @ambari.hosts.component_start
@@ -31,4 +31,3 @@ curl
         cluster_name: options.cluster_name
         name: 'NODEMANAGER'
         hostname: options.fqdn
-

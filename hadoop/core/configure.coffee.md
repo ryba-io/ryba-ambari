@@ -4,6 +4,7 @@
     module.exports = (service) ->
       options = service.options
       options.fqdn ?= service.node.fqdn
+      options.configurations ?= {}
 
 ## Identities
 
@@ -15,7 +16,7 @@
 
 ## Validation
 
-HDFS does not accept underscore "_" inside the hostname or it fails on startup 
+HDFS does not accept underscore "_" inside the hostname or it fails on startup
 with the log message:
 
 ```
@@ -50,7 +51,7 @@ java.lang.IllegalArgumentException: Does not contain a valid host:port authority
       options.spnego ?= {}
       options.spnego.principal ?= "HTTP/#{service.node.fqdn}@#{options.krb5.realm}"
       options.spnego.keytab ?= '/etc/security/keytabs/spnego.service.keytab'
-      
+
 ## Configuration
 
       options.core_site ?= {}
@@ -90,8 +91,7 @@ java.lang.IllegalArgumentException: Does not contain a valid host:port authority
         for node in options.topology
           throw Error "Required Option: rack required in node #{node.id} because at least one rack is defined" unless node.rack
       options.rack_info = (options.topology.filter( (host) -> host.id is service.node.fqdn)[0])?.rack
-      service.deps.ambari_agent.options.rack_info = options.rack_info
-      
+
 Configuration for HTTP
 
       options.core_site['hadoop.http.filter.initializers'] ?= 'org.apache.hadoop.security.AuthenticationFilterInitializer'
@@ -111,11 +111,11 @@ Configuration for auth\_to\_local
 
 The local name will be formulated from exp.
 The format for exp is [n:string](regexp)s/pattern/replacement/g.
-The integer n indicates how many components the target principal should have. 
-If this matches, then a string will be formed from string, substituting the realm 
-of the principal for $0 and the n‘th component of the principal for $n. 
-If this string matches regexp, then the s//[g] substitution command will be run 
-over the string. The optional g will cause the substitution to be global over 
+The integer n indicates how many components the target principal should have.
+If this matches, then a string will be formed from string, substituting the realm
+of the principal for $0 and the n‘th component of the principal for $n.
+If this string matches regexp, then the s//[g] substitution command will be run
+over the string. The optional g will cause the substitution to be global over
 the string, instead of replacing only the first match in the string.
 The rule apply with priority order, so we write rules from the most specific to
 the most general:
@@ -129,24 +129,25 @@ There is 4 identified cases:
     It takes the first component of the principal as username.
 
 Notice that the third rule will disallow admin account on multiple clusters.
-the property must be overriden in a config file to permit it. 
+the property must be overriden in a config file to permit it.
 
-      esc_realm = quote options.krb5.realm
-      options.core_site['hadoop.security.auth_to_local'] ?= """
-
-            RULE:[2:$1@$0]([rn]m@#{esc_realm})s/.*/yarn/
-            RULE:[2:$1@$0](jhs@#{esc_realm})s/.*/mapred/
-            RULE:[2:$1@$0]([nd]n@#{esc_realm})s/.*/hdfs/
-            RULE:[2:$1@$0](hm@#{esc_realm})s/.*/hbase/
-            RULE:[2:$1@$0](rs@#{esc_realm})s/.*/hbase/
-            RULE:[2:$1@$0](opentsdb@#{esc_realm})s/.*/hbase/
-            DEFAULT
-            RULE:[1:$1](yarn|mapred|hdfs|hive|hbase|oozie)s/.*/nobody/
-            RULE:[2:$1](yarn|mapred|hdfs|hive|hbase|oozie)s/.*/nobody/
-            RULE:[1:$1]
-            RULE:[2:$1]
-
-      """
+      # esc_realm = quote options.krb5.realm
+      # options.core_site['hadoop.security.auth_to_local'] ?= """
+      # 
+      #       RULE:[2:$1@$0]([rn]m@#{esc_realm})s/.*/yarn/
+      #       RULE:[2:$1@$0](jhs@#{esc_realm})s/.*/mapred/
+      #       RULE:[2:$1@$0]([nd]n@#{esc_realm})s/.*/hdfs/
+      #       RULE:[2:$1@$0]([nd]n@#{esc_realm})s/.*/hdfs/
+      #       RULE:[2:$1@$0](hm@#{esc_realm})s/.*/hbase/
+      #       RULE:[2:$1@$0](rs@#{esc_realm})s/.*/hbase/
+      #       RULE:[2:$1@$0](opentsdb@#{esc_realm})s/.*/hbase/
+      #       DEFAULT
+      #       RULE:[1:$1](yarn|mapred|hdfs|hive|hbase|oozie)s/.*/nobody/
+      #       RULE:[2:$1](yarn|mapred|hdfs|hive|hbase|oozie)s/.*/nobody/
+      #       RULE:[1:$1]
+      #       RULE:[2:$1]
+      # 
+      # """
 
 
 Configuration for proxy users
@@ -154,21 +155,20 @@ Configuration for proxy users
       options.core_site['hadoop.proxyuser.HTTP.hosts'] ?= '*'
       options.core_site['hadoop.proxyuser.HTTP.groups'] ?= '*'
 
-
 # SSL
 
 Hortonworks mentions 2 strategies to [configure SSL][hdp_ssl], the first one
 involves Self-Signed Certificate while the second one use a Certificate
 Authority.
 
-For now, only the second approach has been tested and is supported. For this, 
+For now, only the second approach has been tested and is supported. For this,
 you are responsible for creating your own Private Key and Certificate Authority
-(see bellow instructions) and for declaring with the 
+(see bellow instructions) and for declaring with the
 "hdp.private\_key\_location" and "hdp.cacert\_location" property.
 
-It is also recommendate to configure the 
-"hdp.core\_site['ssl.server.truststore.password']" and 
-"hdp.core\_site['ssl.server.keystore.password']" passwords or an error will be 
+It is also recommendate to configure the
+"hdp.core\_site['ssl.server.truststore.password']" and
+"hdp.core\_site['ssl.server.keystore.password']" passwords or an error will be
 thrown.
 
 Here's how to generate your own Private Key and Certificate Authority:
@@ -212,7 +212,7 @@ keytool -list -v -keystore keystore -alias hadoop
 ### SSL Client
 
 The "ssl_client" options store information used to write the "ssl-client.xml"
-file in the Hadoop XML configuration format. Some information are derived the 
+file in the Hadoop XML configuration format. Some information are derived the
 the truststore options exported from the SSL service and merged above:
 
 ```json
@@ -223,18 +223,18 @@ the truststore options exported from the SSL service and merged above:
 
         options.ssl_client['ssl.client.truststore.password'] ?= options.ssl.truststore.password
         throw Error "Required Option: ssl_client['ssl.client.truststore.password']" unless options.ssl_client['ssl.client.truststore.password']
-        options.ssl_client['ssl.client.truststore.location'] ?= "#{options.conf_dir}/truststore"
+        options.ssl_client['ssl.client.truststore.location'] ?= "/etc/security/clientKeys/hadoop-truststore"
         options.ssl_client['ssl.client.truststore.type'] ?= 'jks'
         options.ssl_client['ssl.client.keystore.password'] ?= options.ssl.keystore.password
         throw Error "Required Option: ssl_client['ssl.client.keystore.password']" unless options.ssl_client['ssl.client.keystore.password']
-        options.ssl_client['ssl.client.keystore.location'] ?= "#{options.conf_dir}/keystore"
+        options.ssl_client['ssl.client.keystore.location'] ?= "/etc/security/clientKeys/hadoop-keystore"
         options.ssl_client['ssl.client.keystore.type'] ?= 'jks'
         options.ssl_client['ssl.client.truststore.reload.interval'] ?= '10000'
 
 ### SSL Server
 
 The "ssl_server" options store information used to write the "ssl-server.xml"
-file in the Hadoop XML configuration format. Some information are derived the 
+file in the Hadoop XML configuration format. Some information are derived the
 the keystore options exported from the SSL service and merged above:
 
 ```json
@@ -256,68 +256,6 @@ the keystore options exported from the SSL service and merged above:
         options.ssl_server['ssl.server.truststore.type'] ?= 'jks'
         options.ssl_server['ssl.server.truststore.reload.interval'] ?= '10000'
 
-## Metrics
-
-Configuration of Hadoop metrics system. 
-
-The File sink is activated by default. The Ganglia and Graphite sinks are
-automatically activated if the "ryba/retired/ganglia/collecto" and
-"ryba/graphite/collector" are respectively registered on one of the nodes of the
-cluster. You can disable any of those sinks by setting its class to false, here
-how:
-
-```json
-{ "ryba": { "metrics": 
-  "*.sink.file.class": false,
-  "*.sink.ganglia.class": false, 
-  "*.sink.graphite.class": false
- } }
-```
-
-Metric prefix can be defined globally with the usage of glob expression or per
-context. Here's an exemple:
-
-```json
-{ "metrics":
-    config:
-      "*.sink.*.metrics_prefix": "default",
-      "*.sink.file.metrics_prefix": "file_prefix", 
-      "namenode.sink.ganglia.metrics_prefix": "master_prefix",
-      "resourcemanager.sink.ganglia.metrics_prefix": "master_prefix"
-}
-```
-
-Syntax is "[prefix].[source|sink].[instance].[options]".  According to the
-source code, the list of supported prefixes is: "namenode", "resourcemanager",
-"datanode", "nodemanager", "maptask", "reducetask", "journalnode",
-"historyserver", "nimbus", "supervisor".
-
-      options.metrics = merge {}, service.deps.metrics?.options, options.metrics
-
-      # Hadoop metrics
-      options.metrics ?= {}
-      options.metrics.sinks ?= {}
-      options.metrics.sinks.file_enabled ?= true
-      options.metrics.sinks.ganglia_enabled ?= false
-      options.metrics.sinks.graphite_enabled ?= false
-      # default sampling period, in seconds
-      options.metrics.config ?= {}
-      options.metrics.config ?= {}
-      options.metrics.config['*.period'] ?= '60'
-      # File sink
-      if options.metrics.sinks.file_enabled
-        options.metrics.config["*.sink.file.#{k}"] ?= v for k, v of service.deps.metrics.options.sinks.file.config if service.deps.metrics?.options?.sinks?.file_enabled
-        options.metrics.config['nodemanager.sink.file.filename'] ?= 'nodemanager-metrics.out'
-        options.metrics.config['mrappmaster.sink.file.filename'] ?= 'mrappmaster-metrics.out'
-        options.metrics.config['jobhistoryserver.sink.file.filename'] ?= 'jobhistoryserver-metrics.out'
-      # Ganglia sink, accepted properties are "servers" and "supportsparse"
-      if options.metrics.sinks.ganglia_enabled
-        options.metrics.config["*.sink.ganglia.#{k}"] ?= v for k, v of options.sinks.ganglia.config if service.deps.metrics?.options?.sinks?.ganglia_enabled
-      # Graphite Sink
-      if options.metrics.sinks.graphite_enabled
-        throw Error 'Unvalid metrics sink, please provide ryba.metrics.sinks.graphite.config.server_host and server_port' unless options.metrics.sinks.graphite.config.server_host? and options.metrics.sinks.graphite.config.server_port?
-        options.metrics.config["*.sink.graphite.#{k}"] ?= v for k, v of service.deps.metrics.options.sinks.graphite.config if service.deps.metrics?.options?.sinks?.graphite_enabled
-
 ## Log4j
 
       options.log4j = merge {}, service.deps.log4j?.options, options.log4j
@@ -331,96 +269,9 @@ source code, the list of supported prefixes is: "namenode", "resourcemanager",
       options.core_site['ipc.client.idlethreshold'] ?= '8000'
       options.core_site['mapreduce.jobtracker.webinterface.trusted'] ?= 'false'
 
-
-## HDFS Configuration
-
-      enrich_config = (source, target) ->
-        for k, v of source
-          target[k] ?= v
-
-      for srv in [service.deps.hdfs...,service.deps.yarn...]
-        # Register Java Options
-        srv.options ?= {}
-        srv.options.hadoop_opts ?= options.hadoop_opts
-        srv.options.hadoop_classpath ?= options.hadoop_classpath
-        srv.options.hadoop_heap ?= options.hadoop_heap
-        srv.options.hadoop_client_opts ?= options.hadoop_client_opts
-        #topology
-        srv.options.topology ?= options.topology
-        # *-site.xml
-        srv.options.configurations ?= {}
-        srv.options.configurations['core-site'] ?= {}
-        srv.options.configurations['hdfs-site'] ?= {}
-        srv.options.configurations['yarn-site'] ?= {}
-        srv.options.configurations['mapred-site'] ?= {}
-        srv.options.configurations['ssl-server'] ?= {}
-        srv.options.configurations['ssl-client'] ?= {}
-        # enrich hdfs service
-        enrich_config options.core_site, srv.options.configurations['core-site']
-        enrich_config options.hdfs_site, srv.options.configurations['hdfs-site']
-        enrich_config options.yarn_site, srv.options.configurations['yarn-site']
-        enrich_config options.mapred_site, srv.options.configurations['mapred-site']
-        enrich_config options.ssl_server, srv.options.configurations['ssl-server']
-        enrich_config options.ssl_client, srv.options.configurations['ssl-client']
-
-## Env
-        # enrich hdfs hadoop-env service
-        srv.options.configurations['hadoop-env'] ?= {}
-        srv.options.configurations['hadoop-env']['HADOOP_ROOT_LOGGER'] ?= options.log4j.root_logger
-        srv.options.configurations['hadoop-env']['HADOOP_SECURITY_LOGGER'] ?= options.log4j.security_logger
-        srv.options.configurations['hadoop-env']['HDFS_AUDIT_LOGGER'] ?= options.log4j.audit_logger
-        srv.options.configurations['hadoop-env']['HADOOP_CLIENT_OPTS'] ?= options.hadoop_client_opts
-        srv.options.configurations['hadoop-env']['HADOOP_OPTS'] ?= options.hadoop_opts
-        srv.options.configurations['hadoop-env']['hadoop_root_logger'] ?= options.log4j.root_logger
-        srv.options.configurations['hadoop-env']['hadoop_root_logger'] ?= options.log4j.root_logger
-        # enrich hdfs yarn-env service
-        srv.options.configurations['yarn-env'] ?= {}
-        srv.options.configurations['yarn-env']['YARN_ROOT_LOGGER'] ?= options.log4j.root_logger
-        srv.options.configurations['yarn-env']['YARN_OPTS'] ?= options.java_opts
-      
-## Metrics Properties
-
-        srv.options.configurations['hadoop-metrics-properties'] ?= {}
-        enrich_config options.metrics.config, srv.options.configurations['hadoop-metrics-properties'] if service.deps.metrics?
-
-## Log4j Properties
-
-      srv.options.hdfs_log4j ?= {}
-      enrich_config options.log4j.properties, options.hdfs_log4j if service.deps.log4j?
-
-## Ambari Server
-
-      service.deps.ambari_server.options.identities ?= {}
-      service.deps.ambari_server.options.identities ?= {}
-      service.deps.ambari_server.options.identities['spnego'] ?= {}
-      service.deps.ambari_server.options.identities['spnego']['principal'] ?= {}
-      service.deps.ambari_server.options.identities['spnego']['principal']['configuration'] ?= ''
-      service.deps.ambari_server.options.identities['spnego']['principal']['type'] ?= 'service'
-      service.deps.ambari_server.options.identities['spnego']['principal']['local_username'] ?= null
-      service.deps.ambari_server.options.identities['spnego']['principal']['value'] ?= options.core_site['hadoop.http.authentication.kerberos.principal']
-      service.deps.ambari_server.options.identities['spnego']['name'] ?= 'spnego'
-      service.deps.ambari_server.options.identities['spnego']['keytab'] ?= {}
-      service.deps.ambari_server.options.identities['spnego']['keytab']['owner'] ?= {}
-      service.deps.ambari_server.options.identities['spnego']['keytab']['owner']['access'] ?= 'r' 
-      service.deps.ambari_server.options.identities['spnego']['keytab']['owner']['name'] ?= '${cluster-env/spnego}' 
-      service.deps.ambari_server.options.identities['spnego']['keytab']['group'] ?= {}
-      service.deps.ambari_server.options.identities['spnego']['keytab']['group']['access'] ?= 'r'
-      service.deps.ambari_server.options.identities['spnego']['keytab']['group']['name'] ?= '${cluster-env/user_group}'
-      service.deps.ambari_server.options.identities['spnego']['keytab']['file'] ?= options.core_site['hadoop.http.authentication.kerberos.keytab']
-      service.deps.ambari_server.options.identities['spnego']['keytab']['configuration'] ?= null
-
-## Ambari REST API
-
-      #ambari server configuration
-      options.post_component = service.instances[0].node.fqdn is service.node.fqdn
-      options.ambari_host = service.node.fqdn is service.deps.ambari_server.node.fqdn
-      options.ambari_url ?= service.deps.ambari_server.options.ambari_url
-      options.ambari_admin_password ?= service.deps.ambari_server.options.ambari_admin_password
-      options.cluster_name ?= service.deps.ambari_server.options.cluster_name
-      options.stack_name = service.deps.ambari_server.options.stack_name
-      options.stack_version = service.deps.ambari_server.options.stack_version
-      options.takeover = service.deps.ambari_server.options.takeover
-      options.baremetal = service.deps.ambari_server.options.baremetal
+        # srv.options.hosts ?= {}
+        # srv.options.hosts[service.node.fqdn] ?= {}
+        # srv.options.hosts[service.node.fqdn]['rack_info'] ?= options.rack_info
 
 ## Dependencies
 

@@ -4,8 +4,8 @@
 A [DataNode](http://wiki.apache.org/hadoop/DataNode) manages the storage attached
 to the node it run on. There are usually one DataNode per node in the cluster.
 HDFS exposes a file system namespace and allows user data to be stored in files.
-Internally, a file is split into one or more blocks and these blocks are stored 
-in a set of DataNodes. The DataNodes also perform block creation, deletion, and 
+Internally, a file is split into one or more blocks and these blocks are stored
+in a set of DataNodes. The DataNodes also perform block creation, deletion, and
 replication upon instruction from the NameNode.
 
 To provide a fast failover in a Higth Availabity (HA) enrironment, it is
@@ -26,26 +26,9 @@ information and heartbeats to both.
         metrics: module: 'ryba/metrics', local: true
         log4j: module: 'ryba/log4j', local: true
         hdfs: module: 'ryba-ambari-takeover/hadoop/hdfs', required: true
-        ambari_server: module: 'ryba-ambari-takeover/server', single: true, required: true
       configure:
         'ryba-ambari-takeover/hadoop/hdfs_dn/configure'
       commands:
-        'install': [
-          'ryba-ambari-takeover/hadoop/hdfs_dn/install'
-          'ryba-ambari-takeover/hadoop/hdfs_dn/start'
-          'ryba-ambari-takeover/hadoop/hdfs_dn/check'
-        ]
         'start': 'ryba-ambari-takeover/hadoop/hdfs_dn/start'
         'stop': 'ryba-ambari-takeover/hadoop/hdfs_dn/stop'
         'check': 'ryba-ambari-takeover/hadoop/hdfs_dn/check'
-        'takeover': [
-          'ryba-ambari-takeover/hadoop/hdfs_dn/wait'
-          'ryba-ambari-takeover/hadoop/hdfs_dn/install'
-          'ryba-ambari-takeover/hadoop/hdfs_dn/takeover'
-          'ryba-ambari-takeover/hadoop/hdfs_dn/start'
-          # 'ryba-ambari-takeover/hadoop/hdfs_dn/wait'
-          # 'ryba-ambari-takeover/hadoop/hdfs_dn/check'
-        ]
-        'deploy': [
-          'ryba-ambari-takeover/hadoop/hdfs_dn/install'
-        ]

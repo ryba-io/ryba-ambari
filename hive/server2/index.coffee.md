@@ -29,14 +29,11 @@ open API clients like JDBC and ODBC.
         hdfs: module: 'ryba-ambari-takeover/hadoop/hdfs', required: true
         hbase: module: 'ryba-ambari-takeover/hbase/service', required: true
         hive: module: 'ryba-ambari-takeover/hive/service', required: true
-        ambari_server: module: 'ryba-ambari-takeover/server', single: true, required: true
       configure:
         'ryba-ambari-takeover/hive/server2/configure'
       commands:
         'install': [
           'ryba-ambari-takeover/hive/server2/install'
-          'ryba-ambari-takeover/hive/server2/start'
-          'ryba-ambari-takeover/hive/server2/check'
         ]
         'start':
           'ryba-ambari-takeover/hive/server2/start'

@@ -13,7 +13,6 @@ format their data is stored — RCFile format, text files, SequenceFiles, or ORC
     module.exports =
       deps:
         db_admin: module: 'ryba/commons/db_admin', local: true, auto: true, implicit: true
-        ambari_server: module: 'ryba-ambari-takeover/server', single: true, required: true
         hive: module: 'ryba-ambari-takeover/hive/service', required: true
       configure:
         'ryba-ambari-takeover/hive/metastore/configure'

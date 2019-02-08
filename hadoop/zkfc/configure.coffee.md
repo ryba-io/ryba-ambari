@@ -7,7 +7,7 @@ mechanism to connect to zookeeper using kerberos.
 Optional, activate digest type access to zookeeper to manage the zkfc znode:
 
 ```json
-{ 
+{
   "digest": {
     "name": "zkfc",
     "password": "hdfs123"
@@ -17,12 +17,16 @@ Optional, activate digest type access to zookeeper to manage the zkfc znode:
 
     module.exports = (service) ->
       options = service.options
+      options.configurations ?= {}
 
 ## Identities
 
       options.group = merge {}, service.deps.hdfs[0].options.hdfs.group, options.group
       options.user = merge {}, service.deps.hdfs[0].options.hdfs.user, options.user
       options.hadoop_group = merge {}, service.deps.hdfs[0].options.hadoop_group, options.hadoop_group
+      options.configurations ?= {}
+      options.configurations['ssl-server'] ?= service.deps.hadoop_core.options.ssl_server
+      options.configurations['ssl-client'] ?= service.deps.hadoop_core.options.ssl_client
 
 ## Environment
 
@@ -31,6 +35,7 @@ Optional, activate digest type access to zookeeper to manage the zkfc znode:
       options.log_dir ?= service.deps.hdfs[0].options.hdfs.log_dir
       options.conf_dir ?= service.deps.hdfs[0].options.conf_dir
       options.nn_conf_dir ?= service.deps.hdfs_nn_local.options.conf_dir
+      options.zkfc = !!service.deps.hdfs_nn_local
       # Java
       options.java_home ?= service.deps.java.options.java_home
       options.hadoop_heap ?= service.deps.hadoop_core.options.hadoop_heap
@@ -64,8 +69,10 @@ Optional, activate digest type access to zookeeper to manage the zkfc znode:
       if options.core_site['hadoop.security.authentication'] is 'kerberos'
         options.opts.java_properties['java.security.auth.login.config'] ?= "#{options.jaas_file}"
       # Enrich "core-site.xml" with acl and auth
-      options.core_site['ha.zookeeper.acl'] ?= "@#{options.conf_dir}/zk-acl.txt"
-      options.core_site['ha.zookeeper.auth'] = "@#{options.conf_dir}/zk-auth.txt"
+      # options.core_site['ha.zookeeper.acl'] ?= "@#{options.conf_dir}/zk-acl.txt"
+      # options.core_site['ha.zookeeper.auth'] = "@#{options.conf_dir}/zk-auth.txt"
+      # options.core_site['ha.zookeeper.acl'] ?= "@/etc/security/zookeeper/zk-acl.txt"
+      # options.core_site['ha.zookeeper.auth'] = "@/etc/security/zookeeper/zk-auth.txt"
       # Enrich "hdfs-site.xml"
       options.hdfs_site ?= {}
       options.hdfs_site['dfs.ha.zkfc.port'] ?= '8019'
@@ -135,37 +142,10 @@ fencing method should be configured to not block failover.
       options.wait_hdfs_nn = service.deps.hdfs_nn_local.options.wait
 
 ## Hadoop Site Configuration
-Enrich `ryba-ambari-takeover/hadoop/hdfs` with zkfc properties.
-  
-      enrich_config = (source, target) ->
-        for k, v of source
-          target[k] ?= v
-      
-      for srv in service.deps.hdfs
-        srv.options.configurations ?= {}
-        srv.options.configurations['core-site'] ?= {}
-        srv.options.configurations['hdfs-site'] ?= {}
 
-        enrich_config options.core_site, srv.options.configurations['core-site']
-        enrich_config options.hdfs_site, srv.options.configurations['hdfs-site']
-        
-        ## system opts
-        enrich_config options.opts, srv.options.zkfc_opts
-        
-        #add hosts
-        srv.options.zkfc_hosts ?= []
-        srv.options.zkfc_hosts.push options.fqdn if srv.options.zkfc_hosts.indexOf(options.fqdn) is -1
-
-## Ambari
-
-      #ambari server configuration
-      options.post_component = service.instances[0].node.fqdn is service.node.fqdn
-      options.ambari_host = service.node.fqdn is service.deps.ambari_server.node.fqdn
-      options.ambari_url ?= service.deps.ambari_server.options.ambari_url
-      options.ambari_admin_password ?= service.deps.ambari_server.options.ambari_admin_password
-      options.cluster_name ?= service.deps.ambari_server.options.cluster_name
-      options.takeover = service.deps.ambari_server.options.takeover
-      options.baremetal = service.deps.ambari_server.options.baremetal
+      options.configurations ?= {}
+      options.configurations['core-site'] ?= {}
+      options.configurations['hdfs-site'] ?= {}
 
 ## Dependencies
 

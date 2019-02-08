@@ -205,14 +205,6 @@ hdfs_client configuration directory.
       #   srv.node.id is
       #  srv for srv in service.deps.hive_server2
 
-# ## Configuration for Hadoop
-# 
-#       options.hadoop_config ?= {}
-#       options.hadoop_config['mapreduce.jobtracker.kerberos.principal'] ?= "mapred/_HOST@#{options.krb5.realm}"
-#       options.hadoop_config['yarn.resourcemanager.principal'] ?= "yarn/_HOST@#{options.krb5.realm}"
-#       options.hadoop_config['dfs.namenode.kerberos.principal'] ?= "hdfs/_HOST@#{options.krb5.realm}"
-#       options.hadoop_config['mapreduce.framework.name'] ?= "yarn"
-
 ## Configuration for Log4J
 
       options.log4j = merge {}, service.deps.log4j?.options, options.log4j
@@ -253,83 +245,28 @@ the same database. It uses zookeeper for enabling HA.
       options.oozie_site['oozie.zookeeper.secure'] ?= 'true'
       options.oozie_site['oozie.service.ZKUUIDService.jobid.sequence.max'] ?= '99999999990'
 
-## Ambari REST API
-
-      #ambari server configuration
-      options.post_component = service.instances[0].node.fqdn is service.node.fqdn
-      options.ambari_host = service.node.fqdn is service.deps.ambari_server.node.fqdn
-      options.ambari_url ?= service.deps.ambari_server.options.ambari_url
-      options.ambari_admin_password ?= service.deps.ambari_server.options.ambari_admin_password
-      options.cluster_name ?= service.deps.ambari_server.options.cluster_name
-      options.stack_version ?= service.deps.ambari_server.options.stack_version
-      options.stack_name ?= service.deps.ambari_server.options.stack_name
-      options.takeover = service.deps.ambari_server.options.takeover
-      options.baremetal = service.deps.ambari_server.options.baremetal
-
-## Ambari Oozie Configuration
-Enrich `ryba-ambari-takeover/oozie/service` with master properties.
-  
-      enrich_config = (source, target) ->
-        for k, v of source
-          target[k] ?= v
-      
-      for srv in service.deps.oozie
-        srv.options.configurations ?= {}
-        srv.options.configurations['oozie-site'] ?= {}
-        srv.options.http_port ?= options.http_port
-        enrich_config options.oozie_site , srv.options.configurations['oozie-site']
-        #add hosts
-        srv.options.server_hosts ?= []
-        srv.options.server_hosts.push options.fqdn if srv.options.server_hosts.indexOf(options.fqdn) is -1
-
 ## Ambari Oozie System Options
       
-        # Env
-        srv.options.configurations['oozie-env'] ?= {}
-        # Ambari required
-        srv.options.configurations['oozie-env']['oozie_admin_port'] ?= options.admin_port
-        srv.options.configurations['oozie-env']['oozie_data_dir'] ?= options.data_dir
-        srv.options.configurations['oozie-env']['oozie_pid_dir'] ?= options.pid_dir
-        srv.options.configurations['oozie-env']['oozie_log_dir'] ?= options.log_dir
-        srv.options.configurations['oozie-env']['oozie_tmp_dir'] ?= options.tmp_dir
-        srv.options.configurations['oozie-env']['oozie_user'] ?= options.user.name
-        srv.options.configurations['oozie-env']['oozie_user_nofile_limit'] ?= options.user.limits.nofile
-        srv.options.configurations['oozie-env']['oozie_user_nproc_limit'] ?= options.user.limits.nproc
-        srv.options.configurations['oozie-env']['oozie_database'] ?= 'Existing MySQL / MariaDB Database'
-        srv.options.configurations['oozie-env']['oozie_heapsize'] ?= options.heapsize
-        srv.options.configurations['oozie-env']['oozie_permsize'] ?= options.newsize
-        # srv.options.configurations['oozie-env']['oozie_log_maxhistory'] ?= options.log_dir
-        # opts
-        #enrich_config options.opts , srv.options.master_opts
-
-## Kerberos Descriptor
-
-        srv.options.identities ?= {}
-        srv.options.identities['oozie'] ?= {}
-        srv.options.identities['oozie']['principal'] ?= {}
-        srv.options.identities['oozie']['principal']['configuration'] ?= 'oozie-site/oozie.service.HadoopAccessorService.kerberos.principal'
-        srv.options.identities['oozie']['principal']['type'] ?= 'user'
-        srv.options.identities['oozie']['principal']['local_username'] ?= options.user.name
-        srv.options.identities['oozie']['principal']['value'] ?= 'oozie/_HOST@${realm}'#options.spark.krb5_user.principal
-        srv.options.identities['oozie']['name'] ?= 'oozie_server'
-        srv.options.identities['oozie']['keytab'] ?= {}
-        srv.options.identities['oozie']['keytab']['owner'] ?= {}
-        srv.options.identities['oozie']['keytab']['owner']['access'] ?= 'r' 
-        srv.options.identities['oozie']['keytab']['owner']['name'] ?= options.user.name 
-        srv.options.identities['oozie']['keytab']['group'] ?= {}
-        srv.options.identities['oozie']['keytab']['group']['access'] ?= 'r'
-        srv.options.identities['oozie']['keytab']['group']['name'] ?= options.hadoop_group.name
-        srv.options.identities['oozie']['keytab']['file'] ?= options.oozie_site['oozie.service.HadoopAccessorService.keytab.file']
-        srv.options.identities['oozie']['keytab']['configuration'] ?= 'oozie-site/oozie.service.HadoopAccessorService.keytab.file'
+      options.configurations ?= {}
+      # Env
+      options.configurations['oozie-site'] ?= {}
+      options.configurations['oozie-env'] ?= {}
+      # Ambari required
+      options.configurations['oozie-env']['oozie_admin_port'] ?= options.admin_port
+      options.configurations['oozie-env']['oozie_data_dir'] ?= options.data_dir
+      options.configurations['oozie-env']['oozie_pid_dir'] ?= options.pid_dir
+      options.configurations['oozie-env']['oozie_log_dir'] ?= options.log_dir
+      options.configurations['oozie-env']['oozie_tmp_dir'] ?= options.tmp_dir
+      options.configurations['oozie-env']['oozie_user'] ?= options.user.name
+      options.configurations['oozie-env']['oozie_user_nofile_limit'] ?= options.user.limits.nofile
+      options.configurations['oozie-env']['oozie_user_nproc_limit'] ?= options.user.limits.nproc
+      options.configurations['oozie-env']['oozie_database'] ?= 'Existing MySQL / MariaDB Database'
+      options.configurations['oozie-env']['oozie_heapsize'] ?= options.heapsize
+      options.configurations['oozie-env']['oozie_permsize'] ?= options.newsize
 
 ## system Options
 
-        srv.options.hadoop_lib_home ?= options.hadoop_lib_home
-
-# ## Ambari Oozie Log4j Properties
-# 
-#         srv.options.hbase_log4j ?= {}
-#         enrich_config options.log4j.properties, options.hbase_log4j if service.deps.metrics?
+      options.hadoop_lib_home ?= options.hadoop_lib_home
 
 ## Wait
 

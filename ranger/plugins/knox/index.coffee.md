@@ -9,15 +9,5 @@
         knox_server: module: 'ryba-ambari-takeover/knox/server', local: true
         knox: module: 'ryba-ambari-takeover/knox/service'
         ranger_admin: module: 'ryba-ambari-takeover/ranger/hdpadmin', single: true, required: true
-        ambari_server: module: 'ryba/ambari/server', required: true, single: true
       configure:
         'ryba-ambari-takeover/ranger/plugins/knox/configure'
-      plugin: ({options}) ->
-        @before
-          action: ['ambari', 'hosts', 'component_start']
-          name: 'KNOX_GATEWAY'
-        , ->
-          @call 'ryba-ambari-takeover/ranger/plugins/knox/install', options
-      commands:
-        install:
-          'ryba-ambari-takeover/ranger/plugins/knox/install'

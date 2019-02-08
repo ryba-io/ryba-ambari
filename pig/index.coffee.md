@@ -19,14 +19,8 @@ which in turns enables them to handle very large data sets.
         mapred_client: module: 'ryba-ambari-takeover/hadoop/mapred_client', local: true, auto: true, implicit: true
         hive_client: module: 'ryba-ambari-takeover/hive/client', local: true, required: true # In case pig is run through hcat
         ranger_admin: module: 'ryba-ambari-takeover/ranger/admin'
-        ambari_server: module: 'ryba-ambari-takeover/server', single: true, required: true
-        ambari_agent: module: 'ryba-ambari-takeover/agent'
       configure:
         'ryba-ambari-takeover/pig/configure'
       commands:
         'check':
           'ryba-ambari-takeover/pig/check'
-        'install': [
-          'ryba-ambari-takeover/pig/install'
-          'ryba-ambari-takeover/pig/check'
-        ]

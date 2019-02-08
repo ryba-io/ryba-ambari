@@ -22,7 +22,6 @@ The output list can then be saved to the distributed filesystem, and the reducer
         mapred_jhs: module: 'ryba-ambari-takeover/hadoop/mapred_jhs', single: true
         yarn: module: 'ryba-ambari-takeover/hadoop/yarn', required: true
         mapreduce: module: 'ryba-ambari-takeover/hadoop/mapreduce', required: true
-        ambari_server: module: 'ryba-ambari-takeover/server', single: true, required: true
       configure:
         'ryba-ambari-takeover/hadoop/mapred_client/configure'
       commands:
@@ -34,6 +33,5 @@ The output list can then be saved to the distributed filesystem, and the reducer
         ]
         'install': [
           'ryba-ambari-takeover/hadoop/mapred_client/install'
-          'ryba-ambari-takeover/hadoop/mapred_client/check'
         ]
         'deploy': 'ryba-ambari-takeover/hadoop/mapred_client/install'

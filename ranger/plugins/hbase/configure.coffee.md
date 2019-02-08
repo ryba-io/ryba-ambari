@@ -64,13 +64,13 @@
 ## Ranger Coprocessor
 
       # Master Hbase site
-      for srv in service.deps.hbase
+      for srv in service.deps.hbase_master
         for prop in ['hbase.coprocessor.master.classes','hbase.coprocessor.region.classes'] 
-          srv.options.configurations['hbase-site'][prop] = srv.options.configurations['hbase-site'][prop].split(',') unless Array.isArray  srv.options.configurations['hbase-site'][prop]
-          index = srv.options.configurations['hbase-site'][prop].indexOf('org.apache.hadoop.hbase.security.access.AccessController')
+          srv.options.hbase_site[prop] = srv.options.hbase_site[prop].split(',') unless Array.isArray  srv.options.hbase_site[prop]
+          index = srv.options.hbase_site[prop].indexOf('org.apache.hadoop.hbase.security.access.AccessController')
           if index >= 0
-            srv.options.configurations['hbase-site'][prop].splice(index, 1)
-          srv.options.configurations['hbase-site'][prop].push 'org.apache.ranger.authorization.hbase.RangerAuthorizationCoprocessor' unless 'org.apache.ranger.authorization.hbase.RangerAuthorizationCoprocessor' in   srv.options.configurations['hbase-site'][prop]
+            srv.options.hbase_site[prop].splice(index, 1)
+          srv.options.hbase_site[prop].push 'org.apache.ranger.authorization.hbase.RangerAuthorizationCoprocessor' unless 'org.apache.ranger.authorization.hbase.RangerAuthorizationCoprocessor' in   srv.options.hbase_site[prop]
 
 ## HBase regionserver env
 
@@ -240,16 +240,6 @@ configure `policy-mgr-ssl` ambari configuration to make the plugin communicate o
         options.configurations['ranger-hbase-audit']['xasecure.audit.jaas.inmemory.Client.option.keyTab'] ?= service.deps.hbase_master[0].options.hbase_site['hbase.master.kerberos.keytab']
         options.configurations['ranger-hbase-audit']['xasecure.audit.jaas.inmemory.Client.option.principal'] ?= service.deps.hbase_master[0].options.hbase_site['hbase.master.kerberos.principal']
         options.configurations['ranger-hbase-audit']['xasecure.audit.provider.summary.enabled'] ?= 'true'
-
-## Ambari
-
-        #ambari server configuration
-        options.post_component = service.instances[0].node.fqdn is service.node.fqdn
-        options.ambari_host = service.node.fqdn is service.deps.ambari_server.node.fqdn
-        options.ambari_url ?= service.deps.ambari_server.options.ambari_url
-        options.ambari_admin_password ?= service.deps.ambari_server.options.ambari_admin_password
-        options.cluster_name ?= service.deps.ambari_server.options.cluster_name
-        options.takeover = service.deps.ambari_server.options.takeover
 
 ## Enable Plugin in Ranger Admin
 

@@ -19,8 +19,6 @@ built atop Apache Hadoop YARN.
         yarn_rm: module: 'ryba-ambari-takeover/hadoop/yarn_rm', required: true
         # yarn_ts: module: 'ryba-ambari-takeover/hadoop/yarn_ts', required: true #tez-ui
         yarn_client: module: 'ryba-ambari-takeover/hadoop/yarn_client', local: true, auto: true, implicit: true
-        ambari_server: module: 'ryba-ambari-takeover/server', required: true, single: true
-        ambari_agent: module: 'ryba-ambari-takeover/agent'
       configure:
         'ryba-ambari-takeover/tez/configure'
       commands:

@@ -18,57 +18,13 @@ failover and Oozie must target the active node.
       @registry.register ['ambari', 'hosts', 'component_install'], "ryba-ambari-actions/lib/hosts/component_install"
       @registry.register ['ambari', 'hosts', 'component_wait'], "ryba-ambari-actions/lib/hosts/component_wait"
 
-## IPTables
+# ## IPTables
 
-| Service | Port  | Proto | Info                      |
-|---------|-------|-------|---------------------------|
-| oozie   | 11443 | http  | Oozie HTTP secure server  |
-| oozie   | 11001 | http  | Oozie Admin server        |
-
-IPTables rules are only inserted if the parameter "iptables.action" is set to
-"start" (default value).
-
-      @tools.iptables
-        header: 'IPTables'
-        rules: [
-          { chain: 'INPUT', jump: 'ACCEPT', dport: url.parse(options.oozie_site['oozie.base.url']).port, protocol: 'tcp', state: 'NEW', comment: "Oozie HTTP Server" }
-          { chain: 'INPUT', jump: 'ACCEPT', dport: options.admin_port, protocol: 'tcp', state: 'NEW', comment: "Oozie HTTP Server" }
-        ]
-        if: options.iptables
-
-      @call header: 'Packages', ->
-        # Upgrading oozie failed, tested versions are hdp 2.1.2 -> 2.1.5 -> 2.1.7
-        # @system.execute
-        #   cmd: "rm -rf /usr/lib/oozie && yum remove -y oozie oozie-client"
-        #   if: opt.retry > 0
-        # @service
-        #   name: 'unzip' # Required by the "prepare-war" command
-        # @service
-        #   name: 'zip' # Required by the "prepare-war" command
-        # @service
-        #   name: 'extjs-2.2-1'
-        # @call if: options.has_falcon, ->
-        #   @service
-        #     name: 'falcon'
-        #   @hdp_select
-        #     name: 'falcon-client'
-        @service
-          name: 'oozie' # Also install oozie-client and bigtop-tomcat
-        @hdp_select
-          name: 'oozie-server'
-        @hdp_select
-          name: 'oozie-client'
         @call if: options.db.engine is 'mysql', ->
           @service
             name: 'mysql'
           @service
             name: 'mysql-connector-java'
-        @system.tmpfs
-          if_os: name: ['redhat','centos'], version: '7'
-          mount: options.pid_dir
-          uid: options.user.name
-          gid: options.hadoop_group.name
-          perm: '0750'
 
       # @call header: 'Layout Directories', ->
       #   @system.mkdir
@@ -290,29 +246,6 @@ Copy or symlink the MySQL JDBC driver JAR into the /var/lib/oozie/ directory fol
       #     mode: 0o0755
       #     backup: true
 
-      @call header: 'SSL Server', ->
-        @java.keystore_add
-          header: 'SSL'
-          keystore: options.ssl.keystore.target
-          storepass: options.ssl.keystore.password
-          key: options.ssl.key.source
-          cert: options.ssl.cert.source
-          keypass: options.ssl.keystore.password
-          name: options.ssl.key.name
-          local: options.ssl.key.local
-        @java.keystore_add
-          keystore: options.ssl.keystore.target
-          storepass: options.ssl.keystore.password
-          caname: 'hadoop_root_ca'
-          cacert: options.ssl.cacert.source
-          local: options.ssl.cacert.local
-        # fix oozie pkix build exceptionm when oozie server connects to hadoop mr
-        @java.keystore_add
-          keystore: options.ssl.truststore.target
-          storepass: options.ssl.truststore.password
-          caname: 'hadoop_root_ca'
-          cacert: options.ssl.cacert.source
-          local: options.ssl.cacert.local
 
 # ## Falcon Support
 # 
@@ -435,32 +368,32 @@ principal.
       #      cmd: "su -l #{options.user.name} -c '/usr/hdp/current/oozie-server/bin/ooziedb.sh upgrade -run'"
       #      unless_exec: "[[ `#{version_local}` == `#{version_remote}` ]]"
       # 
-      @call header: 'War', ->
-        @system.execute
-          header: 'Stop before WAR'
-          cmd: """
-          if [ ! -f #{options.pid_dir}/oozie.pid ]; then exit 3; fi
-          if ! kill -0 >/dev/null 2>&1 `cat #{options.pid_dir}/oozie.pid`; then exit 3; fi
-          su -l #{options.user.name} -c "/usr/hdp/current/oozie-server/bin/oozied.sh stop 20 -force"
-          rm -rf cat #{options.pid_dir}/oozie.pid
-          """
-          code_skipped: 3
-        # The script `ooziedb.sh` must be done as the oozie Unix user, otherwise
-        # Oozie may fail to start or work properly because of incorrect file permissions.
-        # There is already a "oozie.war" file inside /var/lib/oozie/oozie-server/webapps/.
-        # The "prepare-war" command generate the file "/var/lib/oozie/oozie-server/webapps/oozie.war".
-        # The directory being served by the web server is "prepare-war".
-        # See note 20 lines above about "-d" option
-        # falcon_opts = if falcon_ctxs.length then " –d /tmp/falcon-oozie-jars" else ''
-        secure_opt = if options.ssl.enabled then '-secure' else ''
-        falcon_opts = ''
-        @system.execute
-          header: 'Prepare WAR'
-          cmd: """
-          chown #{options.user.name} /usr/hdp/current/oozie-server/oozie-server/conf/server.xml
-          su -l #{options.user.name} -c 'cd /usr/hdp/current/oozie-server; ./bin/oozie-setup.sh prepare-war #{secure_opt} #{falcon_opts}'
-          """
-          code_skipped: 255 # Oozie already started, war is expected to be installed
+      # @call header: 'War', ->
+      #   @system.execute
+      #     header: 'Stop before WAR'
+      #     cmd: """
+      #     if [ ! -f #{options.pid_dir}/oozie.pid ]; then exit 3; fi
+      #     if ! kill -0 >/dev/null 2>&1 `cat #{options.pid_dir}/oozie.pid`; then exit 3; fi
+      #     su -l #{options.user.name} -c "/usr/hdp/current/oozie-server/bin/oozied.sh stop 20 -force"
+      #     rm -rf cat #{options.pid_dir}/oozie.pid
+      #     """
+      #     code_skipped: 3
+      #   # The script `ooziedb.sh` must be done as the oozie Unix user, otherwise
+      #   # Oozie may fail to start or work properly because of incorrect file permissions.
+      #   # There is already a "oozie.war" file inside /var/lib/oozie/oozie-server/webapps/.
+      #   # The "prepare-war" command generate the file "/var/lib/oozie/oozie-server/webapps/oozie.war".
+      #   # The directory being served by the web server is "prepare-war".
+      #   # See note 20 lines above about "-d" option
+      #   # falcon_opts = if falcon_ctxs.length then " –d /tmp/falcon-oozie-jars" else ''
+      #   secure_opt = if options.ssl.enabled then '-secure' else ''
+      #   falcon_opts = ''
+      #   @system.execute
+      #     header: 'Prepare WAR'
+      #     cmd: """
+      #     chown #{options.user.name} /usr/hdp/current/oozie-server/oozie-server/conf/server.xml
+      #     su -l #{options.user.name} -c 'cd /usr/hdp/current/oozie-server; ./bin/oozie-setup.sh prepare-war #{secure_opt} #{falcon_opts}'
+      #     """
+      #     code_skipped: 255 # Oozie already started, war is expected to be installed
 
 ## Dependencies
 

@@ -54,23 +54,6 @@
       throw Error 'Required Options: "password"' unless options.krb5.password
       options.krb5.admin ?= service.deps.krb5_client.options.admin[options.krb5.realm]
       #artifact id
-      options.identities ?= {}
-      options.identities['spark'] ?= {}
-      options.identities['spark']['principal'] ?= {}
-      options.identities['spark']['principal']['configuration'] ?= 'spark-defaults/spark.history.kerberos.principal'
-      options.identities['spark']['principal']['type'] ?= 'user'
-      options.identities['spark']['principal']['local_username'] ?= options.user.name
-      options.identities['spark']['principal']['value'] ?= options.krb5.principal#options.spark.krb5_user.principal
-      options.identities['spark']['name'] ?= 'sparkuser'
-      options.identities['spark']['keytab'] ?= {}
-      options.identities['spark']['keytab']['owner'] ?= {}
-      options.identities['spark']['keytab']['owner']['access'] ?= 'r' 
-      options.identities['spark']['keytab']['owner']['name'] ?= options.user.name 
-      options.identities['spark']['keytab']['group'] ?= {}
-      options.identities['spark']['keytab']['group']['access'] ?= 'r'
-      options.identities['spark']['keytab']['group']['name'] ?= options.hadoop_group.name
-      options.identities['spark']['keytab']['file'] ?= options.krb5.keytab
-      options.identities['spark']['keytab']['configuration'] ?= 'spark-defaults/spark.history.kerberos.keytab'
 
 ## SSL
 
@@ -92,29 +75,6 @@ I have no time to test it.
       # options.conf['spark.ssl.protocol'] ?= "SSLv3"
       # options.conf['spark.ssl.trustStore'] ?= "#{options.conf_dir}/truststore"
       # options.conf['spark.ssl.trustStorePassword'] ?= service.deps.ssl.options.truststore.password
-
-## Ambari REST API
-
-      #ambari server configuration
-      options.post_component = service.instances[0].node.fqdn is service.node.fqdn
-      options.ambari_host = service.node.fqdn is service.deps.ambari_server.node.fqdn
-      options.ambari_url ?= service.deps.ambari_server.options.ambari_url
-      options.ambari_admin_password ?= service.deps.ambari_server.options.ambari_admin_password
-      options.cluster_name ?= service.deps.ambari_server.options.cluster_name
-      options.stack_name = service.deps.ambari_server.options.stack_name
-      options.stack_version = service.deps.ambari_server.options.stack_version
-      options.takeover = service.deps.ambari_server.options.takeover
-      options.baremetal = service.deps.ambari_server.options.baremetal
-
-## Ambari Agent
-Register users to ambari agent's user list.
-
-      for srv in service.deps.ambari_agent
-        srv.options.users ?= {}
-        srv.options.users['spark'] ?= options.user
-        srv.options.groups ?= {}
-        srv.options.groups['spark'] ?= options.group
-
 ## Dependencies
 
     {merge} = require 'nikita/lib/misc'

@@ -3,6 +3,7 @@
 
     module.exports = (service) ->
       options = service.options
+      options.configurations ?= {}
 
 ## Identities
 
@@ -34,7 +35,7 @@
       options.hadoop_heap ?= service.deps.hadoop_core.options.hadoop_heap
       options.hadoop_opts ?= service.deps.hadoop_core.options.hadoop_opts
       options.hadoop_client_opts ?= service.deps.hadoop_core.options.hadoop_client_opts
-      options.heapsize ?= '900'
+      options.heapsize ?= '1024'
       # Misc
       options.iptables ?= service.deps.iptables and service.deps.iptables.options.action is 'start'
       options.hdfs_krb5_user = service.deps.hadoop_core.options.hdfs.krb5_user
@@ -55,9 +56,9 @@
       # Fix: src in "[DFSConfigKeys.java][keys]" and [HDP port list] mention 13562 while companion files mentions 8081
 
 Note: As of version "2.4.0", the property "mapreduce.jobhistory.http.policy"
-isn't honored. Instead, the property "yarn.http.policy" is used. It is exported 
+isn't honored. Instead, the property "yarn.http.policy" is used. It is exported
 from the yarn_rm.
-      
+
       # options.yarn_site['yarn.http.policy'] ?= service.deps.yarn_rm.options.yarn_site['yarn.http.policy']
       options.mapred_site['mapreduce.jobhistory.http.policy'] ?= 'HTTPS_ONLY'
       options.mapred_site['mapreduce.shuffle.port'] ?= '13562'
@@ -72,7 +73,7 @@ from the yarn_rm.
 ## Configuration for Staging Directories
 
 The property "yarn.app.mapreduce.am.staging-dir" is an alternative to "done-dir"
-and "intermediate-done-dir". According to Cloudera: Configure 
+and "intermediate-done-dir". According to Cloudera: Configure
 mapreduce.jobhistory.intermediate-done-dir and mapreduce.jobhistory.done-dir in
 mapred-site.xml. Create these two directories. Set permissions on
 mapreduce.jobhistory.intermediate-done-dir to 1777. Set permissions on
@@ -99,7 +100,7 @@ drwxrwxrwt   - mapred hadoop          0 2015-08-04 23:21 /user/history/done_inte
 
 The following properties provides persistent state to the Job history server.
 They are referenced by [the druid hadoop configuration][druid] and
-[the Ambari 2.3 stack][amb-mr-site]. Job Recovery is activated by default.   
+[the Ambari 2.3 stack][amb-mr-site]. Job Recovery is activated by default.
 
       options.mapred_site['mapreduce.jobhistory.recovery.enable'] ?= 'true'
       options.mapred_site['mapreduce.jobhistory.recovery.store.class'] ?= 'org.apache.hadoop.mapreduce.v2.hs.HistoryServerLeveldbStateStoreService'
@@ -114,46 +115,6 @@ They are referenced by [the druid hadoop configuration][druid] and
       options.ssl_client = merge {}, service.deps.hadoop_core.options.ssl_client, options.ssl_client or {},
         'ssl.client.truststore.location': "#{options.conf_dir}/truststore"
 
-## Metrics
-
-      options.metrics = merge {}, service.deps.hadoop_core.options.metrics, options.metrics
-      options.metrics.config ?= {}
-      if options.metrics.sinks.file_enabled
-        options.metrics.config["*.sink.file.#{k}"] ?= v for k, v of options.metrics.sinks.file
-      if options.metrics.sinks.graphite_enabled
-        throw Error 'Unvalid metrics sink, please provide ryba.metrics.sinks.graphite.config.server_host and server_port' unless options.metrics.sinks.graphite.config.server_host? and options.metrics.sinks.graphite.config.server_port?
-        options.metrics.config["*.sink.graphite.#{k}"] ?= v for k, v of options.metrics.sinks.graphite.config
-        options.metrics.config["historyserver.sink.graphite.class"] ?= options.metrics.sinks.graphite.class
-        options.metrics.config["mrappmaster.sink.graphite.class"] ?= options.metrics.sinks.graphite.class
-
-## Metrics
-
-      options.metrics = merge {}, service.deps.metrics?.options, options.metrics
-
-      options.metrics.config ?= {}
-      options.metrics.sinks ?= {}
-      options.metrics.sinks.file_enabled ?= true
-      options.metrics.sinks.ganglia_enabled ?= false
-      options.metrics.sinks.graphite_enabled ?= false
-      # File sink
-      if options.metrics.sinks.file_enabled
-        options.metrics.config["*.sink.file.#{k}"] ?= v for k, v of service.deps.metrics.options.sinks.file.config if service.deps.metrics?.options?.sinks?.file_enabled
-        options.metrics.config['mrappmaster.sink.file.class'] ?= 'org.apache.hadoop.metrics2.sink.FileSink'
-        options.metrics.config['jobhistoryserver.sink.file.class'] ?= 'org.apache.hadoop.metrics2.sink.FileSink'
-        options.metrics.config['mrappmaster.sink.file.filename'] ?= 'mrappmaster-metrics.out'
-        options.metrics.config['jobhistoryserver.sink.file.filename'] ?= 'jobhistoryserver-metrics.out'
-      # Ganglia sink, accepted properties are "servers" and "supportsparse"
-      if options.metrics.sinks.ganglia_enabled
-        options.metrics.config["mrappmaster.sink.ganglia.class"] ?= 'org.apache.hadoop.metrics2.sink.ganglia.GangliaSink31'
-        options.metrics.config["jobhistoryserver.sink.ganglia.class"] ?= 'org.apache.hadoop.metrics2.sink.ganglia.GangliaSink31'
-        options.metrics.config["*.sink.ganglia.#{k}"] ?= v for k, v of options.sinks.ganglia.config if service.deps.metrics?.options?.sinks?.ganglia_enabled
-      # Graphite Sink
-      if options.metrics.sinks.graphite_enabled
-        throw Error 'Missing remote_host ryba.mapred_jhs.metrics.sinks.graphite.config.server_host' unless options.metrics.sinks.graphite.config.server_host?
-        throw Error 'Missing remote_port ryba.mapred_jhs.metrics.sinks.graphite.config.server_port' unless options.metrics.sinks.graphite.config.server_port?
-        options.metrics.config["mrappmaster.sink.graphite.class"] ?= 'org.apache.hadoop.metrics2.sink.GraphiteSink'
-        options.metrics.config["jobhistoryserver.sink.graphite.class"] ?= 'org.apache.hadoop.metrics2.sink.GraphiteSink'
-        options.metrics.config["*.sink.graphite.#{k}"] ?= v for k, v of service.deps.metrics.options.sinks.graphite.config if service.deps.metrics?.options?.sinks?.graphite_enabled
 
 ## Wait
 
@@ -171,37 +132,6 @@ They are referenced by [the druid hadoop configuration][druid] and
         srv.options.mapred_site['mapreduce.jobhistory.webapp.https.address'] ?= "#{srv.node.fqdn}:19889"
         [fqdn, port] = srv.options.mapred_site["mapreduce.jobhistory.webapp.#{protocol}address"].split ':'
         host: fqdn, port: port
-
-## HDFS Configuration
-
-      enrich_config = (source, target) ->
-        for k, v of source
-          target[k] ?= v
-
-      for srv in service.deps.yarn
-        srv.options ?= {}
-        srv.options.configurations ?= {}
-        srv.options.configurations['mapred-site'] ?= {}
-        enrich_config options.mapred_site, srv.options.configurations['mapred-site']
-      for srv in service.deps.mapreduce
-        srv.options ?= {}
-        srv.options.configurations ?= {}
-        srv.options.configurations['mapred-site'] ?= {}
-        enrich_config options.mapred_site, srv.options.configurations['mapred-site']
-        #add hosts
-        srv.options.mapred_jhs_hosts ?= []
-        srv.options.mapred_jhs_hosts.push options.fqdn if srv.options.mapred_jhs_hosts.indexOf(options.fqdn) is -1
-
-## Ambari
-
-      #ambari server configuration
-      options.post_component = service.instances[0].node.fqdn is service.node.fqdn
-      options.ambari_host = service.node.fqdn is service.deps.ambari_server.node.fqdn
-      options.ambari_url ?= service.deps.ambari_server.options.ambari_url
-      options.ambari_admin_password ?= service.deps.ambari_server.options.ambari_admin_password
-      options.cluster_name ?= service.deps.ambari_server.options.cluster_name
-      options.takeover = service.deps.ambari_server.options.takeover
-      options.baremetal = service.deps.ambari_server.options.baremetal
 
 ## Dependencies
 

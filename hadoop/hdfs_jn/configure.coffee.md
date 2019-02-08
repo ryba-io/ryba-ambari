@@ -4,7 +4,7 @@
 The JournalNode uses properties define inside the "ryba-ambari-takeover/hadoop/hdfs" module. It
 also declare a new property "dfs.journalnode.edits.dir".
 
-*   `hdp.hdfs.site['dfs.journalnode.edits.dir']` (string)   
+*   `hdp.hdfs.site['dfs.journalnode.edits.dir']` (string)
     The directory where the JournalNode will write transaction logs, default
     to "/var/run/hadoop-hdfs/journalnode\_edit\_dir"
 
@@ -20,6 +20,7 @@ Example:
 
     module.exports = (service) ->
       options = service.options
+      options.configurations ?= {}
 
 ## Identities
 
@@ -81,37 +82,37 @@ Example:
       throw Error 'Required Options: "realm"' unless options.krb5.realm
       options.krb5.admin ?= service.deps.krb5_client.options.admin[options.krb5.realm]
       #takeover config
-      options.hdfs_site['dfs.journalnode.kerberos.internal.spnego.principal'] = "HTTP/_HOST@#{options.krb5.realm }"
-      options.hdfs_site['dfs.journalnode.kerberos.principal'] = "HTTP/_HOST@#{options.krb5.realm }"
-      options.hdfs_site['dfs.journalnode.keytab.file'] = '/etc/security/keytabs/spnego.service.keytab'
+      # options.hdfs_site['dfs.journalnode.kerberos.internal.spnego.principal'] = "HTTP/_HOST@#{options.krb5.realm }"
+      # options.hdfs_site['dfs.journalnode.kerberos.principal'] = "HTTP/_HOST@#{options.krb5.realm }"
+      # options.hdfs_site['dfs.journalnode.keytab.file'] = '/etc/security/keytabs/spnego.service.keytab'
       ## start should be config
       # options.hdfs_site['dfs.journalnode.kerberos.internal.spnego.principal'] = "HTTP/_HOST@#{options.krb5.realm }"
       # options.hdfs_site['dfs.journalnode.kerberos.principal'] = "jn/_HOST@#{options.krb5.realm }"
       # options.hdfs_site['dfs.journalnode.keytab.file'] = '/etc/security/keytabs/jn.service.keytab'
       # end should be config
-      
-      # options.opts.java_properties['java.security.auth.login.config'] ?= "#{options.conf_dir}/hdfs_jn_jaas.conf"
-      
-## Ambari Kerberos Principal and Keytab
 
-      for srv in service.deps.hdfs
-        srv.options.identities ?= {}
-        srv.options.identities['journalnode_jn'] ?= {}
-        srv.options.identities['journalnode_jn']['principal'] ?= {}
-        srv.options.identities['journalnode_jn']['principal']['configuration'] ?= 'hdfs-site/dfs.journalnode.kerberos.principal'
-        srv.options.identities['journalnode_jn']['principal']['type'] ?= 'service'
-        srv.options.identities['journalnode_jn']['principal']['local_username'] ?= options.user.name
-        srv.options.identities['journalnode_jn']['principal']['value'] ?= options.hdfs_site['dfs.journalnode.kerberos.principal'] 
-        srv.options.identities['journalnode_jn']['name'] ?= 'journalnode_jn'
-        srv.options.identities['journalnode_jn']['keytab'] ?= {}
-        srv.options.identities['journalnode_jn']['keytab']['owner'] ?= {}
-        srv.options.identities['journalnode_jn']['keytab']['owner']['access'] ?= 'r' 
-        srv.options.identities['journalnode_jn']['keytab']['owner']['name'] ?= options.user.name 
-        srv.options.identities['journalnode_jn']['keytab']['group'] ?= {}
-        srv.options.identities['journalnode_jn']['keytab']['group']['access'] ?= 'r'
-        srv.options.identities['journalnode_jn']['keytab']['group']['name'] ?= options.hadoop_group.name
-        srv.options.identities['journalnode_jn']['keytab']['file'] ?= options.hdfs_site['dfs.journalnode.kerberos.principal'] 
-        srv.options.identities['journalnode_jn']['keytab']['configuration'] ?= 'hdfs-site/dfs.journalnode.kerberos.principal'
+      # options.opts.java_properties['java.security.auth.login.config'] ?= "#{options.conf_dir}/hdfs_jn_jaas.conf"
+
+# ## Ambari Kerberos Principal and Keytab
+# 
+#       for srv in service.deps.ambari_server
+#         srv.options.identities ?= {}
+#         srv.options.identities['journalnode_jn'] ?= {}
+#         srv.options.identities['journalnode_jn']['principal'] ?= {}
+#         srv.options.identities['journalnode_jn']['principal']['configuration'] ?= 'hdfs-site/dfs.journalnode.kerberos.principal'
+#         srv.options.identities['journalnode_jn']['principal']['type'] ?= 'service'
+#         srv.options.identities['journalnode_jn']['principal']['local_username'] ?= options.user.name
+#         srv.options.identities['journalnode_jn']['principal']['value'] ?= options.hdfs_site['dfs.journalnode.kerberos.principal']
+#         srv.options.identities['journalnode_jn']['name'] ?= 'journalnode_jn'
+#         srv.options.identities['journalnode_jn']['keytab'] ?= {}
+#         srv.options.identities['journalnode_jn']['keytab']['owner'] ?= {}
+#         srv.options.identities['journalnode_jn']['keytab']['owner']['access'] ?= 'r'
+#         srv.options.identities['journalnode_jn']['keytab']['owner']['name'] ?= options.user.name
+#         srv.options.identities['journalnode_jn']['keytab']['group'] ?= {}
+#         srv.options.identities['journalnode_jn']['keytab']['group']['access'] ?= 'r'
+#         srv.options.identities['journalnode_jn']['keytab']['group']['name'] ?= options.hadoop_group.name
+#         srv.options.identities['journalnode_jn']['keytab']['file'] ?= options.hdfs_site['dfs.journalnode.kerberos.principal']
+#         srv.options.identities['journalnode_jn']['keytab']['configuration'] ?= 'hdfs-site/dfs.journalnode.kerberos.principal'
 
 
 ## SSL
@@ -119,86 +120,6 @@ Example:
       options.ssl = merge {}, service.deps.hadoop_core.options.ssl, options.ssl
       options.ssl_server = merge {}, service.deps.hadoop_core.options.ssl_server, options.ssl_server or {}
       options.ssl_client = merge {}, service.deps.hadoop_core.options.ssl_client, options.ssl_client or {}
-
-## Metrics
-
-      options.metrics = merge {}, service.deps.metrics?.options, options.metrics
-
-      options.metrics.config ?= {}
-      options.metrics.config["*.period"] ?= '60'
-      options.metrics.sinks ?= {}
-      options.metrics.sinks.file_enabled ?= true
-      options.metrics.sinks.ganglia_enabled ?= false
-      options.metrics.sinks.graphite_enabled ?= false
-      # File sink
-      if options.metrics.sinks.file_enabled
-        options.metrics.config["*.sink.file.#{k}"] ?= v for k, v of service.deps.metrics.options.sinks.file.config if service.deps.metrics?.options?.sinks?.file_enabled
-        options.metrics.config["journalnode.sink.file.class"] ?= 'org.apache.hadoop.metrics2.sink.FileSink'
-        options.metrics.config['journalnode.sink.file.filename'] ?= 'journalnode-metrics.out'
-      # Ganglia sink, accepted properties are "servers" and "supportsparse"
-      if options.metrics.sinks.ganglia_enabled
-        options.metrics.config["*.sink.ganglia.#{k}"] ?= v for k, v of options.sinks.ganglia.config if service.deps.metrics?.options?.sinks?.ganglia_enabled
-        options.metrics.config["journalnode.sink.ganglia.class"] ?= 'org.apache.hadoop.metrics2.sink.ganglia.GangliaSink31'
-      # Graphite Sink
-      if options.metrics.sinks.graphite_enabled
-        throw Error 'Missing remote_host ryba.hdfs.jn.metrics.sinks.graphite.config.server_host' unless options.metrics.sinks.graphite.config.server_host?
-        throw Error 'Missing remote_port ryba.hdfs.jn.metrics.sinks.graphite.config.server_port' unless options.metrics.sinks.graphite.config.server_port?
-        options.metrics.config["journalnode.sink.graphite.class"] ?= 'org.apache.hadoop.metrics2.sink.GraphiteSink'
-        options.metrics.config["*.sink.graphite.#{k}"] ?= v for k, v of service.deps.metrics.options.sinks.graphite.config if service.deps.metrics?.options?.sinks?.graphite_enabled
-
-## Hadoop Site Configuration
-Enrich `ryba-ambari-takeover/hadoop/hdfs` with hdfs_jn properties.
-  
-      enrich_config = (source, target) ->
-        for k, v of source
-          target[k] ?= v
-      
-      for srv in service.deps.hdfs
-      
-        srv.options.configurations ?= {}
-        srv.options.configurations['core-site'] ?= {}
-        srv.options.configurations['hdfs-site'] ?= {}
-        srv.options.configurations['yarn-site'] ?= {}
-        srv.options.configurations['mapred-site'] ?= {}
-        srv.options.configurations['ssl-server'] ?= {}
-        srv.options.configurations['ssl-client'] ?= {}
-
-        enrich_config options.core_site, srv.options.configurations['core-site']
-        enrich_config options.hdfs_site, srv.options.configurations['hdfs-site']
-        enrich_config options.yarn_site, srv.options.configurations['yarn-site']
-        enrich_config options.mapred_site, srv.options.configurations['mapred-site']
-
-        #add hosts
-        srv.options.jn_hosts ?= []
-        srv.options.jn_hosts.push options.fqdn if srv.options.jn_hosts.indexOf(options.fqdn) is -1
-
-## System Options
-      
-        # Env
-        srv.options.configurations['hadoop-env'] ?= {}
-        # opts
-        srv.options.hdfs_jn_opts = options.opts
-
-## Metrics Properties
-
-        srv.options.configurations['hadoop-metrics-properties'] ?= {}
-        enrich_config options.metrics.config, srv.options.configurations['hadoop-metrics-properties'] if service.deps.metrics?
-
-## Log4j Properties
-
-        srv.options.hdfs_log4j ?= {}
-        enrich_config options.log4j.properties, options.hdfs_log4j if service.deps.log4j?
-
-## Ambari
-
-      #ambari server configuration
-      options.post_component = service.instances[0].node.fqdn is service.node.fqdn
-      options.ambari_host = service.node.fqdn is service.deps.ambari_server.node.fqdn
-      options.ambari_url ?= service.deps.ambari_server.options.ambari_url
-      options.ambari_admin_password ?= service.deps.ambari_server.options.ambari_admin_password
-      options.cluster_name ?= service.deps.ambari_server.options.cluster_name
-      options.takeover = service.deps.ambari_server.options.takeover
-      options.baremetal = service.deps.ambari_server.options.baremetal
 
 ## Wait
 
@@ -218,7 +139,7 @@ Enrich `ryba-ambari-takeover/hadoop/hdfs` with hdfs_jn properties.
         else srv.options.hdfs_site['dfs.journalnode.https-address'] or '0.0.0.0:8481'
         [_, port] = address.split ':'
         host: srv.node.fqdn, port: port
-      options.hosts = service.deps.hdfs_jn.map (srv) -> srv.node.fqdn 
+      options.hosts = service.deps.hdfs_jn.map (srv) -> srv.node.fqdn
 
 ## Dependencies
 

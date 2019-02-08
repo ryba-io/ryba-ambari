@@ -174,7 +174,7 @@ Repository creating is only executed from one NameNode.
         options.install['XAAUDIT.SOLR.ENABLE'] ?= 'true'
         options.install['XAAUDIT.SOLR.URL'] ?= service.deps.ranger_admin.options.install['audit_solr_urls']
         options.install['XAAUDIT.SOLR.USER'] ?= service.deps.ranger_admin.options.install['audit_solr_user']
-        options.install['XAAUDIT.SOLR.ZOOKEEPER'] ?= service.deps.ranger_admin.options.install['audit_solr_zookeepers']
+        options.install['XAAUDIT.SOLR.ZOOKEEPER'] ?= service.deps.ranger_admin.options.site['anger.audit.solr.zookeepers']
         options.install['XAAUDIT.SOLR.PASSWORD'] ?= service.deps.ranger_admin.options.install['audit_solr_password']
         options.install['XAAUDIT.SOLR.FILE_SPOOL_DIR'] ?= "#{service.deps.hdfs_nn.options.log_dir}/hdfs/audit/solr/spool"
         
@@ -239,16 +239,6 @@ configure `policy-mgr-ssl` ambari configuration to make the plugin communicate o
         options.configurations['ranger-hdfs-audit']['xasecure.audit.jaas.inmemory.Client.option.serviceName'] ?= 'solr'
         options.configurations['ranger-hdfs-audit']['xasecure.audit.jaas.inmemory.Client.option.keyTab'] ?= service.deps.hdfs_nn.options.hdfs_site['dfs.namenode.keytab.file']
         options.configurations['ranger-hdfs-audit']['xasecure.audit.jaas.inmemory.Client.option.principal'] ?= service.deps.hdfs_nn.options.hdfs_site['dfs.namenode.kerberos.principal']
-
-## Ambari
-
-        #ambari server configuration
-        options.post_component = service.instances[0].node.fqdn is service.node.fqdn
-        options.ambari_host = service.node.fqdn is service.deps.ambari_server.node.fqdn
-        options.ambari_url ?= service.deps.ambari_server.options.ambari_url
-        options.ambari_admin_password ?= service.deps.ambari_server.options.ambari_admin_password
-        options.cluster_name ?= service.deps.ambari_server.options.cluster_name
-        options.takeover = service.deps.ambari_server.options.takeover
 
 ## Enable Plugin in Ranger Admin
 

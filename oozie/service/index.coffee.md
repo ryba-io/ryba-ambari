@@ -13,8 +13,6 @@
         hdfs: module: 'ryba-ambari-takeover/hadoop/hdfs', required: true
         hbase: module: 'ryba-ambari-takeover/hbase/service', required: true
         oozie: module: 'ryba-ambari-takeover/oozie/service', required: true
-        ambari_server: module: 'ryba-ambari-takeover/server', single: true, required: true
-        ambari_agent: module: 'ryba-ambari-takeover/agent'
         log4j: module: 'ryba/log4j', local: true
       configure:
         'ryba-ambari-takeover/oozie/service/configure'

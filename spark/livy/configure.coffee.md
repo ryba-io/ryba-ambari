@@ -72,27 +72,6 @@
       options.configurations['livy-conf']['livy.impersonation.enabled'] ?= 'true'
       options.configurations['livy-conf']['livy.server.access_control.enabled'] ?= 'true'
       options.configurations['livy-conf']['livy.server.access_control.users'] ?= 'livy,zeppelin'
-
-
-
-      enrich_config = (source, target) ->
-        for k, v of source
-          target[k] ?= v
-
-      for srv in service.deps.spark_service
-
-        srv.options.configurations['livy-conf'] ?= {}
-        enrich_config options.configurations['livy-conf'], srv.options.configurations['livy-conf']
-
-## Ambari Agent
-Register users to ambari agent's user list.
-
-      for srv in service.deps.ambari_agent
-        srv.options.users ?= {}
-        srv.options.users['livy'] ?= options.user
-        srv.options.groups ?= {}
-        srv.options.groups['livy'] ?= options.group
-
 ## Dependencies
 
     {merge} = require 'nikita/lib/misc'

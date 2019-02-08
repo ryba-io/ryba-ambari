@@ -14,14 +14,9 @@ and perform actual file I/O directly with the DataNodes.
         hdfs_dn: module: 'ryba-ambari-takeover/hadoop/hdfs_dn'
         log4j: module: 'ryba/log4j'
         hdfs: module: 'ryba-ambari-takeover/hadoop/hdfs', required: true
-        ambari_server: module: 'ryba-ambari-takeover/server', single: true, required: true
       configure:
         'ryba-ambari-takeover/hadoop/hdfs_client/configure'
       commands:
-        'install': [
-          'ryba-ambari-takeover/hadoop/hdfs_client/install'
-          # 'ryba-ambari-takeover/hadoop/hdfs_client/check'
-        ]
-        'deploy': 'ryba-ambari-takeover/hadoop/hdfs_client/install'
+        'check': 'ryba-ambari-takeover/hadoop/hdfs_client/check'
 
 [hdfs_client]: http://hadoop.apache.org/docs/current/hadoop-project-dist/hadoop-hdfs/HdfsUserGuide.html

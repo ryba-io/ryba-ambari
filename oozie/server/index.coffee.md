@@ -31,8 +31,6 @@ Please check Oozie page
         oozie_local: module: 'ryba-ambari-takeover/oozie/service', required: true, local: true
         oozie_server: module: 'ryba-ambari-takeover/oozie/server'
         log4j: module: 'ryba/log4j', local: true
-        ambari_server: module: 'ryba-ambari-takeover/server', single: true, required: true
-        ambari_agent: module: 'ryba-ambari-takeover/agent'
       configure: 'ryba-ambari-takeover/oozie/server/configure'
       commands:
         backup:

@@ -9,6 +9,7 @@ properties than needed.
     module.exports = (service) ->
       options = service.options
       options.hdfs ?= {}
+      options.configurations ?= {}
 
 
 ## Identities
@@ -61,27 +62,27 @@ properties than needed.
       options.hdfs.krb5_user ?= {}
       options.hdfs.krb5_user.principal ?= "#{options.hdfs.user.name}@#{options.krb5.realm}"
       options.hdfs.krb5_user.keytab ?= '/etc/security/keytabs/hdfs.headless.keytab'
-      options.hdfs.smoke_user.principal ?= "#{options.hdfs.user.name}-#{service.deps.ambari_server.options.cluster_name}@#{options.krb5.realm}"
-      options.hdfs.smoke_user.keytab ?= '/etc/security/keytabs/hdfs.headless.keytab'
+      # options.hdfs.smoke_user.principal ?= "#{options.hdfs.user.name}-#{service.deps.ambari_server[0].options.cluster_name}@#{options.krb5.realm}"
+      # options.hdfs.smoke_user.keytab ?= '/etc/security/keytabs/hdfs.headless.keytab'
       throw Error "Required Property: hdfs.krb5_user.password" unless options.hdfs.krb5_user.password
-      throw Error "Required Property: hdfs.smoke_user.password" unless options.hdfs.smoke_user.password
-      options.identities ?= {}
-      options.identities['hdfs'] ?= {}
-      options.identities['hdfs']['principal'] ?= {}
-      options.identities['hdfs']['principal']['configuration'] ?= 'hadoop-env/hdfs_principal_name'
-      options.identities['hdfs']['principal']['type'] ?= 'user'
-      options.identities['hdfs']['principal']['local_username'] ?= options.hdfs.user.name
-      options.identities['hdfs']['principal']['value'] ?='${hadoop-env/hdfs_user}@${realm}'#options.hdfs.krb5_user.principal
-      options.identities['hdfs']['name'] ?= 'hdfs'
-      options.identities['hdfs']['keytab'] ?= {}
-      options.identities['hdfs']['keytab']['owner'] ?= {}
-      options.identities['hdfs']['keytab']['owner']['access'] ?= 'r' 
-      options.identities['hdfs']['keytab']['owner']['name'] ?= options.hdfs.user.name 
-      options.identities['hdfs']['keytab']['group'] ?= {}
-      options.identities['hdfs']['keytab']['group']['access'] ?= 'r'
-      options.identities['hdfs']['keytab']['group']['name'] ?= options.hadoop_group.name
-      options.identities['hdfs']['keytab']['file'] ?= options.hdfs.krb5_user.keytab
-      options.identities['hdfs']['keytab']['configuration'] ?= 'hadoop-env/hdfs_user_keytab'
+      # throw Error "Required Property: hdfs.smoke_user.password" unless options.hdfs.smoke_user.password
+      # options.identities ?= {}
+      # options.identities['hdfs'] ?= {}
+      # options.identities['hdfs']['principal'] ?= {}
+      # options.identities['hdfs']['principal']['configuration'] ?= 'hadoop-env/hdfs_principal_name'
+      # options.identities['hdfs']['principal']['type'] ?= 'user'
+      # options.identities['hdfs']['principal']['local_username'] ?= options.hdfs.user.name
+      # options.identities['hdfs']['principal']['value'] ?='${hadoop-env/hdfs_user}@${realm}'#options.hdfs.krb5_user.principal
+      # options.identities['hdfs']['name'] ?= 'hdfs'
+      # options.identities['hdfs']['keytab'] ?= {}
+      # options.identities['hdfs']['keytab']['owner'] ?= {}
+      # options.identities['hdfs']['keytab']['owner']['access'] ?= 'r'
+      # options.identities['hdfs']['keytab']['owner']['name'] ?= options.hdfs.user.name
+      # options.identities['hdfs']['keytab']['group'] ?= {}
+      # options.identities['hdfs']['keytab']['group']['access'] ?= 'r'
+      # options.identities['hdfs']['keytab']['group']['name'] ?= options.hadoop_group.name
+      # options.identities['hdfs']['keytab']['file'] ?= options.hdfs.krb5_user.keytab
+      # options.identities['hdfs']['keytab']['configuration'] ?= 'hadoop-env/hdfs_user_keytab'
 
 
 ## HDFS Configuration
@@ -91,13 +92,13 @@ Merge hdfs_site, yarn_site, core_site configuration from each components.
       options.configurations['core-site'] ?= {}
       # ambari missing properties
       options.configurations['core-site']['io.compression.codec.lzo.class'] ?= 'com.hadoop.compression.lzo.LzoCodec'
-        
+
       options.configurations['hdfs-site'] ?= {}
-        
+
       # ambari missing properties
       options.configurations['hdfs-site']['dfs.hosts.exclude'] = '/etc/hadoop/conf/dfs.exclude'
-      options.configurations['hdfs-site']['dfs.hosts.include'] = '/etc/hadoop/conf/dfs.include'
-      options.configurations['hdfs-site']['dfs.hosts'] = '/etc/hadoop/conf/dfs.include'
+      # options.configurations['hdfs-site']['dfs.hosts.include'] = '/etc/hadoop/conf/dfs.include'
+      # options.configurations['hdfs-site']['dfs.hosts'] = '/etc/hadoop/conf/dfs.include'
       options.configurations['hdfs-site']['dfs.client.retry.policy.enabled'] ?= "true"
       options.configurations['hdfs-site']['dfs.content-summary.limit'] ?= "5000"
       options.configurations['hdfs-site']['dfs.encrypt.data.transfer.cipher.suites'] ?= "AES/CTR/NoPadding"
@@ -110,17 +111,7 @@ Merge hdfs_site, yarn_site, core_site configuration from each components.
       options.configurations['hdfs-site']['dfs.namenode.checkpoint.dir'] ?= "/var/hdfs/nn"
       options.configurations['hdfs-site']['dfs.namenode.startup.delay.block.deletion.sec'] = '3601'
       # options.configurations['hdfs-site']['dfs.namenode.checkpoint.dir'] ?= "/var/hdfs/checkpoint"
-        
-      options.configurations['mapred-site'] = {}
-        
-      options.configurations['yarn-site'] = {}
-      
-      options.configurations['capacity-scheduler'] ?= {}
 
-      options.configurations['hadoop-metrics-properties'] = {}
-
-      options.configurations['ssl-server'] = {}
-        
 ## HADOOP, YARN Env
 Inhertis Env properties from hadoop_core components. For Components `HADOOP_DATANODE_OPTS`,
 `HADOOP_NAMENODE_OPTS`,  `HADOOP_JOURNALNODE_OPTS` properties will be rendered at
@@ -138,8 +129,8 @@ For this reason components system opts are regiester.
       # options.configurations['hadoop-env']['HADOOP_SECURE_DN_PID_DIR'] ?= "#{options.hdfs.pid_dir}/#{options.hdfs.user.name}"
       options.configurations['hadoop-env']['proxyuser_group'] ?= 'users'
       options.configurations['hadoop-env']['hdfs_user'] ?= options.hdfs.user.name
-      options.configurations['hadoop-env']['hdfs_principal_name'] ?= options.hdfs.krb5_user.principal
-      options.configurations['hadoop-env']['hdfs_user_keytab'] ?= options.hdfs.krb5_user.keytab
+      # options.configurations['hadoop-env']['hdfs_principal_name'] ?= options.hdfs.krb5_user.principal
+      # options.configurations['hadoop-env']['hdfs_user_keytab'] ?= options.hdfs.krb5_user.keytab
       options.configurations['hadoop-env']['hdfs_user_nofile_limit'] ?= options.hdfs.user.limits.nofile
       options.configurations['hadoop-env']['hdfs_user_nproc_limit'] ?= options.hdfs.user.limits.nproc
       # Ambari required
@@ -151,21 +142,11 @@ For this reason components system opts are regiester.
       options.configurations['hadoop-env']['secure_dn_user'] ?= options.secure_dn_user
       options.configurations['hadoop-env']['nfsgateway_heapsize'] ?= '1024'
 
-
-## Hosts
-
-      # Hdfs Hosts
-      options.nn_hosts ?= []
-      options.jn_hosts ?= []
-      options.dn_hosts ?= []
-      options.zkfc_hosts ?= []
-      options.client_hosts ?= []
-
 ## SSL
 
       # options.configurations['ssl-client'] ?= service.deps.hadoop_core[0].options.ssl_client
       # options.configurations['ssl-server'] ?= service.deps.hadoop_core[0].options.ssl_server
-      
+
       options.ssl = merge {}, service.deps.ssl?.options, options.ssl
       options.ssl.enabled ?= !!service.deps.ssl
       if options.ssl.enabled
@@ -177,7 +158,7 @@ For this reason components system opts are regiester.
 
 ## Hadoop Policy
 
-      options.hadoop_policy ?= 
+      options.hadoop_policy ?=
         "security.admin.operations.protocol.acl" : "hadoop"
         "security.client.datanode.protocol.acl" : "*"
         "security.client.protocol.acl" : "*"
@@ -190,42 +171,6 @@ For this reason components system opts are regiester.
         "security.refresh.policy.protocol.acl" : "hadoop"
         "security.refresh.usertogroups.mappings.protocol.acl" : "hadoop"
 
-## Ambari REST API
-
-      #ambari server configuration
-      options.post_component = service.instances[0].node.fqdn is service.node.fqdn
-      options.ambari_host = service.node.fqdn is service.deps.ambari_server.node.fqdn
-      options.ambari_url ?= service.deps.ambari_server.options.ambari_url
-      options.ambari_admin_password ?= service.deps.ambari_server.options.ambari_admin_password
-      options.cluster_name ?= service.deps.ambari_server.options.cluster_name
-      options.stack_name = service.deps.ambari_server.options.stack_name
-      options.stack_version = service.deps.ambari_server.options.stack_version
-      options.takeover = service.deps.ambari_server.options.takeover
-      options.baremetal = service.deps.ambari_server.options.baremetal
-
-## Ambari Agent
-Register users to ambari agent's user list.
-
-      for srv in service.deps.ambari_agent
-        srv.options.users ?= {}
-        srv.options.users['hdfs'] ?= options.hdfs.user
-        srv.options.groups ?= {}
-        srv.options.groups['hdfs'] ?= options.hdfs.group
-        srv.options.groups['hadoop_group'] ?= options.hadoop_group
-
-## Ambari Config Groups
-`config_groups` contains final object that install will submit to ambari.
-`groups` is the array of config_groups name to which the host belongs to.
-
-      options.config_groups ?= {}
-      options.groups ?= []
-      for srv in service.deps.hdfs
-        for name in options.groups
-          srv.options.config_groups ?= {}
-          srv.options.config_groups[name] ?= {}
-          srv.options.config_groups[name]['hosts'] ?= []
-          srv.options.config_groups[name]['hosts'].push service.node.fqdn unless srv.options.config_groups[name]['hosts'].indexOf(service.node.fqdn) > -1
-      
 ## Dependencies
 
     {merge} = require 'nikita/lib/misc'

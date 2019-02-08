@@ -53,8 +53,6 @@ of your cluster.
         hdfs: module: 'ryba-ambari-takeover/hadoop/hdfs'
         yarn: module: 'ryba-ambari-takeover/hadoop/yarn'
         mapreduce: module: 'ryba-ambari-takeover/hadoop/mapreduce'
-        ambari_server: module: 'ryba-ambari-takeover/server', single: true, required: true
-        ambari_agent: module: 'ryba-ambari-takeover/agent'
       configure:
         'ryba-ambari-takeover/spark/service/configure'
       commands:

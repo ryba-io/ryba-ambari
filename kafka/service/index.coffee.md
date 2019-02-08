@@ -15,8 +15,6 @@ open API clients like JDBC and ODBC.
         java: module: 'masson/commons/java', local: true
         test_user: module: 'ryba/commons/test_user', local: true, auto: true, implicit: true
         ranger_admin: module: 'ryba-ambari-takeover/ranger/hdpadmin', single: true
-        ambari_server: module: 'ryba-ambari-takeover/server', single: true, required: true
-        ambari_agent: module: 'ryba-ambari-takeover/agent'
         log4j: module: 'ryba/log4j', local: true
       configure:
         'ryba-ambari-takeover/kafka/service/configure'

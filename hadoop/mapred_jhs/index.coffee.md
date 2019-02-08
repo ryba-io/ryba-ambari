@@ -21,7 +21,6 @@ Now the jobHistory Server tends to be replace by the Yarn timeline server.
         metrics: module: 'ryba/metrics', local: true
         yarn: module: 'ryba-ambari-takeover/hadoop/yarn', required: true
         mapreduce: module: 'ryba-ambari-takeover/hadoop/mapreduce', required: true
-        ambari_server: module: 'ryba-ambari-takeover/server', single: true, required: true
       configure:
         'ryba-ambari-takeover/hadoop/mapred_jhs/configure'
       commands:
@@ -29,8 +28,6 @@ Now the jobHistory Server tends to be replace by the Yarn timeline server.
           'ryba-ambari-takeover/hadoop/mapred_jhs/check'
         'install': [
           'ryba-ambari-takeover/hadoop/mapred_jhs/install'
-          'ryba-ambari-takeover/hadoop/mapred_jhs/start'
-          'ryba-ambari-takeover/hadoop/mapred_jhs/check'
         ]
         'start':
           'ryba-ambari-takeover/hadoop/mapred_jhs/start'

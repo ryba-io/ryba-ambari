@@ -12,20 +12,5 @@
         hbase_regionserver: module: 'ryba-ambari-takeover/hbase/regionserver', local: true
         ranger_admin: module: 'ryba-ambari-takeover/ranger/hdpadmin', single: true, required: true
         ranger_hdfs: module: 'ryba-ambari-takeover/ranger/plugins/hdfs', required: true
-        ambari_server: module: 'ryba-ambari-takeover/server', single: true
       configure:
         'ryba-ambari-takeover/ranger/plugins/hbase/configure'
-      plugin: ({options}) ->
-        @before
-          action: ['ambari', 'hosts', 'component_start']
-          name: 'HBASE_MASTER'
-        , ->
-          @call 'ryba-ambari-takeover/ranger/plugins/hbase/install', options
-        @before
-          action: ['ambari', 'hosts', 'component_start']
-          name: 'HBASE_REGIONSERVER'
-        , ->
-          @call 'ryba-ambari-takeover/ranger/plugins/hbase/install', options
-      commands:
-        install:
-          'ryba-ambari-takeover/ranger/plugins/hbase/install'

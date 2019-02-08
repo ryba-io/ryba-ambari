@@ -85,19 +85,6 @@ Example:
       # throw Error 'Kafka admin_principal must be in kafka superusers' unless match[0] in options.superusers
       options.superusers ?= [options.admin.principal.split('@')[0].split('/')[0]]
 
-## Ambari REST API
-
-      #ambari server configuration
-      options.post_component = service.instances[0].node.fqdn is service.node.fqdn
-      options.ambari_host = service.node.fqdn is service.deps.ambari_server.node.fqdn
-      options.ambari_url ?= service.deps.ambari_server.options.ambari_url
-      options.ambari_admin_password ?= service.deps.ambari_server.options.ambari_admin_password
-      options.cluster_name ?= service.deps.ambari_server.options.cluster_name
-      options.stack_name ?= service.deps.ambari_server.options.stack_name
-      options.stack_version ?= service.deps.ambari_server.options.stack_version
-      options.takeover = service.deps.ambari_server.options.takeover
-      options.baremetal = service.deps.ambari_server.options.baremetal
-
 ## Ambari Configurations
 
       options.configurations ?= {}
@@ -108,17 +95,8 @@ Example:
       options.configurations['kafka-env']['kafka_user'] ?= options.user.name #on, off
       options.configurations['kafka-env']['kafka_user_nofile_limit'] ?= options.user.limits.nofile #on, off
       options.configurations['kafka-env']['kafka_user_nproc_limit'] ?= options.user.limits.nproc #on, off
-
       options.configurations['kafka-broker'] ?= {}
       
-## Ambari Agent
-Register users to ambari agent's user list.
-
-      for srv in service.deps.ambari_agent
-        srv.options.users ?= {}
-        srv.options.users['kafka'] ?= options.user
-        srv.options.groups ?= {}
-        srv.options.groups['kafka'] ?= options.group
 
 ## Dependencies
 

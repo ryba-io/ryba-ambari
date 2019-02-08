@@ -23,7 +23,6 @@ applications.
         yarn_nm: module: 'ryba-ambari-takeover/hadoop/yarn_nm'
         metrics: module: 'ryba/metrics', local: true
         yarn: module: 'ryba-ambari-takeover/hadoop/yarn', required: true
-        ambari_server: module: 'ryba-ambari-takeover/server', single: true, required: true
       configure:
         'ryba-ambari-takeover/hadoop/yarn_nm/configure'
       commands:
@@ -34,12 +33,6 @@ applications.
         'install': [
           'masson/core/info'
           'ryba-ambari-takeover/hadoop/yarn_nm/install'
-          'ryba-ambari-takeover/hadoop/yarn_nm/start'
-          'ryba-ambari-takeover/hadoop/yarn_nm/check'
-        ]
-        'report': [
-          'masson/bootstrap/report'
-          'ryba-ambari-takeover/hadoop/yarn_nm/report'
         ]
         'start':
           'ryba-ambari-takeover/hadoop/yarn_nm/start'
@@ -47,16 +40,3 @@ applications.
           'ryba-ambari-takeover/hadoop/yarn_nm/status'
         'stop':
           'ryba-ambari-takeover/hadoop/yarn_nm/stop'
-        'takeover': [
-          'masson/core/info'
-          'ryba-ambari-takeover/hadoop/yarn_nm/wait'
-          'ryba-ambari-takeover/hadoop/yarn_nm/install'
-          'ryba-ambari-takeover/hadoop/yarn_nm/takeover'
-          'ryba-ambari-takeover/hadoop/yarn_nm/start'
-          'ryba-ambari-takeover/hadoop/yarn_nm/wait'
-          'ryba-ambari-takeover/hadoop/yarn_nm/check'
-        ]
-        'deploy': [
-          'masson/core/info'
-          'ryba-ambari-takeover/hadoop/yarn_nm/install'
-        ]

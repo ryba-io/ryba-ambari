@@ -9,6 +9,7 @@ properties than needed.
     module.exports = (service) ->
       options = service.options
       options.mapred ?= {}
+      options.configurations ?= {}
 
 ## Identities
 
@@ -43,15 +44,6 @@ properties than needed.
       options.mapred.pid_dir_prefix ?= '/var/run/hadoop'
       options.mapred.pid_dir ?= "#{options.mapred.pid_dir_prefix}/#{options.mapred.user.name}"
 
-## Ambari
-
-      #ambari server configuration
-      options.post_component = service.instances[0].node.fqdn is service.node.fqdn
-      options.ambari_host = service.node.fqdn is service.deps.ambari_server.node.fqdn
-      options.ambari_url ?= service.deps.ambari_server.options.ambari_url
-      options.ambari_admin_password ?= service.deps.ambari_server.options.ambari_admin_password
-      options.cluster_name ?= service.deps.ambari_server.options.cluster_name
-
 ## Kerberos
 
       options.krb5 ?= {}
@@ -73,7 +65,7 @@ properties than needed.
 Merge hdfs_site, yarn_site, core_site configuration from each components.
 
       options.configurations['mapred-site'] ?= {}
-        
+
 ## HADOOP, YARN Env
 Inhertis Env properties from hadoop_core components. For Components `HADOOP_DATANODE_OPTS`,
 `HADOOP_NAMENODE_OPTS`,  `HADOOP_JOURNALNODE_OPTS` properties will be rendered at
@@ -90,16 +82,10 @@ For this reason components system opts are regiester.
       options.configurations['mapred-env']['mapred_user'] ?= options.mapred.user.name
       options.configurations['mapred-env']['mapred_user_nofile_limit'] ?= options.mapred.user.limits.nofile
       options.configurations['mapred-env']['mapred_user_nproc_limit'] ?= options.mapred.user.limits.nproc
-      options.configurations['mapred-env']['jobhistory_heapsize'] ?= '1024m'
+      options.configurations['mapred-env']['jobhistory_heapsize'] ?= '1024'
       options.configurations['mapred-env']['mapred_log_dir_prefix'] ?= options.mapred.log_dir
       options.configurations['mapred-env']['mapred_pid_dir_prefix'] ?= options.mapred.pid_dir_prefix
       options.configurations['mapred-env']['mapred_jobstatus_dir'] ?= '/var/mapred/jhs'
-
-## Hosts
-
-      # Hdfs Hosts
-      options.mapred_jhs_hosts ?= []
-      options.client_hosts ?= []
 
 ## SSL
 
@@ -111,38 +97,6 @@ For this reason components system opts are regiester.
         throw Error "Required Option: ssl.cacert" if not options.ssl.cacert
         throw Error "Required Option: ssl.key" if not options.ssl.key
         throw Error "Required Option: ssl.cert" if  not options.ssl.cert
-
-## Ambari
-
-      #ambari server configuration
-      options.post_component = service.instances[0].node.fqdn is service.node.fqdn
-      options.ambari_host = service.node.fqdn is service.deps.ambari_server.node.fqdn
-      options.ambari_url ?= service.deps.ambari_server.options.ambari_url
-      options.ambari_admin_password ?= service.deps.ambari_server.options.ambari_admin_password
-      options.cluster_name ?= service.deps.ambari_server.options.cluster_name
-      options.takeover = service.deps.ambari_server.options.takeover
-      options.baremetal = service.deps.ambari_server.options.baremetal
-
-## Ambari Agent
-Register users to ambari agent's user list.
-
-      for srv in service.deps.ambari_agent
-        srv.options.users ?= {}
-        srv.options.users['mapred'] ?= options.mapred.user
-        srv.options.groups ?= {}
-        srv.options.groups['mapred'] ?= options.mapred.group
-
-      enrich_config = (source, target) ->
-        for k, v of source
-          target[k] ?= v
-
-## YARN Service
-
-      for srv in service.deps.yarn
-        srv.options.configurations ?= {}
-        srv.options.configurations['mapred-site'] ?= {}
-        enrich_config options.configurations['mapred-site'], srv.options.configurations['mapred-site']
-
 
 ## Dependencies
 

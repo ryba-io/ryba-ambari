@@ -5,35 +5,6 @@ Please refer to the Apache Phoenix QueryServer [documentation][phoenix-doc].
 
     module.exports =  header: 'Phoenix QueryServer Install', handler: ({options}) ->
 
-## Register
-
-      @registry.register 'hconfigure', 'ryba/lib/hconfigure'
-      @registry.register 'hdp_select', 'ryba/lib/hdp_select'
-      @registry.register ['ambari','configs','update'], 'ryba-ambari-actions/lib/configs/update'
-
-## Identities
-
-      @system.group header: 'Group', options.group
-      @system.user header: 'User', options.user
-
-## IPTables
-
-| Service             | Port  | Proto  | Parameter                     |
-|---------------------|-------|--------|-------------------------------|
-| Phoenix QueryServer | 8765  | HTTP   | phoenix.queryserver.http.port |
-
-      @tools.iptables
-        header: 'IPTables'
-        if: options.iptables
-        rules: [
-          { chain: 'INPUT', jump: 'ACCEPT', dport: options.phoenix_site['phoenix.queryserver.http.port'], protocol: 'tcp', state: 'NEW', comment: "Phoenix QueryServer port" }
-        ]
-
-## Packages
-
-      @service header: 'Packages', name: 'phoenix'
-      @hdp_select name: 'phoenix-server'
-
 ## Kerberos
 
 We use the SPNEGO keytab, so we let hadoop/core handle principal & keytab
@@ -47,9 +18,9 @@ We use the SPNEGO keytab, so we let hadoop/core handle principal & keytab
       #     uid: options.user.name
       #     gid: options.group.name
 
-      console.log
-        'phoenix.queryserver.kerberos.principal': options.phoenix_site['phoenix.queryserver.kerberos.principal']
-        'phoenix.queryserver.keytab.file': options.phoenix_site['phoenix.queryserver.keytab.file']
+      # console.log
+      #   'phoenix.queryserver.kerberos.principal': options.phoenix_site['phoenix.queryserver.kerberos.principal']
+      #   'phoenix.queryserver.keytab.file': options.phoenix_site['phoenix.queryserver.keytab.file']
 
       # @ambari.configs.update
       #   header: 'hbase-site'

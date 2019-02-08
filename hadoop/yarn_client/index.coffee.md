@@ -15,18 +15,8 @@ The URI resources are grouped into APIs based on the type of information returne
         yarn_rm: module: 'ryba-ambari-takeover/hadoop/yarn_rm', required: true
         yarn_ts: module: 'ryba-ambari-takeover/hadoop/yarn_ts'
         yarn: module: 'ryba-ambari-takeover/hadoop/yarn', required: true
-        ambari_server: module: 'ryba-ambari-takeover/server', single: true, required: true
       configure:
         'ryba-ambari-takeover/hadoop/yarn_client/configure'
       commands:
         'check':
           'ryba-ambari-takeover/hadoop/yarn_client/check'
-        'install': [
-          'ryba-ambari-takeover/hadoop/yarn_client/install'
-          'ryba-ambari-takeover/hadoop/yarn_client/check'
-        ]
-        'report': [
-          'masson/bootstrap/report'
-          'ryba-ambari-takeover/hadoop/yarn_client/report'
-        ]
-        'deploy': 'ryba-ambari-takeover/hadoop/yarn_client/install'

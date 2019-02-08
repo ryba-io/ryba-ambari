@@ -78,19 +78,6 @@ Example:
       options.user.limits.nofile ?= 64000
       options.user.limits.nproc ?= 64000
 
-## Ambari REST API
-
-      #ambari server configuration
-      options.post_component = service.instances[0].node.fqdn is service.node.fqdn
-      options.ambari_host = service.node.fqdn is service.deps.ambari_server.node.fqdn
-      options.ambari_url ?= service.deps.ambari_server.options.ambari_url
-      options.ambari_admin_password ?= service.deps.ambari_server.options.ambari_admin_password
-      options.cluster_name ?= service.deps.ambari_server.options.cluster_name
-      options.stack_name ?= service.deps.ambari_server.options.stack_name
-      options.stack_version ?= service.deps.ambari_server.options.stack_version
-      options.takeover = service.deps.ambari_server.options.takeover
-      options.baremetal = service.deps.ambari_server.options.baremetal
-
 ## Ambari Configurations
 
       options.configurations ?= {}
@@ -208,16 +195,6 @@ Default Properties
       # options.configurations['hiveserver2-interactive-site']["hive.service.metrics.reporter"] ?= "JSON_FILE, JMX, HADOOP2"
       # options.configurations['hiveserver2-interactive-site']["hive.service.metrics.file.location"] ?= "/var/log/hive/hiveserver2Interactive-report.json"
       
-      
-## Ambari Agent
-Register users to ambari agent's user list.
-
-      for srv in service.deps.ambari_agent
-        srv.options.users ?= {}
-        srv.options.users['hive'] ?= options.user
-        srv.options.groups ?= {}
-        srv.options.groups['hive'] ?= options.group
-
 ## Dependencies
 
     {merge} = require 'nikita/lib/misc'

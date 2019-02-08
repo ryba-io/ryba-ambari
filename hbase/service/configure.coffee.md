@@ -111,28 +111,9 @@ Example
 ## HBase Policy
 
       options.configurations['hbase-policy'] ?= {}
-      options.configurations['security.client.protocol.acl'] ?= '*'
-      options.configurations['security.admin.protocol.acl'] ?= '*'
-      options.configurations['security.masterregion.protocol.acl'] ?= '*'
-
-## Ambari HBase Hosts
-
-      options.regionserver_hosts ?= []
-      options.master_hosts ?= []
-      options.client_hosts ?= []
-      options.rest_hosts ?= []
-      options.thrift_hosts ?= []
-
-## Ambari REST API
-
-      #ambari server configuration
-      options.post_component = service.instances[0].node.fqdn is service.node.fqdn
-      options.ambari_host = service.node.fqdn is service.deps.ambari_server.node.fqdn
-      options.ambari_url ?= service.deps.ambari_server.options.ambari_url
-      options.ambari_admin_password ?= service.deps.ambari_server.options.ambari_admin_password
-      options.cluster_name ?= service.deps.ambari_server.options.cluster_name
-      options.takeover = service.deps.ambari_server.options.takeover
-      options.baremetal = service.deps.ambari_server.options.baremetal
+      options.configurations['hbase-policy']['security.client.protocol.acl'] ?= '*'
+      options.configurations['hbase-policy']['security.admin.protocol.acl'] ?= '*'
+      options.configurations['hbase-policy']['security.masterregion.protocol.acl'] ?= '*'
 
       options.configurations ?= {}
       options.configurations['hbase-site'] ?= {}
@@ -161,28 +142,6 @@ Example
 ## Log4j Properties
 
       options.hbase_log4j ?= {}
-
-## Ambari Agent
-Register users to ambari agent's user list.
-
-      for srv in service.deps.ambari_agent
-        srv.options.users ?= {}
-        srv.options.users['hbase'] ?= options.user
-        srv.options.groups ?= {}
-        srv.options.groups['hbase'] ?= options.group
-
-## Ambari Config Groups
-`config_groups` contains final object that install will submit to ambari.
-`groups` is the array of config_groups name to which the host belongs to.
-
-      options.config_groups ?= {}
-      options.groups ?= []
-      for srv in service.deps.hbase
-        for name in options.groups
-          srv.options.config_groups ?= {}
-          srv.options.config_groups[name] ?= {}
-          srv.options.config_groups[name]['hosts'] ?= []
-          srv.options.config_groups[name]['hosts'].push service.node.fqdn unless srv.options.config_groups[name]['hosts'].indexOf(service.node.fqdn) > -1
 
 ## Dependencies
 

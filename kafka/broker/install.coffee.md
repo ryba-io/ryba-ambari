@@ -25,15 +25,6 @@
 | Kafka Broker | 9094  | sasl_http   | port               |
 | Kafka Broker | 9096  | sasl_https  | port               |
 
-IPTables rules are only inserted if the parameter "iptables.action" is set to
-"start" (default value).
-
-      @tools.iptables
-        header: 'IPTables'
-        if: options.iptables
-        rules: for protocol in options.protocols
-          chain: 'INPUT', jump: 'ACCEPT', dport: options.ports[protocol], protocol: 'tcp', state: 'NEW', comment: "Kafka Broker #{protocol}"
-
 ## Package
 
 Install the Kafka consumer package and set it to the latest version. Note, we
@@ -90,95 +81,49 @@ This Fixs are needed to be able to isolate confs betwwen broker and client
       #     eof: true
       #     mode: 0o755
 
-## Kerberos
-
-Broker Server principal, keytab and JAAS
-
-      @call
-        header: 'Kerberos'
-        if: (options.config['zookeeper.set.acl'] is 'true') and options.manage_identities
-        handler: ->
-          @krb5.addprinc options.krb5.admin,
-            header: 'Broker Server Kerberos'
-            principal: options.kerberos.principal.replace '_HOST', options.fqdn
-            randkey: true
-            keytab: options.kerberos.keyTab
-            uid: options.user.name
-            gid: options.group.name
-
-Kafka Superuser principal generation
-
-          @krb5.addprinc options.krb5.admin,
-            header: 'Kafka Superuser kerberos'
-            principal: options.admin.principal
-            password: options.admin.password
-
-# SSL Server
-
-Upload and register the SSL certificate and private key.
-SSL is enabled at least for inter broker communication
-
-      @call
-        header: 'SSL'
-        unless: options.config['replication.security.protocol'] is 'PLAINTEXT'
-      , ->
-        @java.keystore_add
-          keystore: options.config['ssl.keystore.location']
-          storepass: options.config['ssl.keystore.password']
-          key: options.ssl.key.source
-          cert: options.ssl.cert.source
-          keypass: options.config['ssl.key.password']
-          name: options.ssl.key.name
-          local: options.ssl.cert.local
-        @java.keystore_add
-          keystore: options.config['ssl.keystore.location']
-          storepass: options.config['ssl.keystore.password']
-          caname: "hadoop_root_ca"
-          cacert: options.ssl.cacert.source
-          local: options.ssl.cacert.local
-        # imports kafka broker server hadoop_root_ca CA truststore
-        @java.keystore_add
-          keystore: options.config['ssl.truststore.location']
-          storepass: options.config['ssl.truststore.password']
-          caname: "hadoop_root_ca"
-          cacert: options.ssl.cacert.source
-          local: options.ssl.cacert.local
+# ## Kerberos
+# 
+# Broker Server principal, keytab and JAAS
+# 
+#       @call
+#         header: 'Kerberos'
+#         if: (options.config['zookeeper.set.acl'] is 'true') and options.manage_identities
+#         handler: ->
+#           @krb5.addprinc options.krb5.admin,
+#             header: 'Broker Server Kerberos'
+#             principal: options.kerberos.principal.replace '_HOST', options.fqdn
+#             randkey: true
+#             keytab: options.kerberos.keyTab
+#             uid: options.user.name
+#             gid: options.group.name
+# 
+# Kafka Superuser principal generation
+# 
+#           @krb5.addprinc options.krb5.admin,
+#             header: 'Kafka Superuser kerberos'
+#             principal: options.admin.principal
+#             password: options.admin.password
+# 
+# # SSL Server
+# 
+# Upload and register the SSL certificate and private key.
+# SSL is enabled at least for inter broker communication
 
 
-## Layout
-
-Directories in which Kafka data is stored. Each new partition that is created
-will be placed in the directory which currently has the fewest partitions.
-
-      @system.mkdir (
-        header: "Data dir #{dir}"
-        target: dir
-        uid: options.user.name
-        gid: options.group.name
-        mode: 0o0750
-        parent: true
-      ) for dir in options.config['log.dirs'].split ','
-
-      @ambari.hosts.component_wait
-        header: 'KAFKA_BROKER'
-        if: options.takeover
-        url: options.ambari_url
-        username: 'admin'
-        password: options.ambari_admin_password
-        cluster_name: options.cluster_name
-        component_name: 'KAFKA_BROKER'
-        hostname: options.fqdn
-
-      @ambari.hosts.component_install
-        header: 'KAFKA_BROKER'
-        if: options.takeover
-        url: options.ambari_url
-        username: 'admin'
-        password: options.ambari_admin_password
-        cluster_name: options.cluster_name
-        component_name: 'KAFKA_BROKER'
-        hostname: options.fqdn
-
+# 
+# ## Layout
+# 
+# Directories in which Kafka data is stored. Each new partition that is created
+# will be placed in the directory which currently has the fewest partitions.
+# 
+#       @system.mkdir (
+#         header: "Data dir #{dir}"
+#         target: dir
+#         uid: options.user.name
+#         gid: options.group.name
+#         mode: 0o0750
+#         parent: true
+#       ) for dir in options.config['log.dirs'].split ','
 
 ## Dependencies
 

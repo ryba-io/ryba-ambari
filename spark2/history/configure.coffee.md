@@ -87,42 +87,6 @@ is a headless type keytab.
       options.conf['spark.history.kerberos.principal'] ?= service.deps.spark[0].options.krb5.principal
       options.conf['spark.history.kerberos.keytab'] ?= service.deps.spark[0].options.krb5.keytab
       
-## Ambari Configurations
-
-      enrich_config = (source, target) ->
-        for k, v of source
-          target[k] ?= v
-                
-      for srv in service.deps.spark
-        #spark2-defaults
-        srv.options.conf ?= {}
-        srv.options.configurations ?= {}
-        srv.options.configurations['spark2-defaults'] ?= {}
-        enrich_config options.conf, srv.options.configurations['spark2-defaults']
-        #register hosts
-        srv.options.history_hosts ?= []
-        srv.options.history_hosts.push service.node.fqdn if srv.options.history_hosts.indexOf(service.node.fqdn) is -1
-
-## Ambari Server REST API
-
-      #ambari server configuration
-      options.post_component = service.instances[0].node.fqdn is service.node.fqdn
-      options.ambari_host = service.node.fqdn is service.deps.ambari_server.node.fqdn
-      options.ambari_url ?= service.deps.ambari_server.options.ambari_url
-      options.ambari_admin_password ?= service.deps.ambari_server.options.ambari_admin_password
-      options.cluster_name ?= service.deps.ambari_server.options.cluster_name
-      options.takeover = service.deps.ambari_server.options.takeover
-      options.baremetal = service.deps.ambari_server.options.baremetal
-
-## Ambari Agent
-Register users to ambari agent's user list.
-
-      for srv in service.deps.ambari_agent
-        srv.options.users ?= {}
-        srv.options.users['spark'] ?= options.user
-        srv.options.groups ?= {}
-        srv.options.groups['spark'] ?= options.group
-
 ## Wait
 
       options.wait ?= {}

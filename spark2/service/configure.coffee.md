@@ -57,23 +57,23 @@ Follow Hortonworks [documentation][spark2-ssl] to enable wire encryption.
       throw Error 'Required Options: "password"' unless options.krb5.password
       options.krb5.admin ?= service.deps.krb5_client.options.admin[options.krb5.realm]
       #artifact id
-      options.identities ?= {}
-      options.identities['spark2'] ?= {}
-      options.identities['spark2']['principal'] ?= {}
-      options.identities['spark2']['principal']['configuration'] ?= 'spark2-defaults/spark.history.kerberos.principal'
-      options.identities['spark2']['principal']['type'] ?= 'user'
-      options.identities['spark2']['principal']['local_username'] ?= options.user.name
-      options.identities['spark2']['principal']['value'] ?= options.krb5.principal#options.spark.krb5_user.principal
-      options.identities['spark2']['name'] ?= 'spark2user'
-      options.identities['spark2']['keytab'] ?= {}
-      options.identities['spark2']['keytab']['owner'] ?= {}
-      options.identities['spark2']['keytab']['owner']['access'] ?= 'r' 
-      options.identities['spark2']['keytab']['owner']['name'] ?= options.user.name 
-      options.identities['spark2']['keytab']['group'] ?= {}
-      options.identities['spark2']['keytab']['group']['access'] ?= 'r'
-      options.identities['spark2']['keytab']['group']['name'] ?= options.hadoop_group.name
-      options.identities['spark2']['keytab']['file'] ?= options.krb5.keytab
-      options.identities['spark2']['keytab']['configuration'] ?= 'spark2-defaults/spark.history.kerberos.keytab'
+      # options.identities ?= {}
+      # options.identities['spark2'] ?= {}
+      # options.identities['spark2']['principal'] ?= {}
+      # options.identities['spark2']['principal']['configuration'] ?= 'spark2-defaults/spark.history.kerberos.principal'
+      # options.identities['spark2']['principal']['type'] ?= 'user'
+      # options.identities['spark2']['principal']['local_username'] ?= options.user.name
+      # options.identities['spark2']['principal']['value'] ?= options.krb5.principal#options.spark.krb5_user.principal
+      # options.identities['spark2']['name'] ?= 'spark2user'
+      # options.identities['spark2']['keytab'] ?= {}
+      # options.identities['spark2']['keytab']['owner'] ?= {}
+      # options.identities['spark2']['keytab']['owner']['access'] ?= 'r' 
+      # options.identities['spark2']['keytab']['owner']['name'] ?= options.user.name 
+      # options.identities['spark2']['keytab']['group'] ?= {}
+      # options.identities['spark2']['keytab']['group']['access'] ?= 'r'
+      # options.identities['spark2']['keytab']['group']['name'] ?= options.hadoop_group.name
+      # options.identities['spark2']['keytab']['file'] ?= options.krb5.keytab
+      # options.identities['spark2']['keytab']['configuration'] ?= 'spark2-defaults/spark.history.kerberos.keytab'
 
 ## SSL
 Enable SSL as it is fully supprted starting from spark2
@@ -87,19 +87,6 @@ Enable SSL as it is fully supprted starting from spark2
       options.conf['spark.ssl.protocol'] ?= "SSLv3"
       options.conf['spark.ssl.trustStore'] ?= "#{options.conf_dir}/truststore"
       options.conf['spark.ssl.trustStorePassword'] ?= service.deps.ssl.options.truststore.password
-
-## Ambari rest api
-
-      #ambari server configuration
-      options.post_component = service.instances[0].node.fqdn is service.node.fqdn
-      options.ambari_host = service.node.fqdn is service.deps.ambari_server.node.fqdn
-      options.ambari_url ?= service.deps.ambari_server.options.ambari_url
-      options.ambari_admin_password ?= service.deps.ambari_server.options.ambari_admin_password
-      options.cluster_name ?= service.deps.ambari_server.options.cluster_name
-      options.stack_name = service.deps.ambari_server.options.stack_name
-      options.stack_version = service.deps.ambari_server.options.stack_version
-      options.takeover = service.deps.ambari_server.options.takeover
-      options.baremetal = service.deps.ambari_server.options.baremetal
 
 ## Ambari Agent
 Register users to ambari agent's user list.
