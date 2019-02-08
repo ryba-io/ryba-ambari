@@ -63,32 +63,6 @@ I have no time to test it.
       options.conf['spark.ssl.trustStore'] ?= "#{options.conf_dir}/truststore"
       options.conf['spark.ssl.trustStorePassword'] ?= service.deps.ssl.options.truststore.password
 
-## Ambari Configurations
-
-      for srv in service.deps.spark
-        srv.options.client_hosts ?= []
-        srv.options.client_hosts.push service.node.fqdn if srv.options.client_hosts.indexOf(service.node.fqdn) is -1
-
-## Ambari Server REST API
-
-      #ambari server configuration
-      options.post_component = service.instances[0].node.fqdn is service.node.fqdn
-      options.ambari_host = service.node.fqdn is service.deps.ambari_server.node.fqdn
-      options.ambari_url ?= service.deps.ambari_server.options.ambari_url
-      options.ambari_admin_password ?= service.deps.ambari_server.options.ambari_admin_password
-      options.cluster_name ?= service.deps.ambari_server.options.cluster_name
-      options.takeover = service.deps.ambari_server.options.takeover
-      options.baremetal = service.deps.ambari_server.options.baremetal
-
-## Ambari Agent
-Register users to ambari agent's user list.
-
-      for srv in service.deps.ambari_agent
-        srv.options.users ?= {}
-        srv.options.users['spark'] ?= options.user
-        srv.options.groups ?= {}
-        srv.options.groups['spark'] ?= options.group
-
 ## Wait
 
       options.wait_yarn_rm = service.deps.yarn_rm[0].options.wait

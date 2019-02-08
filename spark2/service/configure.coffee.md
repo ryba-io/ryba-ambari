@@ -88,15 +88,6 @@ Enable SSL as it is fully supprted starting from spark2
       options.conf['spark.ssl.trustStore'] ?= "#{options.conf_dir}/truststore"
       options.conf['spark.ssl.trustStorePassword'] ?= service.deps.ssl.options.truststore.password
 
-## Ambari Agent
-Register users to ambari agent's user list.
-
-      for srv in service.deps.ambari_agent
-        srv.options.users ?= {}
-        srv.options.users['spark'] ?= options.user
-        srv.options.groups ?= {}
-        srv.options.groups['spark'] ?= options.group
-
 ## Dependencies
 
     {merge} = require 'nikita/lib/misc'

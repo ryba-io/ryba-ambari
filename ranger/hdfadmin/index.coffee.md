@@ -14,7 +14,6 @@ access control over Hadoop data access components like Apache Hive and Apache HB
         mariadb_client: module: 'masson/commons/mariadb/client', local: true, auto: true
         db_admin: module: 'ryba/commons/db_admin', local: true, auto: true, implicit: true
         solr_client: module: 'ryba/solr/client', local: true
-        ambari_server: module: 'ryba-ambari-takeover/server', single: true, required: true
         hdp: module: 'ryba/hdp'
       configure:
         'ryba-ambari-takeover/ranger/hdfadmin/configure'

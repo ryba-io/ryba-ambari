@@ -613,17 +613,6 @@ Ryba injects function to the different contexts.
       options.configurations['ranger-ugsync-site']['ranger.usersync.unix.password.file'] ?=  "/etc/passwd"
       options.configurations['ranger-ugsync-site']['ranger.usersync.user.searchenabled'] ?=  "false"
 
-## Ambari
-
-      #ambari server configuration
-      options.post_component = service.instances[0].node.fqdn is service.node.fqdn
-      options.ambari_host = service.node.fqdn is service.deps.ambari_server.node.fqdn
-      options.ambari_url ?= service.deps.ambari_server.options.ambari_url
-      options.ambari_admin_password ?= service.deps.ambari_server.options.ambari_admin_password
-      options.cluster_name ?= service.deps.ambari_server.options.cluster_name
-      options.takeover = service.deps.ambari_server.options.takeover
-      options.baremetal = service.deps.ambari_server.options.baremetal
-
 ## Dependencies
 
     quote = require 'regexp-quote'

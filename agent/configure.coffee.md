@@ -410,16 +410,16 @@
         options.configurations['activity-zeppelin-site'] ?= {}
         options.smartsense_user = service.deps.smartsense_service[0].options.user
         options.smartsense_group = service.deps.smartsense_service[0].options.group
-        if service.deps.smartsense_explorer.length > 0
+        if service.deps.smartsense_explorer?.length > 0
           options.smartsense_explorer = service.deps.smartsense_explorer.map( (srv) -> srv.node.fqdn ).indexOf(service.node.fqdn) > -1
           options.services['SMARTSENSE']['ACTIVITY_EXPLORER'] ?= {} 
           options.services['SMARTSENSE']['ACTIVITY_EXPLORER']['hosts'] = service.deps.smartsense_explorer.map (srv) -> srv.node.fqdn
           exports.enrich_config service.deps.smartsense_explorer[0].options.configurations['activity-zeppelin-site'], options.configurations['activity-zeppelin-site']
-        if service.deps.smartsense_server.length > 0
+        if service.deps.smartsense_server?.length > 0
           options.services['SMARTSENSE']['HST_SERVER'] ?= {} 
           options.services['SMARTSENSE']['HST_SERVER']['hosts'] = service.deps.smartsense_server.map (srv) -> srv.node.fqdn
           exports.enrich_config service.deps.smartsense_server[0].options.configurations['activity-zeppelin-site'], options.configurations['activity-zeppelin-site']
-        if service.deps.smartsense_agent.length > 0
+        if service.deps.smartsense_agent?.length > 0
           options.services['SMARTSENSE']['HST_AGENT'] ?= {} 
           options.services['SMARTSENSE']['HST_AGENT']['hosts'] = service.deps.smartsense_agent.map (srv) -> srv.node.fqdn
           exports.enrich_config service.deps.smartsense_agent[0].options.configurations['activity-zeppelin-site'], options.configurations['activity-zeppelin-site']

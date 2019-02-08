@@ -761,15 +761,15 @@ Register users to ambari agent's user list.
       if service.deps.smartsense_service?.length > 0
         options.services['SMARTSENSE'] ?= {}
         options.configurations['activity-zeppelin-site'] ?= {}
-        if service.deps.smartsense_explorer.length > 0
+        if service.deps.smartsense_explorer?.length > 0
           options.services['SMARTSENSE']['ACTIVITY_EXPLORER'] ?= {} 
           options.services['SMARTSENSE']['ACTIVITY_EXPLORER']['hosts'] = service.deps.smartsense_explorer.map (srv) -> srv.node.fqdn
           exports.enrich_config service.deps.smartsense_explorer[0].options.configurations['activity-zeppelin-site'], options.configurations['activity-zeppelin-site']
-        if service.deps.smartsense_server.length > 0
+        if service.deps.smartsense_server?.length > 0
           options.services['SMARTSENSE']['HST_SERVER'] ?= {} 
           options.services['SMARTSENSE']['HST_SERVER']['hosts'] = service.deps.smartsense_server.map (srv) -> srv.node.fqdn
           exports.enrich_config service.deps.smartsense_server[0].options.configurations['activity-zeppelin-site'], options.configurations['activity-zeppelin-site']
-        if service.deps.smartsense_agent.length > 0
+        if service.deps.smartsense_agent?.length > 0
           options.services['SMARTSENSE']['HST_AGENT'] ?= {} 
           options.services['SMARTSENSE']['HST_AGENT']['hosts'] = service.deps.smartsense_agent.map (srv) -> srv.node.fqdn
           exports.enrich_config service.deps.smartsense_agent[0].options.configurations['activity-zeppelin-site'], options.configurations['activity-zeppelin-site']
@@ -791,6 +791,30 @@ Register users to ambari agent's user list.
         if options.configurations['spark-defaults']['spark.history.kerberos.enabled'] is 'true'
           options.configurations['spark-defaults']['spark.history.kerberos.principal'] ?="#{service.deps.spark_service[0].options.user.name}-#{options.cluster_name}@#{options.krb5.realm}"
           options.configurations['spark-defaults']['spark.history.kerberos.keytab'] ?= '/etc/security/keytabs/spark.headless.keytab'
+
+## SPARK 2 Service
+
+      if service.deps.spark2_service?.length > 0
+        options.services['SPARK2'] ?= {}
+        options.configurations['spark2-defaults'] ?= {}
+        options.configurations['spark2-env'] ?= {}
+        options.configurations['livy2-conf'] ?= {}
+        if service.deps.spark2_hs?.length > 0
+          options.services['SPARK2']['SPARK2_JOBHISTORYSERVER'] ?= {} 
+          options.services['SPARK2']['SPARK2_JOBHISTORYSERVER']['hosts'] = service.deps.spark2_hs.map (srv) -> srv.node.fqdn
+          exports.enrich_config service.deps.spark2_hs[0].options.conf, options.configurations['spark2-defaults']
+        if service.deps.spark2_client.length > 0
+          options.services['SPARK2']['SPARK2_CLIENT'] ?= {} 
+          options.services['SPARK2']['SPARK2_CLIENT']['hosts'] = service.deps.spark2_client.map (srv) -> srv.node.fqdn
+          exports.enrich_config service.deps.spark2_client[0].options.conf, options.configurations['spark2-defaults']
+        if options.configurations['spark2-defaults']['spark.history.kerberos.enabled'] is 'true'
+          options.configurations['spark2-defaults']['spark.history.kerberos.principal'] ?="#{service.deps.spark2_service[0].options.user.name}-#{options.cluster_name}@#{options.krb5.realm}"
+          options.configurations['spark2-defaults']['spark.history.kerberos.keytab'] ?= '/etc/security/keytabs/spark.headless.keytab'
+        if service.deps.spark2_livy.length > 0
+          options.services['SPARK2']['LIVY2_SERVER'] ?= {} 
+          options.services['SPARK2']['LIVY2_SERVER']['hosts'] = service.deps.spark2_livy.map (srv) -> srv.node.fqdn
+          exports.enrich_config service.deps.spark2_livy[0].options.configurations['livy2-conf'], options.configurations['livy2-conf']
+
 
 ## SQOOP Service
 

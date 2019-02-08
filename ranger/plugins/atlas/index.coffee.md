@@ -10,3 +10,5 @@
         ranger_admin: module: 'ryba-ambari-takeover/ranger/hdpadmin', single: true, required: true
         ranger_hdfs: module: 'ryba-ambari-takeover/ranger/plugins/hdfs'
         hdfs_client: module: 'ryba-ambari-takeover/hadoop/hdfs_client'
+      configure:
+        'ryba-ambari-takeover/ranger/plugins/atlas/configure'

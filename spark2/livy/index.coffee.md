@@ -8,7 +8,6 @@
         test_user: module: 'ryba/commons/test_user', local: true, auto: true
         krb5_client: module: 'masson/core/krb5_client', local: true
         iptables: module: 'masson/core/iptables', local: true
-        ambari_service: module: 'ryba-ambari-takeover/ambari/server', required: true
         spark_client: module: 'ryba-ambari-takeover/spark2/client', required: true
         spark_service: module: 'ryba-ambari-takeover/spark2/service', required: true
       configure:
